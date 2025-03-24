@@ -1,0 +1,23 @@
+h2 {
+    color: brown;
+    
+}
+
+.divspec input,
+.divspec button {
+    margin: 10px;
+    padding: 5px;
+}
+
+
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.caixaLogin{
+    background-color: lightgrey;
+    border: 5px ridge darkgray;
+}
