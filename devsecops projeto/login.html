@@ -13,24 +13,39 @@
         <div class="divspec">  
         <form id="form-login">
             <i class="fas fa-envelope" style="margin-left: 5px;"></i><input type="email" placeholder="Email" name="email" class="textoLogin" required> <br>
-            <i class="fa-solid fa-key" style="margin-left: 5px;"></i><input type="password" placeholder="Senha" name="senha" class="textoLogin"> <br>
+            <i class="fa-solid fa-key" style="margin-left: 5px;"></i><input type="password" id="senha" placeholder="Senha" name="senha" class="textoLogin"> <br>
             <button class="botaoLogin" type="submit">Entrar</button>
         </form>
         </div>
         <script>
-            function logar() {
-                document.getElementById("fomr-login")
-                    .addEventListener('submit', e => {
-                        e.preventDefault();
-                        fetch('/php/login.php', {
-                            method: 'POST',
-                            body: new FormData(document.getElementById('form-login'))
-                        })
-                        .then(response => response.text())
-                        .then(data => window.alert(data.mensagem)
-                        .catch(error => console.error(error)));
+            
+            document.getElementById("form-login")
+                .addEventListener('submit', e => {
+                    e.preventDefault();
+                    hashSenha = gerarHash(document.getElementById('senha').value);
+                    document.getElementById('senha').value = '';
+
+                    const formData = new FormData(document.getElementById('form-login'));
+                    formData.delete('senha');
+                    formData.append('senha', hashSenha);
+                    
+                    fetch('/php/login.php', {
+                        method: 'POST',
+                        body: formData
                     })
-            }
+                    .then(response => response.text())
+                    .then(data => alert(data))
+                    .catch(error => console.error(error));
+                })
+                async function gerarHash(valor) {
+                    const encoder = new TextEncoder();
+                    const data = encoder.encode(valor);
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+                    return hashHex;
+                    
+                }
         </script>
         <div>
             <text style="margin-left: 20px;">Não tem login? </text><a href="cadastro.html">Criar uma conta!</a>
