@@ -9,14 +9,17 @@ CREATE TABLE Usuario (
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL
 );
+insert into Usuario VALUES (1, "TESTE", "email.teste@@@", "TESTE");
 
 
 CREATE TABLE Veiculo (
     idVeiculo INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
-    placa VARCHAR(10) NOT NULL,
+    placa VARCHAR(10) NOT NULL UNIQUE,
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
 );
+
+ALTER TABLE Veiculo ADD UNIQUE (placa);
 
 CREATE TABLE NotaFiscal (
     idNotaFiscal INT AUTO_INCREMENT PRIMARY KEY,
@@ -30,7 +33,7 @@ CREATE TABLE NotaFiscal (
 
 CREATE TABLE Estacionamento (
     idEstacionamento INT AUTO_INCREMENT PRIMARY KEY,
-    totalVagas NOT NULL
+    totalVagas INT NOT NULL
 );
 
 CREATE TABLE VeiculoEstacionado (
