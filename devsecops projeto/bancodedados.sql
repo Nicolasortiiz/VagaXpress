@@ -9,15 +9,12 @@ CREATE TABLE Usuario (
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL
 );
-
-
 CREATE TABLE Veiculo (
     idVeiculo INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
     placa VARCHAR(10) NOT NULL,
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
 );
-
 CREATE TABLE NotaFiscal (
     idNotaFiscal INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
@@ -27,22 +24,18 @@ CREATE TABLE NotaFiscal (
     valor DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
 );
-
 CREATE TABLE Estacionamento (
     idEstacionamento INT AUTO_INCREMENT PRIMARY KEY,
     totalVagas NOT NULL
 );
-
 CREATE TABLE VeiculoEstacionado (
     idVeiculoEstacionado INT AUTO_INCREMENT PRIMARY KEY,
     placa VARCHAR(10) NOT NULL,
     dataEntrada DATE NOT NULL,
     dataSaida DATE,
     horaEntrada TIME NOT NULL,
-    horaSaida TIME,
-    FOREIGN KEY (placa) REFERENCES Veiculo(placa) ON DELETE CASCADE
+    horaSaida TIME
 );
-
 CREATE TABLE EstacionamentoReservado (
     idEstacionamentoReservado INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
