@@ -29,7 +29,7 @@
                     formData.delete('senha');
                     formData.append('senha', hashSenha);
                     
-                    fetch('/php/login.php', {
+                    fetch('../php/login.php', {
                         method: 'POST',
                         body: formData
                     })
