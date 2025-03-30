@@ -81,4 +81,5 @@ CREATE TABLE Mensagem (
 )
 
 INSERT INTO Usuario (nome, email, senha) VALUES ('Admin', 'admin@vagaxpress.com', 'admin.senha123');
+INSERT INTO Usuario (nome, email, senha) VALUES ('teste', 'teste@mail.com', 'teste');
 INSERT INTO Estacionamento (totalVagas, valorHora) VALUES (100, 5.00);

@@ -9,6 +9,7 @@ $dadosCriptografados = file_get_contents('php://input');
 $resultado = decrypt($dadosCriptografados);
 $email = $resultado['email'];
 $username = $resultado['nome'];
+date_default_timezone_set('America/Sao_Paulo');
 
 $otp = TOTP::generate();
 $otp->setLabel('VagaXpress');

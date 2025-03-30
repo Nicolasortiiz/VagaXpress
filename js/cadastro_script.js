@@ -40,7 +40,7 @@ async function criptografar(dados) {
     return res;
 }
 
-function cadastrar(event) {
+async function cadastrar(event) {
     event.preventDefault();
     document.getElementById("botaoCadastrar").disabled = true;
 
@@ -58,25 +58,50 @@ function cadastrar(event) {
             var verificadorSenha = senha.test(document.getElementById('senha').value);
 
             if (verificadorEmail && verificadorSenha) {
-                document.querySelector(".input_box").style.display = 'none';
-                document.querySelector(".divToken").style.display = 'flex';
-                enviarVerificacao();
+
+                var dados = {
+                    email: document.getElementById('email').value
+                };
+
+                var res = await criptografar(dados);
+
+                fetch("../php/confirmar_email.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        cript: res
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert("Email já cadastrado!");
+                            
+                        } else {
+                            document.querySelector(".input_box").style.pointerEvents = 'none';
+                            document.querySelector(".input_box").style.display = 'none';
+                            document.querySelector(".divToken").style.display = 'flex';
+                            enviarVerificacao();
+                        }
+
+                    })
+                    .catch(error => console.error(error));
+
             }
             else {
                 alert("Os dados registrados não estão de acordo com a expressão regular.")
-                document.getElementById("botaoCadastrar").disabled = false;
             }
         }
         else {
             alert("As duas senhas não são iguais.");
-            document.getElementById("botaoCadastrar").disabled = false;
         }
     }
     else {
         alert("Preencha todos os campos.");
-        document.getElementById("botaoCadastrar").disabled = false;
     }
-
+    document.getElementById("botaoCadastrar").disabled = false;
 };
 
 async function enviarVerificacao() {
@@ -100,7 +125,7 @@ async function enviarVerificacao() {
             if (data.error) {
                 alert("Ocorreu um erro, reinicie a página!");
             }
-            
+
         })
         .catch(error => console.error(error));
 }
@@ -124,21 +149,21 @@ async function cadastrarConta() {
     })
         .then(response => response.json())
         .then(data => {
-            if(data.error == 1){
+            if (data.error == 1) {
                 alert("Conta já cadastrada!")
-            }else if (data.error ==2) {
+            } else if (data.error == 2) {
                 alert("Ocorreu um erro, reinicie a página!");
-            }else if (data.error) {
+            } else if (data.error) {
                 alert("Ocorreu um erro, reinicie a página!");
             }
-            if(data.success){
-                window.location.href = "../index.html";
+            if (data.success) {
+                window.location.href = "/login.html";
             }
-            
+
         })
         .catch(error => console.error(error));
 
-    
+
 }
 
 async function verificaToken() {
@@ -164,16 +189,15 @@ async function verificaToken() {
                 }
                 if (data.status == 1) {
                     cadastrarConta();
-                    document.getElementById("botaoToken").disabled = false;
+                    
                 } else {
                     alert("Token inválido");
-                    document.getElementById("botaoToken").disabled = false;
                 }
             })
             .catch(error => console.error(error));
     } else {
         alert("Preencha todos os campos.");
-        document.getElementById("botaoToken").disabled = false;
     }
+    document.getElementById("botaoToken").disabled = false;
 }
 

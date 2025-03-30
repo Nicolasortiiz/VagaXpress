@@ -24,18 +24,7 @@ if(isset($resultado['email']) && isset($resultado['nome']) && isset($resultado['
     $username = $resultado['nome'];
     $senha = $resultado['senha'];
 }else{
-    echo json_encode(array('error'=> true));
-}
-$querySelect = 'SELECT * FROM Usuario WHERE email = ?';
-$stmt = $conn->prepare($querySelect);
-$stmt->bind_param('s', $email);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if($result->num_rows > 0){
-    $status = ["error" => 1];
-    echo json_encode($status);
-    exit;
+    echo json_encode(['error'=> true]);
 }
 
 $queryInsert = "INSERT INTO Usuario (nome, email, senha, segredo) VALUES (?, ?, ?, ?)";

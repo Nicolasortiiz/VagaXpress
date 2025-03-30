@@ -1,71 +1,40 @@
 <!DOCTYPE html>
+
 <html lang="pt-br">
 
 <head>
+    <title>Autenticação</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/stylesLogin.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <title>VagaXpress - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/telaAutenticacao_styles.css">
+    <script src="/js/crypto-js.min.js"></script>
+    <script src="/js/autenticacao_script.js"></script>
+    <script src="/js/openpgp.min.js"></script>
 </head>
 
 <body>
-    <div class="caixaLogin">
-        <h1>Login</h1>
-        <div class="divspec">
-            <form id="form-login" onsubmit="login(event)">
-                <i class="fas fa-envelope" style="margin-left: 5px;"></i><input type="email" placeholder="Email"
-                    name="email" class="textoLogin" required> <br>
-                <i class="fa-solid fa-key" style="margin-left: 5px;"></i><input type="password" id="senha"
-                    placeholder="Senha" name="senha" class="textoLogin"> <br>
-                <button class="botaoLogin" type="submit">Entrar</button>
-            </form>
-        </div>
-        <div class="divotp" style="display: none;">
-            
-        </div>
-        <script>
-            async function login(event) {
-                event.preventDefault();
-                hashSenha = await gerarHash(document.getElementById('senha').value);
-                document.getElementById('senha').value = '';
+    <div class="input_box">
+        
+        <input class="inputEmail" type="text" placeholder="E-mail" id="email">
+        <br>
+        <input class="inputSenha" type="password" placeholder="Senha" id="senha">
+        <br>
+        <button onclick="enviarLogin()" id="botaoLogin">Entrar</button>
+        <a href='cadastro.html'>Cadastrar nova conta</a>
+        <br>
+        
+        <a href="recuperacao.html">Recuperar senha</a>
 
-                const formData = new FormData(document.getElementById('form-login'));
-                formData.delete('senha');
-                formData.append('senha', hashSenha);
-
-                fetch('../php/login.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.text())
-                    .then(data => {
-                        if (data.resultado) {
-                            //document.querySelector('.divotp').style.display = 'block';
-                            //document.querySelector('.divspec').style.display = 'none';
-                            window.location.href = "../index.html";
-                        } else {
-                            window.alert("Login ou senha incorretos!");
-                        }
-                    })
-                    .catch(error => console.error(error));
-            }
-
-            async function gerarHash(valor) {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(valor);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-                return hashHex;
-
-            }
-        </script>
-        <div>
-            <text style="margin-left: 20px;">Não tem login? </text><a href="cadastro.html">Criar uma conta!</a>
-        </div>
     </div>
+    <div class="divSMS">
+        <a>Insira o código autenticador </a>
+        <a>(caso necessário recupere a senha para gerar um novo)</a>
+        <br>
+        <input class="inputSMS" type="text" placeholder="Código" id="inputSMS">
+        <br>
+        <button onclick="validarLogin()" id="botaoSMS">Entrar</button>
 
+    </div>
 </body>
 
 </html>
