@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+
+<head>
+    <title>Recuperação de Senha</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/telaRecuperacao.css">
+    <script src="../javascript/jsencrypt.min.js"></script>
+    <script src="../javascript/crypto-js.min.js"></script>
+    <script src="../javascript/telaRecuperacao.js"></script>
+</head>
+
+<body>
+    <div class="divEmail">
+
+        <input class="input" type="text" placeholder="E-mail" id="email">
+        <br>
+        <button onclick="enviaEmail()" id="botaoEmail">Enviar email de confirmação</button>
+
+    </div>
+
+    <div class="divSenha">
+
+        <input class="inputSenha" type="password" placeholder="Nova senha" id="senha">
+        <br>
+        <input class="inputConfirmarSenha" type="password" placeholder="Confirmar nova senha" id="confirmar_senha">
+        <br>
+        <button onclick="verificaSenha()" id="botaoSenha">Criar nova senha</button>
+
+    </div>
+
+    <div class="divToken">
+        <a>Um token foi enviado para o seu email</a>
+        <br>
+        <input class="input" type="text" placeholder="Token" id="token">
+        <br>
+        <button onclick="validarToken()" id="botaoToken">Enviar</button>
+
+    </div>
+</body>
+
+</html>

@@ -15,6 +15,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmtVeiculo-> bind_param("s", $placa);
     $stmtVeiculo-> execute();
     $resultVeiculo = $stmtVeiculo->get_result();
+    $stmtVeiculo-> close();
 
     $veiculo = $resultVeiculo->fetch_assoc();
     $idVeiculo = $veiculo['idVeiculoEstacionado'];
@@ -33,6 +34,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     $valorTotal = $totalHoras * $valorHora;
+    $conn-> close();
 
     echo json_encode([
         "valorTotal" => $valorTotal,

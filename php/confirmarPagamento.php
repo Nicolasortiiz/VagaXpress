@@ -22,6 +22,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
     $resultVeiculo = $stmtVeiculo->get_result();
     $veiculo = $resultVeiculo->fetch_assoc();
     $idVeiculo = $veiculo['idVeiculoEstacionado'];
+    $stmtVeiculo-> close();
 
     $updateVeiculoQuery = "UPDATE VeiculoEstacionado SET dataSaida = ?, horaSaida = ? WHERE idVeiculoEstacionado = ?";
     $stmtUpdateVeiculo = $conn->prepare($updateVeiculoQuery);
@@ -32,10 +33,13 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
         echo json_encode(["resultado" => false]);
         exit;
     }
+    $stmtUpdateVeiculo -> close();
 
     $insertNotaFiscalQuery = "INSERT INTO NotaFiscal_Totem (dataEmissao, cpf, nome, valor) VALUES (?, ?, ?, ?)";
     $stmtNotaFiscal = $conn->prepare($insertNotaFiscalQuery);
     $stmtNotaFiscal->bind_param("ssss", $dataSaida, $cpf, $nome, $valorTotal);
+    $stmtNotaFiscal-> close();
+    $conn-> close();
     if($stmtNotaFiscal->execute()){
         echo json_encode(["resultado" => true]);
     }else{

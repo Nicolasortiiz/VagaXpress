@@ -11,6 +11,8 @@ if($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->bind_param("s", $placa);
     $stmt->execute();
     $resultado = $stmt->get_result();
+    $stmt-> close();
+    $conn-> close();
     if($resultado->num_rows > 0){
         echo json_encode(["resultado" => true]);
     }else{
