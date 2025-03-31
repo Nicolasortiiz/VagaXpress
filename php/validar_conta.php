@@ -1,28 +1,49 @@
 <?php
-require_once "session.php";
+
+use OTPHP\TOTP;
+use PHPMailer\PHPMailer\PHPMailer;
+require_once "connector.php";
 require_once "decrypt.php";
 require_once __DIR__ . '/otphp/vendor/autoload.php';
-use OTPHP\TOTP;
+require_once 'PHPMailer-master/src/Exception.php';
+require_once 'PHPMailer-master/src/PHPMailer.php';
+require_once 'PHPMailer-master/src/SMTP.php';
 
 session_start();
-$email = $arr['dado1'];
-
-$result = mysqli_query($con, "SELECT nome_usuario FROM usuario WHERE email_usuario LIKE '$email'");
-$row = mysqli_fetch_assoc($result);
+date_default_timezone_set('America/Sao_Paulo');
+$dadosCriptografados = file_get_contents('php://input');
+$resultado = decrypt($dadosCriptografados);
+$email = $resultado['email'];
 $otp = TOTP::generate();
-mysqli_query($con, "UPDATE usuario SET segredo_usuario = '{$otp->getSecret()}' WHERE email_usuario = '$email'");
+$secret = $otp->getSecret();
 
-$otp->setLabel('Código autenticação');
+$querySelect = "SELECT nome FROM Usuario WHERE email LIKE ?";
+$queryUpdate = "UPDATE Usuario SET segredo = ? WHERE email = ?";
+
+$stmt = $conn->prepare($querySelect);
+$stmt->bind_param('s', $email);
+if(!$stmt->execute()){
+    echo json_encode(['error' => true]);
+    exit;
+}
+$resultado = $stmt->get_result();
+$usuario = $resultado->fetch_assoc();
+$stmt->close();
+
+$stmt = $conn->prepare($queryUpdate);
+$stmt->bind_param('ss', $secret, $email);
+if(!$stmt->execute()){
+    echo json_encode(['error' => true]);
+    exit;
+}
+$stmt-> close();
+$conn-> close();
+
+$otp->setLabel('VagaXpress');
 $qrCode = $otp->getQrCodeUri(
     'https://api.qrserver.com/v1/create-qr-code/?data=[DATA]&size=300x300&ecc=M',
     '[DATA]'
 );
-
-use PHPMailer\PHPMailer\PHPMailer;
-
-require_once 'PHPMailer-master/src/Exception.php';
-require_once 'PHPMailer-master/src/PHPMailer.php';
-require_once 'PHPMailer-master/src/SMTP.php';
 
 $mail = new PHPMailer();
 
@@ -40,7 +61,7 @@ $mail->Port = 465;
 $mail->Username = 'projectsmirai0';
 $mail->Password = "gyzc stjy qumj kgza";
 $mail->SetFrom('projectsmirai0@gmail.com', 'projectsmirai0');
-$mail->addAddress($email, $row['nome_usuario']);
+$mail->addAddress($email, $usuario['nome']);
 $mail->Subject = "Confirmação de conta";
 
 
@@ -60,5 +81,6 @@ $mail->msgHTML($mensagem);
 $mail->send();
 
 $_SESSION['token'] = $token;
+$_SESSION['qr'] = $otp->getSecret();
 
-mysqli_close($con);
+?>

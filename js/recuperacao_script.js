@@ -1,7 +1,7 @@
 let chavePublica;
 
 window.onload = function () {
-    fetch("../php/chave_pub.php", {
+    fetch("/php/chave_pub.php", {
         method: 'POST'
     })
         .then(response => response.json())
@@ -38,80 +38,63 @@ async function criptografar(dados) {
         encryptionKeys: publicKey
     });
     return res;
-}
+};
 
-async function cadastrar(event) {
-    event.preventDefault();
-    document.getElementById("botaoCadastrar").disabled = true;
+function enviaEmail() {
+    document.getElementById("botaoEmail").disabled = true;
+    let email = /^[A-z0-9\.]+@[a-z]+\.com[a-z\.]{0,3}$/;
 
-    if (document.getElementById("email").value != "" &&
-        document.getElementById("username").value != "" &&
-        document.getElementById("senha").value != "" &&
-        document.getElementById("confirmar_senha").value != "") {
-
-        if (document.getElementById("senha").value == document.getElementById("confirmar_senha").value) {
-
-            let email = /^[A-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
-            let senha = /^.{7,20}$/;
-
-            var verificadorEmail = email.test(document.getElementById('email').value);
-            var verificadorSenha = senha.test(document.getElementById('senha').value);
-
-            if (verificadorEmail && verificadorSenha) {
-
-                var dados = {
-                    email: document.getElementById('email').value
-                };
-
-                var res = await criptografar(dados);
-
-                fetch("../php/confirmar_email.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        cript: res
-                    })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.error) {
-                            alert("Email já cadastrado!");
-                            
-                        } else {
-                            document.querySelector(".input_box").style.pointerEvents = 'none';
-                            document.querySelector(".input_box").style.display = 'none';
-                            document.querySelector(".divToken").style.display = 'flex';
-                            enviarVerificacao();
-                        }
-
-                    })
-                    .catch(error => console.error(error));
-
-            }
-            else {
-                alert("Os dados registrados não estão de acordo com a expressão regular.")
-            }
+    var verificadorEmail = email.test(document.getElementById('email').value);
+    if (document.getElementById('email').value != "") {
+        if (verificadorEmail) {
+            verificaEmail();
+        } else {
+            alert("Email inválido!");
         }
-        else {
-            alert("As duas senhas não são iguais.");
-        }
-    }
-    else {
+    } else {
         alert("Preencha todos os campos.");
     }
-    document.getElementById("botaoCadastrar").disabled = false;
+    document.getElementById("botaoEmail").disabled = false;
 };
+
+function verificaSenha() {
+    document.getElementById("botaoSenha").disabled = true;
+    let senha = /^.{7,20}$/;
+
+    var verificadorSenha = senha.test(document.getElementById('senha').value);
+    if (document.getElementById('senha').value != "" &&
+        document.getElementById('confirmar_senha').value != "") {
+
+        if (verificadorSenha) {
+
+            if (document.getElementById('senha').value == document.getElementById('confirmar_senha').value) {
+
+                document.querySelector(".divSenha").style.display = 'none';
+                document.querySelector(".divToken").style.display = 'flex';
+                enviarVerificacao();
+
+            } else {
+                alert("As duas senhas não são iguais.");
+                document.getElementById("botaoSenha").disabled = false;
+            }
+        } else {
+            alert("Senha inválida!");
+            document.getElementById("botaoSenha").disabled = false;
+        }
+    } else {
+        alert("Preencha todos os campos.");
+        document.getElementById("botaoSenha").disabled = false;
+    }
+}
 
 async function enviarVerificacao() {
     var dados = {
-        email: document.getElementById("email").value,
-        nome: document.getElementById("username").value
+        email: document.getElementById('email').value,
     };
 
     var res = await criptografar(dados);
-    fetch("/php/enviar_email.php", {
+
+    fetch("../php/validar_conta.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -125,20 +108,21 @@ async function enviarVerificacao() {
             if (data.error) {
                 alert("Ocorreu um erro, reinicie a página!");
             }
-
         })
         .catch(error => console.error(error));
+
 }
-async function cadastrarConta() {
+
+
+async function mudarSenha() {
     var dados = {
         email: document.getElementById('email').value,
-        nome: document.getElementById("username").value,
         senha: CryptoJS.SHA256(document.getElementById("senha").value).toString()
     };
 
     var res = await criptografar(dados);
 
-    fetch("../php/cadastro.php", {
+    fetch("../php/mudar_senha.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -149,24 +133,47 @@ async function cadastrarConta() {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.error == 1) {
-                alert("Conta já cadastrada!")
-            } else if (data.error == 2) {
-                alert("Ocorreu um erro, reinicie a página!");
-            } else if (data.error) {
-                alert("Ocorreu um erro, reinicie a página!");
-            }
             if (data.success) {
+                alert("Senha atualizada com sucesso!");
                 document.querySelectorAll('input').forEach(input => {
                     input.value = ''; 
                 });
-                window.location.href = "/login.html";
+                window.location.href = "login.html";
+            } else {
+                alert("Ocorreu um erro, reinicie a página!");
             }
-
         })
         .catch(error => console.error(error));
+};
 
+async function verificaEmail() {
 
+    var dados = {
+        email: document.getElementById('email').value
+    };
+
+    var res = await criptografar(dados);
+
+    fetch("../php/confirmar_email.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cript: res
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error != 1) {
+                alert("Email não cadastrado!");
+            } else {
+                document.querySelector(".divEmail").style.display = 'none';
+                document.querySelector(".divSenha").style.display = 'flex';
+            }
+        })
+        .catch(error => console.error(error));
+    document.getElementById("botaoEmail").disabled = false;
 }
 
 async function verificaToken() {
@@ -175,7 +182,9 @@ async function verificaToken() {
         var dados = {
             token: document.getElementById('token').value
         };
+
         var res = await criptografar(dados);
+
         fetch("../php/verifica_token.php", {
             method: "POST",
             headers: {
@@ -187,12 +196,12 @@ async function verificaToken() {
         })
             .then(response => response.json())
             .then(data => {
+
                 if (data.error) {
                     alert("Ocorreu um erro, reinicie a página!");
                 }
                 if (data.status == 1) {
-                    cadastrarConta();
-                    
+                    mudarSenha();
                 } else {
                     alert("Token inválido");
                 }
@@ -203,4 +212,3 @@ async function verificaToken() {
     }
     document.getElementById("botaoToken").disabled = false;
 }
-

@@ -10,6 +10,7 @@ date_default_timezone_set('America/Sao_Paulo');
 
 $input = $resultado['input'] ?? null;
 $email = $resultado['email'];
+$data = strtotime($resultado['data']);
 session_start();
 
 // tirar usuário teste
@@ -31,9 +32,7 @@ $stmt->close();
 $conn->close();
 $otp = TOTP::createFromSecret($usuario['segredo']);
 
-$horaComAjuste = time() + 40;
-
-if ($otp->at($horaComAjuste) == $input) {
+if ($otp->at($data) == $input) {
     $status = ["success" => true];
     $_SESSION["email"] = $email;
     $_SESSION["ultima_atividade"] = time();
@@ -42,4 +41,5 @@ if ($otp->at($horaComAjuste) == $input) {
 }
 
 echo json_encode($status);
+
 

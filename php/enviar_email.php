@@ -1,15 +1,20 @@
 <?php
+
+use OTPHP\TOTP;
+use PHPMailer\PHPMailer\PHPMailer;
+require_once 'PHPMailer-master/src/Exception.php';
+require_once 'PHPMailer-master/src/PHPMailer.php';
+require_once 'PHPMailer-master/src/SMTP.php';
 require_once "decrypt.php";
 require_once __DIR__ . '/otphp/vendor/autoload.php';
-use OTPHP\TOTP;
 
 session_start();
-
+date_default_timezone_set('America/Sao_Paulo');
 $dadosCriptografados = file_get_contents('php://input');
 $resultado = decrypt($dadosCriptografados);
 $email = $resultado['email'];
 $username = $resultado['nome'];
-date_default_timezone_set('America/Sao_Paulo');
+
 
 $otp = TOTP::generate();
 $otp->setLabel('VagaXpress');
@@ -17,12 +22,6 @@ $qrCode = $otp->getQrCodeUri(
     'https://api.qrserver.com/v1/create-qr-code/?data=[DATA]&size=300x300&ecc=M',
     '[DATA]'
 );
-
-use PHPMailer\PHPMailer\PHPMailer;
-
-require_once 'PHPMailer-master/src/Exception.php';
-require_once 'PHPMailer-master/src/PHPMailer.php';
-require_once 'PHPMailer-master/src/SMTP.php';
 
 $mail = new PHPMailer();
 

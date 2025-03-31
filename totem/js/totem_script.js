@@ -194,6 +194,9 @@ async function confirmarPagamento() {
         .catch(error => console.error(error));
 
     await sleep(5000)
+    document.querySelectorAll('input').forEach(input => {
+        input.value = ''; 
+    });
     window.location.reload();
 
 };

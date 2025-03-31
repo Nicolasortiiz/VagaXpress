@@ -6,19 +6,17 @@
     <title>Recuperação de Senha</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/css/telaRecuperacao.css">
-    <script src="../javascript/jsencrypt.min.js"></script>
-    <script src="../javascript/crypto-js.min.js"></script>
-    <script src="../javascript/telaRecuperacao.js"></script>
+    <link rel="stylesheet" href="../css/telaRecuperacao.css">
+    <script src="../js/openpgp.min.js"></script>
+    <script src="../js/crypto-js.min.js"></script>
+    <script src="../js/recuperacao_script.js"></script>
 </head>
 
 <body>
     <div class="divEmail">
-
         <input class="input" type="text" placeholder="E-mail" id="email">
         <br>
         <button onclick="enviaEmail()" id="botaoEmail">Enviar email de confirmação</button>
-
     </div>
 
     <div class="divSenha">
@@ -36,7 +34,7 @@
         <br>
         <input class="input" type="text" placeholder="Token" id="token">
         <br>
-        <button onclick="validarToken()" id="botaoToken">Enviar</button>
+        <button onclick="verificaToken()" id="botaoToken">Enviar</button>
 
     </div>
 </body>
