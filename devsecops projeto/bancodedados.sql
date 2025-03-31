@@ -6,7 +6,8 @@ CREATE TABLE Usuario (
     idUsuario INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL
+    senha VARCHAR(255) NOT NULL,
+    segredo VARCHAR(255)
 );
 insert into Usuario VALUES (1, "TESTE", "email.teste@@@", "TESTE");
 
@@ -83,4 +84,5 @@ CREATE TABLE Mensagem (
 )
 
 INSERT INTO Usuario (nome, email, senha) VALUES ('Admin', 'admin@vagaxpress.com', 'admin.senha123');
+INSERT INTO Usuario (nome, email, senha) VALUES ('teste', 'teste@mail.com', 'teste');
 INSERT INTO Estacionamento (totalVagas, valorHora) VALUES (100, 5.00);

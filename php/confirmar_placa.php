@@ -1,18 +1,16 @@
 <?php
-require_once "decrypt.php";
-require_once "connector.php";
+require_once("decrypt.php");
+require_once("connector.php");
 
 $dadosCriptografados = file_get_contents('php://input');
 $resultado = decrypt($dadosCriptografados);
 
-$email = $resultado["email"];
-$senha = $resultado["senha"];
-$email = htmlspecialchars(strip_tags($email));
-$senha = htmlspecialchars(strip_tags($senha));
+$placa = $resultado["placa"];
+$placa = htmlspecialchars(strip_tags($placa));
 
-$query = "SELECT * FROM Usuario WHERE email = ? AND senha = ?";
+$query = "SELECT * FROM VeiculoEstacionado WHERE placa = ? AND dataSaida IS NULL AND horaSaida IS NULL";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("ss", $email, $senha);
+$stmt->bind_param("s", $placa);
 $stmt->execute();
 $resultado = $stmt->get_result();
 $stmt->close();

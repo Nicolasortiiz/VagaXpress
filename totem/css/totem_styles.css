@@ -1,0 +1,38 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+.telaPlaca,
+.telaInfos,
+.telaQr,
+.telaConfirmacao {
+    margin-bottom: 20px;
+}
+
+.telaInfos {
+    pointer-events: none;
+}
+
+.telaConfirmacao {
+    pointer-events: none;
+}
+
+.telaQr {
+    pointer-events: none;
+}
+
+input[type="text"] {
+    padding: 8px;
+    margin: 5px;
+    width: 200px;
+}
+
+button {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.telaConfirmacao h2 {
+    color: green;
+}
