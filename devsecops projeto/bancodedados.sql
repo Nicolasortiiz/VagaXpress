@@ -1,3 +1,4 @@
+DROP DATABASE estacionamentoDB;
 CREATE DATABASE estacionamentoDB;
 
 USE estacionamentoDB;
@@ -9,7 +10,6 @@ CREATE TABLE Usuario (
     senha VARCHAR(255) NOT NULL,
     segredo VARCHAR(255)
 );
-insert into Usuario VALUES (1, "TESTE", "email.teste@@@", "TESTE");
 
 CREATE TABLE Veiculo (
     idVeiculo INT AUTO_INCREMENT PRIMARY KEY,
@@ -17,8 +17,6 @@ CREATE TABLE Veiculo (
     placa VARCHAR(10) NOT NULL UNIQUE,
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
 );
-
-ALTER TABLE Veiculo ADD UNIQUE (placa);
 
 CREATE TABLE NotaFiscal_Totem (
     idNotaFiscal INT AUTO_INCREMENT PRIMARY KEY,
@@ -81,7 +79,7 @@ CREATE TABLE Mensagem (
     idUsuario INT NOT NULL,
     mensagem TEXT NOT NULL,
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
-)
+);
 
 INSERT INTO Usuario (nome, email, senha) VALUES ('Admin', 'admin@vagaxpress.com', 'admin.senha123');
 INSERT INTO Usuario (nome, email, senha) VALUES ('teste', 'teste@mail.com', 'teste');
