@@ -1,6 +1,8 @@
 <?php
 require_once("decrypt.php");
 require_once("connector.php");
+date_default_timezone_set('America/Sao_Paulo');
+
 
 $dadosCriptografados = file_get_contents('php://input');
 $resultado = decrypt($dadosCriptografados);

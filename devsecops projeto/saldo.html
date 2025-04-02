@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/saldo.js"></script> 
+    <title>Tela Pagamento</title>
+</head>
+<body>
+
+    <div>
+        <h2>Adicionar Saldo</h2>
+        <input type="text" id="valorSaldo" placeholder="R$ 0,00" oninput="formatarSaldo(this)">
+        <button id="botaoAdicionarSaldo" onclick="adicionarSaldo()">Adicionar</button>
+    </div>
+
+    <div>
+        <h2>Pefil Usuário</h2>
+        <p>Saldo Total: R$ <span id="saldoTotal">0.00</span></p>
+    </div>
+
+</body>
+</html>
