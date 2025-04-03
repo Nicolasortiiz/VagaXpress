@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/saldo.js"></script>
+    <script src="/js/crypto-js.min.js"></script>
+    <script src="/js/openpgp.min.js"></script>
+    <title>Tela Pagamento</title>
+</head>
+
+<body>
+
+    <div>
+        <div class="divAddSaldo">
+            <h2>Adicionar Saldo</h2>
+            <input type="text" id="valorSaldo" placeholder="R$ 0,00" oninput="formatarSaldo(this)">
+            <button onclick="gerarQrCode()">Gerar QR Code</button>
+
+        </div>
+        <div class="divQr" style="display: none;">
+            <h2>QR Code</h2>
+            <button id="botaoAdicionarSaldo"  onclick="adicionarSaldo()">Confirmar</button>
+            <button onclick="cancelarQrCode()">Cancelar</button>
+        </div>
+    </div>
+
+
+    <div>
+        <h2>Pefil Usuário</h2>
+        <p>Saldo Total: R$ <span id="saldoTotal"></span></p>
+    </div>
+
+</body>
+
+</html>

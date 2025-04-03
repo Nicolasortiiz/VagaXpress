@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/menu.js"></script> 
+    <title>Menu Principal</title>
+</head>
+<body>
+
+    <div>
+        <h1>Bem-vindo ao VagaXpress</h1>
+        
+    </div>
+	<div>
+		<h2>Cadastro de Veículo</h2>
+        <form onsubmit="event.preventDefault(); gravarPlaca();">
+            <input id="placa" placeholder="Placa" required>
+            <input id="usuario_id" type="hidden" value="1"> <!--Fazer user_id dinamico depois-->
+            <button type="submit">Cadastrar</button>
+        </form>
+	</div>
+	<div>
+		<h2>Agendamento de Estacionamento</h2>
+        <form>
+            <input placeholder="Placa" required>
+			<input placeholder="Data Agendamento" required>
+			<input placeholder="Hora Agendamento" required>
+            <button type="submit">Agendar</button>
+        </form>
+	</div>
+
+</body>
+</html>
