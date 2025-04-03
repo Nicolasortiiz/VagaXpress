@@ -3,14 +3,14 @@ function abrirTela(event) {
     const conteudo = document.getElementById("conteudo");
 
     switch (elementoClicado) {
-        case "tela1":
+        case "tela_inicial":
             conteudo.innerHTML = `
                 <h2>Página Inicial</h2>
                 <p>Bem-vindo ao VagaXpress! Escolha uma opção no menu lateral.</p>
             `;
             break;
 
-        case "tela2":
+        case "cadastro_veiculos":
             conteudo.innerHTML = `
                 <h2>Cadastro de Veículo</h2>
                 <form onsubmit="event.preventDefault(); gravarPlaca();">
@@ -21,7 +21,7 @@ function abrirTela(event) {
             `;
             break;
 
-        case "tela3":
+        case "agendamento":
             conteudo.innerHTML = `
                 <h2>Agendamento de Estacionamento</h2>
                 <form onsubmit="event.preventDefault();">
@@ -33,14 +33,20 @@ function abrirTela(event) {
             `;
             break;
 
-        case "tela4":
+        case "perfil_usuario":
             conteudo.innerHTML = `
             <h2>Perfil do usuário</h2>
             <p>Veja seu perfil aqui.</p>
         `;
         break;
 
-        case "tela5":
+        case "notificacao":
+            conteudo.innerHTML = `
+                <h2>Notificações</h2>
+        ;`
+            carregarNotificacoes();
+
+        case "suporte":
             conteudo.innerHTML = `
                 <h2>Suporte</h2>
                 <p>Entre em contato com o suporte se precisar de ajuda.</p>
@@ -75,4 +81,37 @@ function gravarPlaca() {
         console.error("Erro ao enviar os dados:", error);
         alert("Erro ao cadastrar veículo. Verifique a conexão.");
     });
+}
+
+function carregarNotificacoes() {
+    fetch("php/busca_notificacoes.php")
+        .then(response => response.json())
+        .then(data => {
+            const conteudo = document.getElementById("conteudo");
+            let tabela = `
+                <h2>Notificações</h2>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Mensagem</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+            data.forEach(notificacao => {
+                tabela += `
+                    <tr>
+                        <td>${notificacao.idMensagem}</td>
+                        <td>${notificacao.mensagem}</td>
+                    </tr>`;
+            });
+
+            tabela += `</tbody></table>`;
+            conteudo.innerHTML = tabela;
+        })
+        .catch(error => {
+            console.error("Erro ao carregar notificações:", error);
+            document.getElementById("conteudo").innerHTML = "<p>Erro ao carregar notificações.</p>";
+        });
 }
