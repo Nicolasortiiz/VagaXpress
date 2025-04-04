@@ -18,14 +18,6 @@ CREATE TABLE Veiculo (
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
 );
 
-CREATE TABLE NotaFiscal_Totem (
-    idNotaFiscal INT AUTO_INCREMENT PRIMARY KEY,
-    dataEmissao DATE NOT NULL,
-    cpf VARCHAR(11) NOT NULL,
-    nome VARCHAR(100) NOT NULL,
-    valor DECIMAL(10,2) NOT NULL
-);
-
 CREATE TABLE NotaFiscal_Usuario (
     idNotaFiscal INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
@@ -82,5 +74,5 @@ CREATE TABLE Mensagem (
 );
 
 INSERT INTO Usuario (nome, email, senha) VALUES ('Admin', 'admin@vagaxpress.com', 'admin.senha123');
-INSERT INTO Usuario (nome, email, senha) VALUES ('teste', 'teste@mail.com', 'teste');
+INSERT INTO Usuario (nome, email, senha) VALUES ('teste', 'teste@mail.com', '');
 INSERT INTO Estacionamento (totalVagas, valorHora) VALUES (100, 5.00);

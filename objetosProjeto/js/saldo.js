@@ -3,6 +3,8 @@ let chavePublica;
 window.onload = function () {
     // alterar para quando o botão do usuário for pressionado
     carregarSaldo();
+    carregarVeiculo();
+    carregarHistoricoNF();
     fetch("php/verificar_login.php", {
         method: 'POST'
     })
@@ -107,9 +109,7 @@ async function adicionarSaldo() {
 
 async function carregarSaldo() {
     verificarLogin();
-    fetch("php/saldo.php", {
-        method: "POST"
-    })
+    fetch("php/saldo.php")
     .then(response => response.json())
     .then(data => {
         if (data.erro) {
@@ -130,3 +130,41 @@ function cancelarQrCode(){
     document.querySelector('.divQr').style.display = 'none';
     document.querySelector('.divAddSaldo').style.display = 'block';
 }
+
+async function carregarVeiculo(){
+    verificarLogin();
+    fetch("php/retorna_veiculos.php")
+    .then(response => response.json())
+    .then(data => {
+        if (data.erro) {
+            window.alert(data.erro);
+        }else{
+            if(data.placa){
+                console.log(data.placa);
+            }else{
+                console.log("Nenhum veículo cadastrado");
+            }
+        }
+    })
+    .catch(error => console.error(error));
+}
+
+async function carregarHistoricoNF(){
+    verificarLogin();
+    fetch("php/retorna_historicoNF.php")
+    .then(response => response.json())
+    .then(data => {
+        if (data.erro) {
+            window.alert(data.erro);
+        }else{
+            if(data.idNotaFiscal){
+                console.log(data.idNotaFiscal);
+                console.log(data.dataEmissao);
+            }else{
+                console.log("Nenhuma nota fiscal disponível!");
+            }
+        }
+    })
+    .catch(error => console.error(error));
+}
+

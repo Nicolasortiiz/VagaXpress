@@ -13,6 +13,12 @@
 <body>
 
     <div>
+        <h2>Pefil Usuário</h2>
+        <div>
+            <p>Saldo Total: R$ <span id="saldoTotal"></span></p>
+            <button>Adicionar Saldo</button>
+            
+        </div>
         <div class="divAddSaldo">
             <h2>Adicionar Saldo</h2>
             <input type="text" id="valorSaldo" placeholder="R$ 0,00" oninput="formatarSaldo(this)">
@@ -24,14 +30,14 @@
             <button id="botaoAdicionarSaldo"  onclick="adicionarSaldo()">Confirmar</button>
             <button onclick="cancelarQrCode()">Cancelar</button>
         </div>
+
+        <div class="divNotasFiscais"></div>
+
+        <div class="divVeiculos"></div>
     </div>
 
 
-    <div>
-        <h2>Pefil Usuário</h2>
-        <p>Saldo Total: R$ <span id="saldoTotal"></span></p>
-        
-    </div>
+    
 
 </body>
 

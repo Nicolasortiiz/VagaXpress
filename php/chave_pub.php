@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-$pubkey = shell_exec("python3 publica.py");
+$pubkey = shell_exec("gpg --armor --export");
 
 if($pubkey){
     echo json_encode(["pubkey" => htmlspecialchars($pubkey)]);
