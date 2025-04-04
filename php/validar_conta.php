@@ -4,7 +4,7 @@ use OTPHP\TOTP;
 use PHPMailer\PHPMailer\PHPMailer;
 require_once "connector.php";
 require_once "decrypt.php";
-require_once __DIR__ . '/otphp/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 require_once 'PHPMailer-master/src/Exception.php';
 require_once 'PHPMailer-master/src/PHPMailer.php';
 require_once 'PHPMailer-master/src/SMTP.php';

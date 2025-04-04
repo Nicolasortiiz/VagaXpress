@@ -160,7 +160,7 @@ async function cadastrarConta() {
                 document.querySelectorAll('input').forEach(input => {
                     input.value = ''; 
                 });
-                window.location.href = "/login.html";
+                window.location.href = "login.html";
             }
 
         })

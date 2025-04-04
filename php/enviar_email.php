@@ -6,8 +6,8 @@ require_once 'PHPMailer-master/src/Exception.php';
 require_once 'PHPMailer-master/src/PHPMailer.php';
 require_once 'PHPMailer-master/src/SMTP.php';
 require_once "decrypt.php";
-require_once __DIR__ . '/otphp/vendor/autoload.php';
-use OTPHP\TOTP;
+require_once __DIR__ . '/vendor/autoload.php';
+
 session_start();
 date_default_timezone_set('America/Sao_Paulo');
 $dadosCriptografados = file_get_contents('php://input');
@@ -15,7 +15,7 @@ $resultado = decrypt($dadosCriptografados);
 $email = $resultado['email'];
 $username = $resultado['nome'];
 
-
+use OTPHP\TOTP;
 $otp = TOTP::generate();
 $otp->setLabel('VagaXpress');
 $qrCode = $otp->getQrCodeUri(
