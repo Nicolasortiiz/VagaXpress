@@ -1,4 +1,5 @@
 let chavePublica;
+let valorSaldo='';
 
 window.onload = function () {
     // alterar para quando o botão do usuário for pressionado
@@ -31,6 +32,39 @@ window.onload = function () {
         })
         .catch(error => console.error(error));
 };
+
+function botaoSaldo(event){
+    const elementoClicado = event.target.id;
+    const conteudo = document.getElementById("conteudo_saldo");
+
+    switch (elementoClicado) {
+        case "abrir_adicionar":
+            conteudo.innerHTML = `
+            <div class="divAddSaldo">
+                <h2>Adicionar Saldo</h2>
+                <input type="text" id="valorSaldo" placeholder="R$ 0,00" oninput="formatarSaldo(this)">
+                <button id="mudar_qr" onclick="botaoSaldo(event)">Gerar QR Code</button>
+                <button id="fechar_adicionar" onclick="botaoSaldo(event)">Cancelar</button>
+            </div>
+            `;
+            break;
+
+        case "mudar_qr":
+            valorSaldo = document.getElementById("valorSaldo");
+            conteudo.innerHTML = `
+            <div class="divQr">
+                <h2>QR Code</h2>
+                <img src="imgs/qrCodeExemplo.png"><br>
+                <button id="botaoAdicionarSaldo"  onclick="adicionarSaldo()">Confirmar</button>
+                <button id="abrir_adicionar" onclick="botaoSaldo(event)">Cancelar</button>
+            </div>
+            `;
+            break;
+        case "fechar_adicionar":
+            conteudo.innerHTML = ``;
+            break;
+    }
+}
 
 async function criptografar(dados) {
     var k = CryptoJS.lib.WordArray.random(16);
@@ -81,7 +115,7 @@ function formatarSaldo(input) {
 async function adicionarSaldo() {
     verificarLogin();
     document.getElementById('botaoAdicionarSaldo').disabled = true;
-    var dados = { valor: document.getElementById('valorSaldo').value };
+    var dados = { valor: valorSaldo };
 
     res = await criptografar(dados);
     fetch("php/adicionar_saldo.php", {

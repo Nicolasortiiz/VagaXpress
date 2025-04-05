@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/../utils/decrypt.php";
-require_once __DIR__ . "/../controller/usuarioController.php";
+require_once __DIR__ . "/../controller/UsuarioController.php";
 
 header('Content-Type: application/json');
 date_default_timezone_set('America/Sao_Paulo');
@@ -19,6 +19,7 @@ $nome = $data['nome'] ?? '';
 $senha = $data['senha'] ?? '';
 $token = $data['token'] ?? '';
 $hora = strtotime($data['data']) ?? '';
+$saldo = $data['saldo'] ?? 0.0;
 
 switch ($action) {
     case 'encontrar_email':
@@ -42,6 +43,16 @@ switch ($action) {
     case 'verificar_login_autenticacao':
         $controller->validarLoginAutenticacao();
         break;
+    case 'verificar_login_principal':
+        $controller->validarLoginPrincipal();
+        break;
+    case 'adicionar_saldo':
+        $controller->adicionarSaldo($saldo);
+        break;
+    case 'retornar_saldo':
+        $controller->retornarInfosPerfil();
+        break;
+    
     default:
         http_response_code(400);
         echo json_encode(['erro' => 'Erro ao executar a action!']);

@@ -7,85 +7,118 @@
     <script src="js/saldo.js"></script>
     <script src="/js/crypto-js.min.js"></script>
     <script src="/js/openpgp.min.js"></script>
+
+
     <title>Tela Pagamento</title>
-
     <style>
-        body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    background-color: #f9f9f9;
+
+
+.divTelaUsuario * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Títulos */
-h2 {
+.divTelaUsuario {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
     color: #333;
-    margin-bottom: 10px;
+    padding: 20px;
+    max-width: 100%;
+    margin: 0 auto;
 }
 
-/* Bloco de saldo */
-div {
+/* Título principal */
+.divTelaUsuario h2 {
+    font-size: 24px;
+    color: #2c3e50;
     margin-bottom: 20px;
 }
 
-/* Input de saldo */
-#valorSaldo {
-    padding: 10px;
-    font-size: 16px;
-    width: 200px;
-    margin-right: 10px;
+/* Exibição de saldo */
+.divTelaUsuario p {
+    font-size: 18px;
+    margin-bottom: 10px;
 }
 
-/* Botões */
-button {
-    padding: 10px 15px;
-    font-size: 14px;
-    cursor: pointer;
-    background-color: #007bff;
+/* Botões principais */
+.divTelaUsuario button {
+    background-color: #2d89ef;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-button:hover {
-    background-color: #0056b3;
+.divTelaUsuario button:hover {
+    background-color: #1b66c9;
 }
 
-/* Div de adicionar saldo */
-.divAddSaldo {
-    display: none;
+/* Botões lado a lado */
+.divAddSaldo button,
+.divQr button {
+    margin-right: 10px;
+    margin-top: 10px;
 }
 
-/* Div de QR Code */
+.divTelaUsuario input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.divAddSaldo,
 .divQr {
-    margin-top: 20px;
-    background-color: #ffffff;
-    padding: 15px;
+    text-align: center;
+    background-color: white;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    margin: 20px auto;
+    max-width: 450px;
+    position: fixed;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
 }
+
+.divQr img {
+    max-width: 250px;
+    width: 100%;
+    height: 250px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 5px;
+    background-color: #f4f4f4;
+}
+
+
+        
+    
+        
     </style>
 </head>
 
 <body>
 
-    <div>
+    <div class="divTelaUsuario">
         <h2>Pefil Usuário</h2>
         <div>
             <p>Saldo Total: R$ <span id="saldoTotal"></span></p>
-            <button>Adicionar Saldo</button>
+            <button id="abrir_adicionar" onclick="botaoSaldo(event)">Adicionar Saldo</button>
             
         </div>
-        <div class="divAddSaldo">
-            <h2>Adicionar Saldo</h2>
-            <input type="text" id="valorSaldo" placeholder="R$ 0,00" oninput="formatarSaldo(this)">
-            <button onclick="gerarQrCode()">Gerar QR Code</button>
-
-        </div>
-        <div class="divQr" style="display: none;">
-            <h2>QR Code</h2>
-            <button id="botaoAdicionarSaldo"  onclick="adicionarSaldo()">Confirmar</button>
-            <button onclick="cancelarQrCode()">Cancelar</button>
-        </div>
+        <div id="conteudo_saldo"></div>
+        <p>teste</p>
 
         <div class="divNotasFiscais"></div>
 

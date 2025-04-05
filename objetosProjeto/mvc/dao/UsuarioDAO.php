@@ -110,6 +110,51 @@ class UsuarioDAO {
         return $result;
     }
 
+    public function adicionarSaldo(Usuario $usuario){
+        $querySelect ="SELECT saldo FROM Usuario WHERE idUsuario = ?";
+        $queryUpdate = "UPDATE Usuario SET saldo = ? WHERE idUsuario = ?";
+        $idUsuario = $usuario->getIdUsuario();
+        $saldo = $usuario->getSaldo();
+
+        $stmt = $this->conn->prepare($querySelect);
+        $stmt->bind_param("s", $idUsuario);
+        $stmt->execute();  
+        $result = $stmt->get_result();
+
+        if($result){
+            $stmt = $this->conn->prepare($queryUpdate);
+            $stmt->bind_param("di", $saldo, $idUsuario);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
+            return $result;
+        }else{
+            return false;
+        }
+    }
+
+    public function retornarSaldo(Usuario $usuario){
+        $querySelect = "SELECT saldo FROM Usuario WHERE idUsuario = ?";
+        $idUsuario = $usuario->getIdUsuario();
+
+        $stmt = $this->conn->prepare($querySelect);
+        $stmt->bind_param("i", $idUsuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        $saldo = $result->fetch_assoc()['saldo'] ?? false;
+
+        return $saldo;
+    }
+
+    public function retornarNotificacoes(){
+        $querySelect = "SELECT idMensagem, mensagem FROM Mensagem ORDER BY idMensagem DESC";
+        $stmt = $this->conn->prepare($querySelect);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result->fetch_all();
+    }
 
 }
 

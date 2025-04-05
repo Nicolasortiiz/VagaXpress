@@ -180,18 +180,14 @@ class UsuarioController
     public function validarLoginAutenticacao()
     {
         $pubkey = shell_exec("gpg --armor --export");
-        if (
-            isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"])
-            && isset($_SESSION["usuario_id"])
-        ) {
+        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
             $email = $_SESSION["email"];
             $ultima_atividade = $_SESSION["ultima_atividade"];
-            $usuario_id = $_SESSION["usuario_id"];
-            
+
             if (time() - $ultima_atividade > 3600) {
                 session_unset();
                 session_destroy();
-                
+
                 echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
                 exit;
             }
@@ -202,37 +198,98 @@ class UsuarioController
                 echo json_encode(["login" => 1, "msg" => "Usuário já está logado!"]);
                 exit;
             }
-        }else{
-            echo json_encode(["login"=> 0, "pubkey" => htmlspecialchars($pubkey)]);
+        } else {
+            echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
         }
     }
 
     public function validarLoginPrincipal()
     {
+        $pubkey = shell_exec("gpg --armor --export");
         if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
             $email = $_SESSION["email"];
             $ultima_atividade = $_SESSION["ultima_atividade"];
-            $usuario_id = $_SESSION["usuario_id"];
         } else {
-            echo json_encode(["login" => 0, "msg" => "Login necessário"]);
+            echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
             exit;
         }
 
         if (time() - $ultima_atividade > 3600) {
             session_unset();
             session_destroy();
-            echo json_encode(["login" => 0, "msg" => "Sessão expirada"]);
+            echo json_encode(["login" => 0, "msg" => "Sessão expirada", "pubkey" => htmlspecialchars($pubkey)]);
             exit;
         }
 
         if ($email == "admin@vagaxpress.com") {
-            echo json_encode(["login" => 2]);
+            echo json_encode(["login" => 2, "pubkey" => htmlspecialchars($pubkey)]);
             exit;
         } else {
-            echo json_encode(["login" => 1]);
+            echo json_encode(["login" => 1, "pubkey" => htmlspecialchars($pubkey)]);
             exit;
         }
     }
+
+    public function validarLogin()
+    {
+        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
+            $ultima_atividade = $_SESSION["ultima_atividade"];
+            if (time() - $ultima_atividade > 3600) {
+                session_unset();
+                session_destroy();
+                return false;
+            }
+            $_SESSION["ultima_atividade"] = time();
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+
+    public function adicionarSaldo($valor){
+        if($this->validarLogin()){
+            $usuario_id = intval($_SESSION["usuario_id"]);
+            $valor = str_replace(["R$", " "], "", $valor);
+            $valor = floatval(str_replace(",", ".", $valor));
+            $usuario = new Usuario();
+            $usuario->setIdUsuario($usuario_id);
+            $usuario->setSaldo($valor);
+
+            if ($valor <= 0) {
+                echo json_encode(["erro" => true, "msg" => "O valor precisa ser maior que zero!"]);
+                exit;
+            }
+            
+            if($this->UsuarioDAO->adicionarSaldo($usuario)){
+                echo json_encode(["error" => false, "msg" => number_format($valor, 2, ',', '.')]);
+            }else{
+                echo json_encode(["error"=> true, "msg" => "Erro ao adicionar saldo, tente novamente!"]);
+            }
+
+        }else{
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+        }
+    }
+
+    public function retornarInfosPerfil(){
+        if($this->validarLogin()){
+            $usuario_id = intval($_SESSION["usuario_id"]);
+            $usuario = new Usuario();
+            $usuario->setIdUsuario($usuario_id);
+            $saldo = $this->UsuarioDAO->retornarSaldo($usuario);
+            if (!$saldo) {
+                echo json_encode(["error"=> true,"msg"=> "Erro ao retornar saldo, tente novamente!"]);
+                exit;
+            }else{
+                echo json_encode(["error"=> false, "saldo" => $saldo]);
+            }
+        }else{
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+        }
+    }
+
+    
 }
 
 ?>

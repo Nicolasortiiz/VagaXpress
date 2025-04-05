@@ -62,9 +62,7 @@ CREATE TABLE Vagas (
 
 CREATE TABLE Mensagem (
     idMensagem INT AUTO_INCREMENT PRIMARY KEY,
-    idUsuario INT NOT NULL,
-    mensagem TEXT NOT NULL,
-    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
+    mensagem TEXT NOT NULL
 );
 
 INSERT INTO Usuario (nome, email, senha) VALUES ('Admin', 'admin@vagaxpress.com', 'admin.senha123');
