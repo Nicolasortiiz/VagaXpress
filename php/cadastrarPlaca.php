@@ -1,7 +1,7 @@
 <?php
-header("Content-Type: application/json");
-
 require_once "conexao.php";
+header("Content-Type: application/json");
+date_default_timezone_set('America/Sao_Paulo');
 
 $data = json_decode(file_get_contents("php://input"), true);
 
