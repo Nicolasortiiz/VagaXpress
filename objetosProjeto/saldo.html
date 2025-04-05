@@ -8,6 +8,62 @@
     <script src="/js/crypto-js.min.js"></script>
     <script src="/js/openpgp.min.js"></script>
     <title>Tela Pagamento</title>
+
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+/* Títulos */
+h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Bloco de saldo */
+div {
+    margin-bottom: 20px;
+}
+
+/* Input de saldo */
+#valorSaldo {
+    padding: 10px;
+    font-size: 16px;
+    width: 200px;
+    margin-right: 10px;
+}
+
+/* Botões */
+button {
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Div de adicionar saldo */
+.divAddSaldo {
+    display: none;
+}
+
+/* Div de QR Code */
+.divQr {
+    margin-top: 20px;
+    background-color: #ffffff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+    </style>
 </head>
 
 <body>

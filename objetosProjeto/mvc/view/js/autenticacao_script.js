@@ -1,13 +1,21 @@
 let chavePublica;
 
 window.onload = function () {
-    fetch("/api/chave_publica.php")
+    fetch("/api/usuario.php?action=verificar_login_autenticacao")
         .then(response => response.json())
         .then(data => {
-            if (data.pubkey) {
-                chavePublica = data.pubkey;
-            } else {
-                window.alert("Ocorreu um erro, reinicie a página!")
+            if (data.login == 0) {
+                if (data.pubkey) {
+                    chavePublica = data.pubkey;
+                } else {
+                    window.alert("Ocorreu um erro, reinicie a página!")
+                }
+            }else if(data.login == 1){
+                window.alert(data.msg);
+                window.location.href = "../index.html";
+            }else if(data.login == 2){
+                window.alert(data.msg);
+                //enviar para página adm
             }
         })
         .catch(error => console.error(error));

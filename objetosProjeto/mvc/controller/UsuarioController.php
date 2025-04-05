@@ -60,7 +60,7 @@ class UsuarioController
         $mensagem = "<div style='font-family: Arial, sans-serif;'>";
         $mensagem .= "<h2>Código de autenticação:</h2>";
         $mensagem .= "<p style='font-size: 24px; font-weight: bold;'>Token: {$token}</p>";
-        
+
         $mensagem .= "<img src='{$qrCode}' alt='QR Code OTP'>";
         $mensagem .= "</div>";
 
@@ -174,6 +174,63 @@ class UsuarioController
         } else {
             echo json_encode(['error' => true, 'msg' => 'Código inválido!']);
 
+        }
+    }
+
+    public function validarLoginAutenticacao()
+    {
+        $pubkey = shell_exec("gpg --armor --export");
+        if (
+            isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"])
+            && isset($_SESSION["usuario_id"])
+        ) {
+            $email = $_SESSION["email"];
+            $ultima_atividade = $_SESSION["ultima_atividade"];
+            $usuario_id = $_SESSION["usuario_id"];
+            
+            if (time() - $ultima_atividade > 3600) {
+                session_unset();
+                session_destroy();
+                
+                echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
+                exit;
+            }
+            if ($email == "admin@vagaxpress.com") {
+                echo json_encode(["login" => 2, "msg" => "Administrador já está logado!"]);
+                exit;
+            } else {
+                echo json_encode(["login" => 1, "msg" => "Usuário já está logado!"]);
+                exit;
+            }
+        }else{
+            echo json_encode(["login"=> 0, "pubkey" => htmlspecialchars($pubkey)]);
+        }
+    }
+
+    public function validarLoginPrincipal()
+    {
+        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
+            $email = $_SESSION["email"];
+            $ultima_atividade = $_SESSION["ultima_atividade"];
+            $usuario_id = $_SESSION["usuario_id"];
+        } else {
+            echo json_encode(["login" => 0, "msg" => "Login necessário"]);
+            exit;
+        }
+
+        if (time() - $ultima_atividade > 3600) {
+            session_unset();
+            session_destroy();
+            echo json_encode(["login" => 0, "msg" => "Sessão expirada"]);
+            exit;
+        }
+
+        if ($email == "admin@vagaxpress.com") {
+            echo json_encode(["login" => 2]);
+            exit;
+        } else {
+            echo json_encode(["login" => 1]);
+            exit;
         }
     }
 }
