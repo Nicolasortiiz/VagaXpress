@@ -23,7 +23,7 @@ class VeiculoController
             $veiculo->setPlaca($placa);
             $usuario->setIdUsuario($_SESSION['usuario_id']);
 
-            if (!$this->VeiculoDAO->retornarPlaca($veiculo)) {
+            if (!$this->VeiculoDAO->procurarPlaca($veiculo)) {
                 if($this->VeiculoDAO->inserirPlaca($veiculo,$usuario)) {
                     echo json_encode(['error' => false, 'msg'=> 'Veículo cadastrado com sucesso!']);
                 }else{

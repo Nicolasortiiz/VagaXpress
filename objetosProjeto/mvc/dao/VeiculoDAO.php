@@ -9,7 +9,7 @@ class VeiculoDAO {
         $this->conn = Conexao::getInstancia()->getConexao();
     }
 
-    public function retornarPlaca(Veiculo $veiculo) {
+    public function procurarPlaca(Veiculo $veiculo) {
         $querrySelect = "SELECT * FROM Veiculo WHERE placa = ?";
         $placa = $veiculo->getPlaca();
         $stmt = $this->conn->prepare($querrySelect);
@@ -17,7 +17,11 @@ class VeiculoDAO {
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();
-        return $result;
+        if($result->num_rows > 0) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function inserirPlaca(Veiculo $veiculo, Usuario $usuario) {
@@ -26,10 +30,15 @@ class VeiculoDAO {
         $id = $usuario->getIdusuario();
         $stmt = $this->conn->prepare($querryInsert);
         $stmt->bind_param("si", $placa,$id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $stmt->close();
-        return $result;
+    
+        if($stmt->execute()){
+            $stmt->close();
+            return true;
+        }else{
+            $stmt->close();
+            return false;
+        }
+        
     }
 }
 

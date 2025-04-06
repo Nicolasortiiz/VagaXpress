@@ -111,27 +111,36 @@ class UsuarioDAO {
     }
 
     public function adicionarSaldo(Usuario $usuario){
-        $querySelect ="SELECT saldo FROM Usuario WHERE idUsuario = ?";
+        $querySelect = "SELECT saldo FROM Usuario WHERE idUsuario = ?";
         $queryUpdate = "UPDATE Usuario SET saldo = ? WHERE idUsuario = ?";
+        
         $idUsuario = $usuario->getIdUsuario();
-        $saldo = $usuario->getSaldo();
-
+        $novoSaldo = $usuario->getSaldo();
         $stmt = $this->conn->prepare($querySelect);
-        $stmt->bind_param("s", $idUsuario);
+        $stmt->bind_param("i", $idUsuario);
         $stmt->execute();  
         $result = $stmt->get_result();
-
-        if($result){
-            $stmt = $this->conn->prepare($queryUpdate);
-            $stmt->bind_param("di", $saldo, $idUsuario);
-            $stmt->execute();
-            $result = $stmt->get_result();
+    
+        if ($result && $result->num_rows > 0) {
+            $saldo = $result->fetch_assoc()["saldo"];
+            $novoSaldo = $saldo + $novoSaldo;
             $stmt->close();
-            return $result;
-        }else{
+            $stmt = $this->conn->prepare($queryUpdate);
+            $stmt->bind_param("di", $novoSaldo, $idUsuario);
+            if ($stmt->execute()) {
+                $stmt->close();
+                return true;
+            } else {
+                $stmt->close();
+                return false;
+            }
+    
+        } else {
+            $stmt->close();
             return false;
         }
     }
+    
 
     public function retornarSaldo(Usuario $usuario){
         $querySelect = "SELECT saldo FROM Usuario WHERE idUsuario = ?";
@@ -154,6 +163,22 @@ class UsuarioDAO {
         $result = $stmt->get_result();
         $stmt->close();
         return $result->fetch_all();
+    }
+
+    public function retornarPlacas(Usuario $usuario){
+        $querySelect = "SELECT placa FROM Veiculo WHERE idUsuario = ?";
+        $idUsuario = $usuario->getIdUsuario();
+
+        $stmt = $this->conn->prepare($querySelect);
+        $stmt->bind_param("i", $idUsuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        $placas = [];
+        while ($row = $result->fetch_assoc()) {
+            $placas[] = $row['placa'];
+        }
+        return $placas;
     }
 
 }

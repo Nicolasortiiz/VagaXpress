@@ -247,8 +247,9 @@ class UsuarioController
         }
     }
 
-    public function adicionarSaldo($valor){
-        if($this->validarLogin()){
+    public function adicionarSaldo($valor)
+    {
+        if ($this->validarLogin()) {
             $usuario_id = intval($_SESSION["usuario_id"]);
             $valor = str_replace(["R$", " "], "", $valor);
             $valor = floatval(str_replace(",", ".", $valor));
@@ -260,36 +261,58 @@ class UsuarioController
                 echo json_encode(["erro" => true, "msg" => "O valor precisa ser maior que zero!"]);
                 exit;
             }
-            
-            if($this->UsuarioDAO->adicionarSaldo($usuario)){
+
+            if ($this->UsuarioDAO->adicionarSaldo($usuario)) {
                 echo json_encode(["error" => false, "msg" => number_format($valor, 2, ',', '.')]);
-            }else{
-                echo json_encode(["error"=> true, "msg" => "Erro ao adicionar saldo, tente novamente!"]);
+            } else {
+                echo json_encode(["error" => true, "msg" => "Erro ao adicionar saldo, tente novamente!"]);
             }
 
-        }else{
+        } else {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
         }
     }
 
-    public function retornarInfosPerfil(){
-        if($this->validarLogin()){
-            $usuario_id = intval($_SESSION["usuario_id"]);
-            $usuario = new Usuario();
-            $usuario->setIdUsuario($usuario_id);
-            $saldo = $this->UsuarioDAO->retornarSaldo($usuario);
-            if (!$saldo) {
-                echo json_encode(["error"=> true,"msg"=> "Erro ao retornar saldo, tente novamente!"]);
-                exit;
-            }else{
-                echo json_encode(["error"=> false, "saldo" => $saldo]);
-            }
-        }else{
+    public function retornarInfosPerfil()
+    {
+        if (!$this->validarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
         }
-    }
-
     
+        $usuario_id = intval($_SESSION["usuario_id"]);
+        $usuario = new Usuario();
+        $usuario->setIdUsuario($usuario_id);
+    
+        $resposta = [
+            "error" => false,
+            "msg" => "",
+            "saldo" => null,
+            "placas" => null
+        ];
+    
+        $saldo = $this->UsuarioDAO->retornarSaldo($usuario);
+        if ($saldo === false) {
+            $resposta["error"] = true;
+            $resposta["msg"] = "Erro ao retornar saldo, tente novamente!";
+        } else {
+            $resposta["saldo"] = $saldo;
+        }
+    
+        $placas = $this->UsuarioDAO->retornarPlacas($usuario);
+        if ($placas !== false) {
+            $resposta["placas"] = $placas;
+        }
+    
+        echo json_encode($resposta);
+    }
+    
+    public function realizarLogout()
+    {
+        session_unset();
+        session_destroy();
+        echo json_encode(["logout" => true]);
+    }
 }
 
 ?>

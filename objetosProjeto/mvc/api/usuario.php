@@ -52,6 +52,9 @@ switch ($action) {
     case 'retornar_saldo':
         $controller->retornarInfosPerfil();
         break;
+    case 'logout':
+        $controller->realizarLogout();
+        break;
     
     default:
         http_response_code(400);
