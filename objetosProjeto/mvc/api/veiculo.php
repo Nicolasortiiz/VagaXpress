@@ -20,6 +20,9 @@ switch ($action) {
     case 'cadastrar_placa':
         $controller->cadastrarPlaca($placa);
         break;
+    case 'retornar_infos_agendamento':
+        $controller->retornarInfosAgendamento();
+        break;
     default:
         http_response_code(400);
         echo json_encode(['erro' => 'Erro ao executar a action!']);

@@ -16,7 +16,7 @@ CREATE TABLE Veiculo (
     idVeiculo INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
     placa VARCHAR(10) NOT NULL UNIQUE,
-    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
+    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) 
 );
 
 CREATE TABLE NotaFiscal_Usuario (
@@ -26,7 +26,7 @@ CREATE TABLE NotaFiscal_Usuario (
     cpf VARCHAR(11) NOT NULL,
     nome VARCHAR(100) NOT NULL,
     valor DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE
+    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
 );
 
 CREATE TABLE Estacionamento (
@@ -41,17 +41,18 @@ CREATE TABLE VeiculoEstacionado (
     dataEntrada DATE NOT NULL,
     dataSaida DATE NULL,
     horaEntrada TIME NOT NULL,
-    horaSaida TIME NULL
+    horaSaida TIME NULL,
+    statusPagamento BOOLEAN NOT NULL
 );
 
-CREATE TABLE EstacionamentoReservado (
+CREATE TABLE VagaAgendada (
     idEstacionamentoReservado INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
     idVeiculo INT NOT NULL,
     dataEntrada DATE NOT NULL,
     horaEntrada TIME NOT NULL,
-    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) ON DELETE CASCADE,
-    FOREIGN KEY (idVeiculo) REFERENCES Veiculo(idVeiculo) ON DELETE CASCADE
+    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
+    FOREIGN KEY (idVeiculo) REFERENCES Veiculo(idVeiculo)
 );
 
 CREATE TABLE Vagas (

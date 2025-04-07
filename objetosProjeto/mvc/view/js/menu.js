@@ -200,6 +200,8 @@ async function gravarPlaca() {
         });
 }
 
+/* Scripts Página Notificação */
+
 function carregarNotificacoes() {
     fetch("/api/mensagem.php?action=buscar_notificacoes")
         .then(response => response.json())
@@ -312,7 +314,7 @@ async function adicionarSaldo() {
 }
 
 async function carregarInfosPerfil() {
-    fetch("/api/usuario.php?action=retornar_saldo")
+    fetch("/api/usuario.php?action=retornar_infos_perfil")
         .then(response => response.json())
         .then(data => {
             if (data.erro) {
@@ -362,37 +364,15 @@ async function carregarInfosPerfil() {
         .catch(error => console.error(error));
 }
 
-async function carregarVeiculo() {
-    fetch("php/retorna_veiculos.php")
-        .then(response => response.json())
-        .then(data => {
-            if (data.erro) {
-                window.alert(data.erro);
-            } else {
-                if (data.placa) {
-                    console.log(data.placa);
-                } else {
-                    console.log("Nenhum veículo cadastrado");
-                }
-            }
-        })
-        .catch(error => console.error(error));
-}
 
-async function carregarHistoricoNF() {
-    fetch("php/retorna_historicoNF.php")
+/* Página Agendamento/Pagamento */
+
+async function carregarInfosAgendamento() {
+    fetch("/api/veiculo.php?action=retornar_infos_agendamento")
         .then(response => response.json())
         .then(data => {
-            if (data.erro) {
-                window.alert(data.erro);
-            } else {
-                if (data.idNotaFiscal) {
-                    console.log(data.idNotaFiscal);
-                    console.log(data.dataEmissao);
-                } else {
-                    console.log("Nenhuma nota fiscal disponível!");
-                }
-            }
+            
         })
         .catch(error => console.error(error));
+
 }

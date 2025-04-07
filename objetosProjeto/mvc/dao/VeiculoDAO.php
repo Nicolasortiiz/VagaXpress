@@ -40,6 +40,8 @@ class VeiculoDAO {
         }
         
     }
+
+
 }
 
 ?>

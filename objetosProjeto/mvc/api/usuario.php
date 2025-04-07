@@ -49,13 +49,12 @@ switch ($action) {
     case 'adicionar_saldo':
         $controller->adicionarSaldo($saldo);
         break;
-    case 'retornar_saldo':
+    case 'retornar_infos_perfil':
         $controller->retornarInfosPerfil();
         break;
     case 'logout':
         $controller->realizarLogout();
         break;
-    
     default:
         http_response_code(400);
         echo json_encode(['erro' => 'Erro ao executar a action!']);
