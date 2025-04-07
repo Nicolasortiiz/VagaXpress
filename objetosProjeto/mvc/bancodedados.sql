@@ -19,7 +19,7 @@ CREATE TABLE Veiculo (
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) 
 );
 
-CREATE TABLE NotaFiscal_Usuario (
+CREATE TABLE NotaFiscal (
     idNotaFiscal INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
     dataEmissao DATE NOT NULL,
@@ -35,8 +35,8 @@ CREATE TABLE Estacionamento (
     valorHora DECIMAL(10,2) NOT NULL
 );
 
-CREATE TABLE VeiculoEstacionado (
-    idVeiculoEstacionado INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Registro (
+    idRegistroEstacionamento INT AUTO_INCREMENT PRIMARY KEY,
     placa VARCHAR(10) NOT NULL,
     dataEntrada DATE NOT NULL,
     dataSaida DATE NULL,

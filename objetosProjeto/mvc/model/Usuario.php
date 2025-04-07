@@ -54,3 +54,4 @@ class Usuario {
         $this->segredo = $segredo;
     }
 }
+?>

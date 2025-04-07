@@ -26,3 +26,4 @@ class Mensagem
         $this->mensagem = $mensagem;
     }
 }
+?>
