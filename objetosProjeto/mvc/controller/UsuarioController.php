@@ -1,7 +1,8 @@
 <?php
+require_once __DIR__ . "/../controller/NotaFiscalController.php";
 require_once __DIR__ . "/../dao/UsuarioDAO.php";
 require_once __DIR__ . "/../model/Usuario.php";
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . "/../vendor/autoload.php";
 
 use PHPMailer\PHPMailer\PHPMailer;
 use OTPHP\TOTP;
@@ -14,10 +15,12 @@ date_default_timezone_set('America/Sao_Paulo');
 class UsuarioController
 {
     private $UsuarioDAO;
+    private $NotaFiscalController;
 
     public function __construct()
     {
         $this->UsuarioDAO = new UsuarioDAO();
+        $this->NotaFiscalController = new NotaFiscalController();
     }
 
     public function encontrarEmail($email, $nome)
@@ -291,24 +294,28 @@ class UsuarioController
             "error" => false,
             "msg" => "",
             "saldo" => null,
-            "placas" => null
+            "placas" => null,
+            "nome" => null,
+            "notas" => null
         ];
 
-        $saldo = $this->UsuarioDAO->retornarSaldo($usuario);
-        if ($saldo === false) {
+        $nome = $this->UsuarioDAO->retornarNome($usuario);
+        if ($nome == null) {
             $resposta["error"] = true;
-            $resposta["msg"] = "Erro ao retornar saldo, tente novamente!";
+            $resposta["msg"] = "Erro ao retornar nome, tente novamente!";
         } else {
-            $resposta["saldo"] = $saldo;
+            $resposta["nome"] = $nome;
         }
 
+        $saldo = $this->UsuarioDAO->retornarSaldo($usuario);
+        $resposta["saldo"] = $saldo;
+
         $placas = $this->UsuarioDAO->retornarPlacas($usuario);
-        if ($placas !== false) {
-            $resposta["placas"] = $placas;
-        } else{
-            $resposta["error"] = true;
-            $resposta["msg"] = "Erro ao retornar veículos cadastrados, tente novamente!";
-        }
+        $resposta["placas"] = $placas;
+
+        $notas = $this->NotaFiscalController->retornarInfosNotasFiscaisUsuario($usuario);
+
+        $resposta["notas"] = $notas;
 
         echo json_encode($resposta);
     }
@@ -320,7 +327,7 @@ class UsuarioController
         echo json_encode(["logout" => true]);
     }
 
-    
+
 }
 
 ?>

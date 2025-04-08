@@ -178,3 +178,12 @@ tr:nth-child(even) {
 .tabelas-usuario button:hover {
     background-color: #0056b3;
 }
+
+.divAdds {
+    display: flex;
+    gap: 40px;
+}
+
+.botaoPlaca{
+    margin-top: 11px;
+}

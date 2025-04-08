@@ -92,12 +92,23 @@ function abrirTela(event) {
             conteudo.innerHTML = `
             <div class="divTelaUsuario">
             <h2>Perfil do Usuário</h2>
-            <div>
-                <p>Saldo Total: R$ <span id="saldoTotal"></span></p>
-                <button id="abrir_adicionar" onclick="botaoSaldo(event)">Adicionar Saldo</button>
-            </div>
+            <div class="divAdds">
+                <div>
+                    <p>Nome: <span id="nomeUsuario"></span></p>
+                    <p>Saldo Total: R$ <span id="saldoTotal"></span></p>
+                    <button id="abrir_adicionar" onclick="botaoSaldo(event)">Adicionar Saldo</button>
+                </div>
 
-            <div id="conteudo_saldo"></div>
+                <div id="conteudo_saldo"></div>
+                
+                <div>
+                    <p>Cadastrar Veículo</p>
+                    <form onsubmit="event.preventDefault(); gravarPlaca();">
+                        <input id="placa" placeholder="Placa" required> <br>
+                        <button class="botaoPlaca" type="submit">Cadastrar</button>
+                    </form>
+                </div>
+            </div>
 
             <div class="tabelas-usuario">
                 <div class="tabela-container">
@@ -319,14 +330,16 @@ async function carregarInfosPerfil() {
         .then(data => {
             if (data.erro) {
                 window.alert(data.msg);
-            } else {
-                if (data.saldo > 0) {
-                    document.getElementById('saldoTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
-                } else {
-                    document.getElementById('saldoTotal').textContent = "0,00";
-                }
             }
 
+            if (data.saldo > 0) {
+                document.getElementById('saldoTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
+            } else {
+                document.getElementById('saldoTotal').textContent = "0,00";
+            }
+
+            document.getElementById('nomeUsuario').textContent = data.nome;
+            
             const tbody_veiculos = document.querySelector("#tabelaVeiculos tbody");
             tbody_veiculos.innerHTML = "";
 
@@ -347,19 +360,19 @@ async function carregarInfosPerfil() {
             const tbody_notas = document.querySelector("#tabelaNotas tbody");
             tbody_notas.innerHTML = "";
 
-            if (Array.isArray(data)) {
-                data.forEach(nf => {
+            if (Array.isArray(data.notas)) {
+                data.notas.forEach(nf => {
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
                         <td>${nf.dataEmissao}</td>
                         <td>R$ ${parseFloat(nf.valor).toFixed(2).replace(".", ",")}</td>
-                        <td><button onclick='mostrarDetalhesNota(${JSON.stringify(nf)})'>Detalhes</button></td>
+                        <td><button onclick='mostrarDetalhesNota(${JSON.stringify(nf.id)})'>Detalhes</button></td>
                     `;
                     tbody_notas.appendChild(tr);
                 });
             } else {
                 console.log("Nenhuma nota fiscal disponível");
-            }           
+            }
         })
         .catch(error => console.error(error));
 }
@@ -371,7 +384,7 @@ async function carregarInfosAgendamento() {
     fetch("/api/veiculo.php?action=retornar_infos_agendamento")
         .then(response => response.json())
         .then(data => {
-            
+
         })
         .catch(error => console.error(error));
 

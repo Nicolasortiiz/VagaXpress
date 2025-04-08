@@ -181,6 +181,17 @@ class UsuarioDAO {
         return $placas;
     }
 
+    public function retornarNome(Usuario $usuario){
+        $querySelect = 'SELECT nome FROM Usuario WHERE idUsuario = ?';
+        $idUsuario = $usuario->getIdUsuario();
+        $stmt = $this->conn->prepare($querySelect);
+        $stmt->bind_param('i', $idUsuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result->fetch_assoc()['nome'];
+    }   
+
 }
 
 ?>
