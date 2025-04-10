@@ -1,12 +1,10 @@
 let chavePublica;
 window.onload = function () {
 
-    fetch("/api/usuario.php?action=verificar_login_principal")
+    fetch("/gateway.php/api/usuario?action=verificar_login_principal")
         .then(response => response.json())
         .then(data => {
             if (data.login == 0) {
-                document.getElementById("cadastro_veiculos").style.disabled = true;
-                document.getElementById("cadastro_veiculos").style.display = "none";
                 document.getElementById("agendamento").style.disabled = true;
                 document.getElementById("agendamento").style.display = "none";
                 document.getElementById("perfil_usuario").style.disabled = true;
@@ -172,7 +170,7 @@ function abrirTela(event) {
 }
 
 async function realizarLogout() {
-    fetch("/api/usuario.php?action=logout")
+    fetch("/gateway.php/api/usuario?action=logout")
         .then(response => response.json())
         .then(data => {
             if (data.logout) {
@@ -189,7 +187,7 @@ async function gravarPlaca() {
 
     res = await criptografar(dados);
 
-    fetch("/api/veiculo.php?action=cadastrar_placa", {
+    fetch("/gateway.php/api/veiculo?action=cadastrar_placa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -214,7 +212,7 @@ async function gravarPlaca() {
 /* Scripts Página Notificação */
 
 function carregarNotificacoes() {
-    fetch("/api/mensagem.php?action=buscar_notificacoes")
+    fetch("/gateway.php/api/mensagem?action=buscar_notificacoes")
         .then(response => response.json())
         .then(data => {
             const conteudo = document.getElementById("conteudo");
@@ -302,7 +300,7 @@ async function adicionarSaldo() {
     var dados = { saldo: valorSaldo };
 
     res = await criptografar(dados);
-    fetch("/api/usuario.php?action=adicionar_saldo", {
+    fetch("/gateway.php/api/usuario?action=adicionar_saldo", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -325,7 +323,7 @@ async function adicionarSaldo() {
 }
 
 async function carregarInfosPerfil() {
-    fetch("/api/usuario.php?action=retornar_infos_perfil")
+    fetch("/gateway.php/api/usuario?action=retornar_infos_perfil")
         .then(response => response.json())
         .then(data => {
             if (data.erro) {
@@ -381,7 +379,7 @@ async function carregarInfosPerfil() {
 /* Página Agendamento/Pagamento */
 
 async function carregarInfosAgendamento() {
-    fetch("/api/veiculo.php?action=retornar_infos_agendamento")
+    fetch("/gateway.php/api/veiculo?action=retornar_infos_agendamento")
         .then(response => response.json())
         .then(data => {
 
