@@ -57,6 +57,16 @@ class NotaFiscalController
         $nf = new NotaFiscal();
         $nf->setIdNotaFiscal($idNotaFiscal);
         
+        $nota = [];
+        $nota = $this->NotaFiscalDAO->retornarNotaFiscal($nf);
+
+        $resposta = [
+            "nota" => null
+        ];
+
+        $resposta["nota"] = $nota;
+
+        echo json_encode($resposta);
         
     }
   

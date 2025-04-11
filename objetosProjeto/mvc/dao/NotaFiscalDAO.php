@@ -34,7 +34,7 @@ class NotaFiscalDAO
 
     public function retornarNotaFiscal(NotaFiscal $notaFiscal)
     {
-        $querySelect = 'SELECT dataEmissao, cpf, nome, valor, desc FROM NotaFiscal WHERE idNotaFiscal = ?';
+        $querySelect = 'SELECT dataEmissao, cpf, nome, valor, descricao FROM NotaFiscal WHERE idNotaFiscal = ?';
         $idNotaFiscal = $notaFiscal->getIdNotaFiscal();
         $stmt = $this->conn->prepare($querySelect);
         $stmt->bind_param('i', $idNotaFiscal);
@@ -46,7 +46,8 @@ class NotaFiscalDAO
             'dataEmissao' => $result->fetch_assoc()['dataEmissao'],
             'cpf' => $result->fetch_assoc()['cpf'],
             'nome' => $result->fetch_assoc()['nome'],
-            'valor' => $result->fetch_assoc()['valor']
+            'valor' => $result->fetch_assoc()['valor'],
+            'descricao' => $result->fetch_assoc()['descricao']
         ];
 
         return $notaFiscal;

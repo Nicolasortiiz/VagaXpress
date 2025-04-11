@@ -1,25 +1,25 @@
 <?php
 class VagaAgendada {
-    private $idEstacionamentoReservado;
+    private $idVagaAgendada;
     private $idUsuario;
     private $idVeiculo;
     private $dataEntrada;
     private $horaEntrada;
 
-    public function __construct($idEstacionamentoReservado = null, $idUsuario = null, $idVeiculo = null, $dataEntrada = null, $horaEntrada = null) {
-        $this->idEstacionamentoReservado = $idEstacionamentoReservado;
+    public function __construct($idVagaAgendada = null, $idUsuario = null, $idVeiculo = null, $dataEntrada = null, $horaEntrada = null) {
+        $this->idEstacionamentoReservado = $idVagaAgendada;
         $this->idUsuario = $idUsuario;
         $this->idVeiculo = $idVeiculo;
         $this->dataEntrada = $dataEntrada;
         $this->horaEntrada = $horaEntrada;
     }
 
-    public function getIdEstacionamentoReservado() {
-        return $this->idEstacionamentoReservado;
+    public function getIdVagaAgendada() {
+        return $this->idVagaAgendada;
     }
 
-    public function setIdEstacionamentoReservado($idEstacionamentoReservado) {
-        $this->idEstacionamentoReservado = $idEstacionamentoReservado;
+    public function setIdVagaAgendada($idVagaAgendada) {
+        $this->idVagaAgendada = $idVagaAgendada;
     }
 
     public function getIdUsuario() {

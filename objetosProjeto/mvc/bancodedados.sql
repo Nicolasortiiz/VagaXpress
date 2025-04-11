@@ -26,6 +26,7 @@ CREATE TABLE NotaFiscal (
     cpf VARCHAR(11) NOT NULL,
     nome VARCHAR(100) NOT NULL,
     valor DECIMAL(10,2) NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
 );
 
@@ -36,7 +37,7 @@ CREATE TABLE Estacionamento (
 );
 
 CREATE TABLE Registro (
-    idRegistroEstacionamento INT AUTO_INCREMENT PRIMARY KEY,
+    idRegistro INT AUTO_INCREMENT PRIMARY KEY,
     placa VARCHAR(10) NOT NULL,
     dataEntrada DATE NOT NULL,
     dataSaida DATE NULL,
@@ -46,7 +47,7 @@ CREATE TABLE Registro (
 );
 
 CREATE TABLE VagaAgendada (
-    idEstacionamentoReservado INT AUTO_INCREMENT PRIMARY KEY,
+    idVagaAgendada INT AUTO_INCREMENT PRIMARY KEY,
     idUsuario INT NOT NULL,
     idVeiculo INT NOT NULL,
     dataEntrada DATE NOT NULL,
