@@ -35,8 +35,8 @@ CREATE TABLE Estacionamento (
     valorHora DECIMAL(10,2) NOT NULL
 );
 
-CREATE TABLE VagaHistorico (
-    idVagaHistorico INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Registro (
+    idRegistro INT AUTO_INCREMENT PRIMARY KEY,
     placa VARCHAR(10) NOT NULL,
     dataEntrada DATE NOT NULL,
     dataSaida DATE NULL,
@@ -46,7 +46,7 @@ CREATE TABLE VagaHistorico (
 );
 
 CREATE TABLE VagaAgendada (
-    idEstacionamentoReservado INT AUTO_INCREMENT PRIMARY KEY,
+    idVagaAgendada INT AUTO_INCREMENT PRIMARY KEY,
     placa VARCHAR(10) NOT NULL,
     dataEntrada DATE NOT NULL,
     horaEntrada TIME NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE VagaAgendada (
 CREATE TABLE VagasOcupada (
     idVagas INT AUTO_INCREMENT PRIMARY KEY,
     idVeiculoEstacionado INT NOT NULL,
-    FOREIGN KEY (idVagaHistorico) REFERENCES VagaHistorico(idVagaHistorico) ON DELETE CASCADE
+    FOREIGN KEY (idRegistro) REFERENCES VagaHistorico(idRegistro) ON DELETE CASCADE
 );
 
 CREATE TABLE Mensagem (
