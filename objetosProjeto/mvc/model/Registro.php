@@ -24,7 +24,6 @@ class Registro {
         return $this->idRegistro;
     }
 
-    public function setIdRegistroEstacionamento($idRegistro) {
         $this->idRegistro = $idRegistro;
     }
 

@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . "/../dao/NotaFiscalDAO.php";
 require_once __DIR__ . "/../model/NotaFiscal.php";
-require_once __DIR__ . "/../model/Usuario.php";
 
 session_start();
 date_default_timezone_set('America/Sao_Paulo');
@@ -16,12 +15,59 @@ class NotaFiscalController
         $this->NotaFiscalDAO = new NotaFiscalDAO();
     }
 
-    public function retornarInfosNotasFiscaisUsuario(Usuario $usuario){
+    public function validarLogin()
+    {
+        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
+            $ultima_atividade = $_SESSION["ultima_atividade"];
+            if (time() - $ultima_atividade > 3600) {
+                session_unset();
+                session_destroy();
+                return false;
+            }
+            $_SESSION["ultima_atividade"] = time();
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+
+    public function retornarInfosNotasFiscaisUsuario(){
+        if (!$this->validarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        }
+
         $nf = new NotaFiscal();
-        $nf->setIdUsuario($usuario->getIdUsuario());
+        $nf->setIdUsuario($_SESSION['usuario_id']);
         $notas = [];
         $notas = $this->NotaFiscalDAO->retornarInfosNotasFiscais($nf);
-        return $notas;
+
+        $resposta = [
+            "notas" => null
+        ];
+
+        $resposta["notas"] = $notas;
+
+        echo json_encode($resposta);
+
+    }
+
+    public function retornarDetalhesNotaFiscal($idNotaFiscal){
+        $nf = new NotaFiscal();
+        $nf->setIdNotaFiscal($idNotaFiscal);
+        
+        $nota = [];
+        $nota = $this->NotaFiscalDAO->retornarNotaFiscal($nf);
+
+        $resposta = [
+            "nota" => null
+        ];
+
+        $resposta["nota"] = $nota;
+
+        echo json_encode($resposta);
+        
     }
   
 }

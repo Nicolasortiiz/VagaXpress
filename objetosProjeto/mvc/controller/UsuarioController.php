@@ -295,8 +295,7 @@ class UsuarioController
             "msg" => "",
             "saldo" => null,
             "placas" => null,
-            "nome" => null,
-            "notas" => null
+            "nome" => null
         ];
 
         $nome = $this->UsuarioDAO->retornarNome($usuario);
@@ -312,10 +311,6 @@ class UsuarioController
 
         $placas = $this->UsuarioDAO->retornarPlacas($usuario);
         $resposta["placas"] = $placas;
-
-        $notas = $this->NotaFiscalController->retornarInfosNotasFiscaisUsuario($usuario);
-
-        $resposta["notas"] = $notas;
 
         echo json_encode($resposta);
     }
