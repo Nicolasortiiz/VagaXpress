@@ -1,41 +1,31 @@
 <?php
 class VagaAgendada {
     private $idVagaAgendada;
-    private $idUsuario;
-    private $idVeiculo;
+    private $placa;
     private $dataEntrada;
     private $horaEntrada;
 
-    public function __construct($idVagaAgendada = null, $idUsuario = null, $idVeiculo = null, $dataEntrada = null, $horaEntrada = null) {
+    public function __construct($idVagaAgendada = null, $placa = null, $dataEntrada = null, $horaEntrada = null) {
         $this->idVagaAgendada = $idVagaAgendada;
-        $this->idUsuario = $idUsuario;
-        $this->idVeiculo = $idVeiculo;
+        $this->placa = $placa;
         $this->dataEntrada = $dataEntrada;
         $this->horaEntrada = $horaEntrada;
     }
 
-    public function getidVagaAgendada$idVagaAgendada() {
+    public function getidVagaAgendada() {
         return $this->idVagaAgendada;
     }
 
-    public function setidVagaAgendada$idVagaAgendada($idVagaAgendada) {
+    public function setidVagaAgendada($idVagaAgendada) {
         $this->idVagaAgendada = $idVagaAgendada;
     }
-
-    public function getIdUsuario() {
-        return $this->idUsuario;
+    
+    public function getPlaca() {
+        return $this->placa;
     }
 
-    public function setIdUsuario($idUsuario) {
-        $this->idUsuario = $idUsuario;
-    }
-
-    public function getIdVeiculo() {
-        return $this->idVeiculo;
-    }
-
-    public function setIdVeiculo($idVeiculo) {
-        $this->idVeiculo = $idVeiculo;
+    public function setPlaca($placa){
+        $this->placa = $placa;
     }
 
     public function getDataEntrada() {

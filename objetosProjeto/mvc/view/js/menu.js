@@ -1,5 +1,6 @@
 let chavePublica;
 window.onload = function () {
+    document.querySelector('body').style.display = 'none';
 
     fetch("/gateway.php/api/usuario?action=verificar_login_principal")
         .then(response => response.json())
@@ -22,8 +23,10 @@ window.onload = function () {
             } else {
                 window.alert("Ocorreu um erro, reinicie a página!")
             }
+            document.querySelector('body').style.display = 'flex';
         })
         .catch(error => console.error(error));
+    
 }
 
 async function criptografar(dados) {
@@ -87,6 +90,7 @@ function abrirTela(event) {
             break;
 
         case "perfil_usuario":
+            
             conteudo.innerHTML = `
             <div class="divTelaUsuario">
             <h2>Perfil do Usuário</h2>
@@ -323,56 +327,84 @@ async function adicionarSaldo() {
 }
 
 async function carregarInfosPerfil() {
+    await carregaUsuario();
+    await carregaNF();
+    await carregaVeiculo();
+    
+}
+
+async function carregaUsuario(){
     fetch("/gateway.php/api/usuario?action=retornar_infos_perfil")
-        .then(response => response.json())
-        .then(data => {
-            if (data.erro) {
-                window.alert(data.msg);
-            }
+    .then(response => response.json())
+    .then(data => {
+        if (data.erro) {
+            window.alert(data.msg);
+        }
 
-            if (data.saldo > 0) {
-                document.getElementById('saldoTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
-            } else {
-                document.getElementById('saldoTotal').textContent = "0,00";
-            }
+        if (data.saldo > 0) {
+            document.getElementById('saldoTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
+        } else {
+            document.getElementById('saldoTotal').textContent = "0,00";
+        }
 
-            document.getElementById('nomeUsuario').textContent = data.nome;
-            
-            const tbody_veiculos = document.querySelector("#tabelaVeiculos tbody");
-            tbody_veiculos.innerHTML = "";
+        document.getElementById('nomeUsuario').textContent = data.nome;
+        
+    })
+    .catch(error => console.error(error));
+} 
 
-            if (Array.isArray(data.placas) && data.placas.length > 0) {
-                data.placas.forEach(placa => {
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                        <td>${placa}</td>
-                        <td><button onclick="deletarVeiculo('${placa}')">Deletar</button></td>
-                    `;
-                    tbody_veiculos.appendChild(tr);
-                });
-            } else {
-                console.log("Nenhum veículo cadastrado");
-            }
+async function carregaNF(){
+    fetch("/gateway.php/api/notaFiscal?action=retornar_notas_fiscais")
+    .then(response => response.json())
+    .then(data => {
+        if (data.erro) {
+            window.alert(data.msg);
+        }
+        const tbody_notas = document.querySelector("#tabelaNotas tbody");
+        tbody_notas.innerHTML = "";
 
+        if (Array.isArray(data.notas)) {
+            data.notas.forEach(nf => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${nf.dataEmissao}</td>
+                    <td>R$ ${parseFloat(nf.valor).toFixed(2).replace(".", ",")}</td>
+                    <td><button onclick='mostrarDetalhesNota(${JSON.stringify(nf.id)})'>Detalhes</button></td>
+                `;
+                tbody_notas.appendChild(tr);
+            });
+        } else {
+            console.log("Nenhuma nota fiscal disponível");
+        }
+    })
+    .catch(error => console.error(error));
+}
 
-            const tbody_notas = document.querySelector("#tabelaNotas tbody");
-            tbody_notas.innerHTML = "";
+async function carregaVeiculo(){
+    fetch("/gateway.php/api/veiculo?action=retornar_placas")
+    .then(response => response.json())
+    .then(data => {
+        if (data.erro) {
+            window.alert(data.msg);
+        }
+        
+        const tbody_veiculos = document.querySelector("#tabelaVeiculos tbody");
+        tbody_veiculos.innerHTML = "";
 
-            if (Array.isArray(data.notas)) {
-                data.notas.forEach(nf => {
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                        <td>${nf.dataEmissao}</td>
-                        <td>R$ ${parseFloat(nf.valor).toFixed(2).replace(".", ",")}</td>
-                        <td><button onclick='mostrarDetalhesNota(${JSON.stringify(nf.id)})'>Detalhes</button></td>
-                    `;
-                    tbody_notas.appendChild(tr);
-                });
-            } else {
-                console.log("Nenhuma nota fiscal disponível");
-            }
-        })
-        .catch(error => console.error(error));
+        if (Array.isArray(data.placas) && data.placas.length > 0) {
+            data.placas.forEach(placa => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${placa}</td>
+                    <td><button onclick="deletarVeiculo('${placa}')">Deletar</button></td>
+                `;
+                tbody_veiculos.appendChild(tr);
+            });
+        } else {
+            console.log("Nenhum veículo cadastrado");
+        }
+    })
+    .catch(error => console.error(error));
 }
 
 

@@ -1,16 +1,15 @@
 <?php
 class Registro {
-    public $idRegistro;
-    public $placa;
-    public $dataEntrada;
-    public $dataSaida;
-    public $horaEntrada;
-    public $horaSaida;
-    public $statusPagamento;
+    private $idRegistro;
+    private $placa;
+    private $dataEntrada;
+    private $dataSaida;
+    private $horaEntrada;
+    private $horaSaida;
+    private $statusPagamento;
 
 
-    public function __construct($idRegistro = null, $placa = null, $dataEntrada = null, 
-    $dataSaida = null, $horaEntrada = null, $horaSaida = null, $statusPagamento = null) {
+    public function __construct($idRegistro = null, $placa = null, $dataEntrada = null, $dataSaida = null, $horaEntrada = null, $horaSaida = null, $statusPagamento = null) {
         $this->idRegistro = $idRegistro;
         $this->placa = $placa;
         $this->dataEntrada = $dataEntrada;
@@ -23,6 +22,8 @@ class Registro {
     public function getIdRegistro() {
         return $this->idRegistro;
     }
+
+    public function setIdRegistro($idRegistro) {
 
         $this->idRegistro = $idRegistro;
     }

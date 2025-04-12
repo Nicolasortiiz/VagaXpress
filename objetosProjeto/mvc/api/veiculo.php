@@ -23,6 +23,9 @@ switch ($action) {
     case 'retornar_infos_agendamento':
         $controller->retornarInfosAgendamento();
         break;
+    case 'retornar_placas':
+        $controller->retornarPlacas();
+        break;
     default:
         http_response_code(400);
         echo json_encode(['erro' => 'Erro ao executar a action!']);

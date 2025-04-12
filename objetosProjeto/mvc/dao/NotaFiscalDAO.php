@@ -1,7 +1,6 @@
 <?php
 require_once 'Conexao.php';
 require_once __DIR__ . '/../model/NotaFiscal.php';
-require_once __DIR__ . '/../model/Usuario.php';
 
 class NotaFiscalDAO
 {
@@ -51,6 +50,22 @@ class NotaFiscalDAO
         ];
 
         return $notaFiscal;
+    }
+
+    public function gerarNotaFiscal(NotaFiscal $notaFiscal){
+        $queryInsert = 'INSERT INTO NotaFiscal (idUsuario,dataEmissao,cpf,nome,valor,descricao) VALUES (?,?,?,?,?,?)';
+        $idUsuario = $notaFiscal->getIdUsuario();
+        $dataEmissao = $notaFiscal->getDataEmissao();
+        $cpf = $notaFiscal->getCpf();
+        $nome = $notaFiscal->getNome();
+        $valor = $notaFiscal->getValor();
+        $descricao = $notaFiscal->getDescricao();
+
+        $stmt = $this->conn->prepare($queryInsert);
+        $stmt->bind_param('isssds', $idUsuario, $dataEmissao, $cpf, $nome, $valor, $descricao);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
     }
 }
 

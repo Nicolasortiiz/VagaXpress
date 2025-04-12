@@ -1,8 +1,8 @@
 <?php
 class Mensagem
 {
-    public $idMensagem;
-    public $mensagem;
+    private $idMensagem;
+    private $mensagem;
 
     public function __construct($idMensagem = null, $mensagem = '')
     {

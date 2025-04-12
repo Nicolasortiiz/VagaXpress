@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__ . "/../dao/VeiculoDAO.php";
 require_once __DIR__ . "/../model/Veiculo.php";
-require_once __DIR__ . "/../model/Usuario.php";
-require_once __DIR__ . "/../controller/UsuarioController.php";
 
 session_start();
 date_default_timezone_set('America/Sao_Paulo');
@@ -10,29 +8,43 @@ date_default_timezone_set('America/Sao_Paulo');
 class VeiculoController
 {
     private $VeiculoDAO;
-    private $UsuarioController;
 
     public function __construct()
     {
         $this->VeiculoDAO = new VeiculoDAO();
-        $this->UsuarioController = new UsuarioController();
+    }
+
+    public function validarLogin()
+    {
+        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
+            $ultima_atividade = $_SESSION["ultima_atividade"];
+            if (time() - $ultima_atividade > 3600) {
+                session_unset();
+                session_destroy();
+                return false;
+            }
+            $_SESSION["ultima_atividade"] = time();
+            return true;
+
+        } else {
+            return false;
+        }
     }
 
     public function cadastrarPlaca($placa)
     {
-        if (!$this->UsuarioController->validarLogin()) {
+        if (!$this->validarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
 
 
         $veiculo = new Veiculo();
-        $usuario = new Usuario();
         $veiculo->setPlaca($placa);
-        $usuario->setIdUsuario($_SESSION['usuario_id']);
+        $veiculo->setIdUsuario($_SESSION['usuario_id']);
 
         if (!$this->VeiculoDAO->procurarPlaca($veiculo)) {
-            if ($this->VeiculoDAO->inserirPlaca($veiculo, $usuario)) {
+            if ($this->VeiculoDAO->inserirPlaca($veiculo)) {
                 echo json_encode(['error' => false, 'msg' => 'Veículo cadastrado com sucesso!']);
             } else {
                 echo json_encode(['error' => true, 'msg' => 'Erro ao cadastrar placa, tente novamente!']);
@@ -43,9 +55,43 @@ class VeiculoController
 
     }
 
+    public function retornarPlacas(){
+        if (!$this->validarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        }
+
+        $resposta = [
+            "placas" => null
+        ];
+
+        $veiculo = new Veiculo();
+        $veiculo->setIdUsuario($_SESSION['usuario_id']);
+
+        $placas = $this->VeiculoDAO->retornarPlacas($veiculo);
+        $resposta["placas"] = $placas;
+        echo json_encode($resposta);
+    }
+
+    public function deletarPlaca($id){
+        if (!$this->validarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        }
+
+        $veiculo = new Veiculo();
+        $veiculo->setIdVeiculo($id);
+        if($this->VeiculoDAO->deletarPlaca($veiculo)){
+            echo json_encode(['error' => false]);
+        }else{
+            echo json_encode(['error' => true, 'msg' => 'Erro ao deletar a placa!']);
+        }
+
+    }
+
     public function retornarInfosAgendamento()
     {
-        if (!$this->UsuarioController->validarLogin()) {
+        if (!$this->validarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -60,17 +106,9 @@ class VeiculoController
             "total" => null,
             "agendamentos" => null,
             "estacionamentos" => null
-        ];
-
-
-        
+        ];    
 
         $totalPagar = 0.0;
-
-
-
-
-
     }
 
 

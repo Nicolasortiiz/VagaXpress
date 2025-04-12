@@ -11,7 +11,11 @@ class UsuarioDAO {
     public function cadastrar(Usuario $usuario, $senha){
         $queryInsert = "INSERT INTO Usuario (nome, email, senha, segredo, saldo) VALUES (?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($queryInsert);
-        $stmt-> bind_param("ssssd", $usuario->nome,$usuario->email, $senha, $usuario->segredo, $usuario->saldo);
+        $nome = $usuario->getNome();
+        $email = $usuario->getEmail();
+        $segredo = $usuario->getSegredo();
+        $saldo = $usuario->getSaldo();
+        $stmt-> bind_param("ssssd", $nome,$email, $senha, $segredo, $saldo);
         $result = $stmt-> execute();
         $stmt->close();
         if(!$result){
@@ -22,7 +26,7 @@ class UsuarioDAO {
     }
 
     public function encontrarEmail(Usuario $usuario): bool {
-        $email = $usuario->email;
+        $email = $usuario->getEmail();
         $querySelect = 'SELECT * FROM Usuario WHERE email = ?';
         $stmt = $this->conn->prepare($querySelect);
         $stmt->bind_param('s', $email);
@@ -38,7 +42,7 @@ class UsuarioDAO {
     }
 
     public function validarConta(Usuario $usuario,$senha): bool {
-        $email = $usuario->email;
+        $email = $usuario->getEmail();
         $query = "SELECT * FROM Usuario WHERE email = ? AND senha = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("ss", $email, $senha);
@@ -53,7 +57,7 @@ class UsuarioDAO {
     }
 
     public function retornaIdUsuario(Usuario $usuario): int {
-        $email = $usuario->email;
+        $email = $usuario->getEmail();
         $query = "SELECT idUsuario FROM Usuario WHERE email LIKE ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("s", $email);
@@ -69,7 +73,7 @@ class UsuarioDAO {
     }
     
     public function retornaSegredoUsuario(Usuario $usuario){
-        $email = $usuario->email;
+        $email = $usuario->getEmail();
         $query = "SELECT segredo FROM Usuario WHERE email LIKE ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("s", $email);
@@ -88,7 +92,8 @@ class UsuarioDAO {
     public function encontrarNome(Usuario $usuario) {
         $querySelect = "SELECT nome FROM Usuario WHERE email LIKE ?";
         $stmt = $this->conn->prepare($querySelect);
-        $stmt->bind_param("s", $usuario->email);
+        $email = $usuario->getEmail();
+        $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();
@@ -103,7 +108,8 @@ class UsuarioDAO {
     public function updateUsuario(Usuario $usuario, $senha, $segredo): bool {
         $queryUpdate = 'UPDATE Usuario SET senha = ?, segredo = ? WHERE email = ?';
         $stmt = $this->conn->prepare($queryUpdate);
-        $stmt->bind_param('sss', $senha, $segredo, $usuario->email);
+        $email = $usuario->getEmail();
+        $stmt->bind_param('sss', $senha, $segredo, $email);
         $result = $stmt->execute();
         $stmt->close();
     
@@ -163,22 +169,6 @@ class UsuarioDAO {
         $result = $stmt->get_result();
         $stmt->close();
         return $result->fetch_all();
-    }
-
-    public function retornarPlacas(Usuario $usuario){
-        $querySelect = "SELECT placa FROM Veiculo WHERE idUsuario = ?";
-        $idUsuario = $usuario->getIdUsuario();
-
-        $stmt = $this->conn->prepare($querySelect);
-        $stmt->bind_param("i", $idUsuario);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $stmt->close();
-        $placas = [];
-        while ($row = $result->fetch_assoc()) {
-            $placas[] = $row['placa'];
-        }
-        return $placas;
     }
 
     public function retornarNome(Usuario $usuario){

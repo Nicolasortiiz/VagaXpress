@@ -309,8 +309,7 @@ class UsuarioController
         $saldo = $this->UsuarioDAO->retornarSaldo($usuario);
         $resposta["saldo"] = $saldo;
 
-        $placas = $this->UsuarioDAO->retornarPlacas($usuario);
-        $resposta["placas"] = $placas;
+        
 
         echo json_encode($resposta);
     }
