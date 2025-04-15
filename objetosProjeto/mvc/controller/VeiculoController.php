@@ -78,7 +78,7 @@ class VeiculoController
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
-
+        // Validar que a placa não está devendo
         $veiculo = new Veiculo();
         $veiculo->setIdVeiculo($id);
         if($this->VeiculoDAO->deletarPlaca($veiculo)){
@@ -89,27 +89,9 @@ class VeiculoController
 
     }
 
-    public function retornarInfosAgendamento()
-    {
-        if (!$this->validarLogin()) {
-            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
-            exit;
-        }
 
-        $usuario_id = intval($_SESSION["usuario_id"]);
-        $usuario = new Usuario();
-        $usuario->setIdUsuario($usuario_id);
 
-        $resposta = [
-            "error" => false,
-            "msg" => "",
-            "total" => null,
-            "agendamentos" => null,
-            "estacionamentos" => null
-        ];    
 
-        $totalPagar = 0.0;
-    }
 
 
 }

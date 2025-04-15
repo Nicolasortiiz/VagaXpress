@@ -20,9 +20,6 @@ switch ($action) {
     case 'cadastrar_placa':
         $controller->cadastrarPlaca($placa);
         break;
-    case 'retornar_infos_agendamento':
-        $controller->retornarInfosAgendamento();
-        break;
     case 'retornar_placas':
         $controller->retornarPlacas();
         break;
