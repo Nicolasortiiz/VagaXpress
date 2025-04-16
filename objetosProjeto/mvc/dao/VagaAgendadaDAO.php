@@ -46,7 +46,46 @@ class VagaAgendadaDAO
         return $result;
     }
 
+    public function retornarHoraChegada(VagaAgendada $agendamento){
+        $querySelect = 'SELECT horaChegada FROM VagaAgendada WHERE idVagaAgendada = ?';
+        $id = $agendamento->getidVagaAgendada();
+        $stmt = $this->conn->prepare($querySelect);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        $row = $result->fetch_assoc();
+        return $row['horaChegada'];
+    }
 
+    public function retornarDataChegada(VagaAgendada $agendamento){
+        $querySelect = 'SELECT dataChegada FROM VagaAgendada WHERE idVagaAgendada = ?';
+        $id = $agendamento->getidVagaAgendada();
+        $stmt = $this->conn->prepare($querySelect);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        $row = $result->fetch_assoc();
+        return $row['dataChegada'];
+    }
+
+    public function removerAgendamento(VagaAgendada $agendamento){
+        $queryDelete = 'DELETE FROM VagaAgendada WHERE idVagaAgendada = ?';
+        $id = $agendamento->getidVagaAgendada();
+        $stmt = $this->conn->prepare($queryDelete);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+    
+        $linhasAfetadas = $stmt->affected_rows;
+        $stmt->close();
+        
+        if($linhasAfetadas > 0){
+            return true;
+        }
+        return false;
+    }
+    
 }
 
 ?>

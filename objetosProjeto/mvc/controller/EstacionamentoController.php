@@ -22,7 +22,7 @@ class EstacionamentoController
 
     }
 
-    public function retornarTotalVagas()
+    public function retornarTotalVagas(): int
     {
         return intval($this->retornarTotalVagas());
     }

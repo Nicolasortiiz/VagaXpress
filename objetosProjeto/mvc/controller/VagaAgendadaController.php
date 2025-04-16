@@ -64,6 +64,37 @@ class VagaAgendadaController
         }
 
     }
+
+    public function cancelarAgendamento($idAgendamento){
+        if (!$this->validarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        }
+        $agendamento = new VagaAgendada();
+        $agendamento->setidVagaAgendada($idAgendamento);
+
+        $horaChegada = $this->VagaAgendadaDAO->retornarHoraChegada($agendamento);
+        $dataChegada = $this->VagaAgendadaDAO->retornarDataChegada($agendamento);
+
+        $dataHoraChegada = DateTime::createFromFormat('Y-m-d H:i:s', $dataChegada . ' ' . $horaChegada);
+    
+        $agora = new DateTime();
+        $intervalo = $agora->diff($dataHoraChegada);
+        $minutosParaChegada = ($dataHoraChegada->getTimestamp() - $agora->getTimestamp()) / 60;
+    
+        if ($minutosParaChegada < 30) {
+            echo json_encode(["error" => true, "msg" => "O cancelamento só pode ser feito com até 30 minutos de antecedência!"]);
+            exit;
+        }
+    
+        $removido = $this->VagaAgendadaDAO->removerAgendamento($agendamento);
+        
+        if ($removido) {
+            echo json_encode(["error" => false]);
+        } else {
+            echo json_encode(["error" => true, "msg" => "Erro ao cancelar o agendamento, tente novamente!"]);
+        }
+    }
 }
 
 ?>
