@@ -86,7 +86,7 @@ function abrirTela(event) {
         case "alterar_valor":
             conteudo.innerHTML = `
                 <h2>Alterar valores de vagas e outras cobranças</h2>
-        ;`
+        `
             break;
 
         case "banir_placa":
@@ -98,6 +98,10 @@ function abrirTela(event) {
         case "enviar_notificacao":
             conteudo.innerHTML = `
                 <h2>Enviar notificações para todos os usuários</h2>
+                <form onsubmit="event.preventDefault(); enviar_notificacao();">
+                    <input id="notificacao" placeholder="Insira sua notificação aqui" required>
+                    <button type="submit">Enviar</button>
+                </form>
             `;
             break;
 
@@ -121,34 +125,6 @@ async function realizarLogout() {
 
         })
         .catch(error => console.error(error));
-}
-
-async function gravarPlaca() {
-
-    var dados = { placa: document.getElementById("placa").value };
-
-    res = await criptografar(dados);
-
-    fetch("/api/veiculo.php?action=cadastrar_placa", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            cript: res
-        })
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Erro na resposta do servidor: " + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            alert(data.msg);
-        })
-        .catch(error => {
-
-            alert("Erro ao cadastrar veículo. Verifique a conexão.");
-        });
 }
 
 /* Scripts Página Notificação */
@@ -186,63 +162,12 @@ function carregarNotificacoes() {
         });
 }
 
-
-/* Scripts Página Usuário */
-let valorSaldo = '';
-function botaoSaldo(event) {
-    const elementoClicado = event.target.id;
-    const conteudo = document.getElementById("conteudo_saldo");
-
-    switch (elementoClicado) {
-        case "abrir_adicionar":
-            conteudo.innerHTML = `
-            <div class="divAddSaldo">
-                <h2>Adicionar Saldo</h2>
-                <input type="text" id="valorSaldo" placeholder="R$ 0,00" oninput="formatarSaldo(this)"><br>
-                <button id="mudar_qr" onclick="botaoSaldo(event)">Gerar QR Code</button>
-                <button id="fechar_adicionar" onclick="botaoSaldo(event)">Cancelar</button>
-            </div>
-            `;
-            break;
-
-        case "mudar_qr":
-            valorSaldo = document.getElementById("valorSaldo").value;
-            conteudo.innerHTML = `
-            <div class="divQr">
-                <h2>QR Code</h2>
-                <img src="view/imgs/qrCodeExemplo.png"><br>
-                <button id="botaoAdicionarSaldo"  onclick="adicionarSaldo()">Confirmar</button>
-                <button id="abrir_adicionar" onclick="botaoSaldo(event)">Cancelar</button>
-            </div>
-            `;
-            break;
-        case "fechar_adicionar":
-            conteudo.innerHTML = ``;
-            break;
-    }
-}
-
-function formatarSaldo(input) {
-    let valor = input.value.replace(/\D/g, "");
-    if (valor.length > 10) {
-        valor = valor.substring(0, 10);
-    }
-    valor = (parseFloat(valor) / 100).toFixed(2);
-
-    if (valor > 99999999.99) {
-        valor = 99999999.99;
-    }
-
-    input.value = "R$ " + valor.replace(".", ",");
-}
-
-
-async function adicionarSaldo() {
-    document.getElementById('botaoAdicionarSaldo').disabled = true;
-    var dados = { saldo: valorSaldo };
-
+async function enviar_notificacao() {
+    var notificacao = { placa: document.getElementById("notificacao").value };
     res = await criptografar(dados);
-    fetch("/api/usuario.php?action=adicionar_saldo", {
+    const dados = {notificacao: notificacao};
+
+    fetch("/api/mensagem.php?action=enviar_notificacao", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -253,79 +178,11 @@ async function adicionarSaldo() {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.error) {
-                window.alert(data.msg);
-            } else {
-                window.alert(`O valor de R$ ${data.msg} foi adicionado!`);
-            }
+            console.log("Resposta do servidor:", data);
+            alert("Notificação enviada com sucesso!");
         })
-        .catch(error => console.error(error));
-
-    document.getElementById('botaoAdicionarSaldo').disabled = false;
-}
-
-async function carregarInfosPerfil() {
-    fetch("/api/usuario.php?action=retornar_infos_perfil")
-        .then(response => response.json())
-        .then(data => {
-            if (data.erro) {
-                window.alert(data.msg);
-            }
-
-            if (data.saldo > 0) {
-                document.getElementById('saldoTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
-            } else {
-                document.getElementById('saldoTotal').textContent = "0,00";
-            }
-
-            document.getElementById('nomeUsuario').textContent = data.nome;
-            
-            const tbody_veiculos = document.querySelector("#tabelaVeiculos tbody");
-            tbody_veiculos.innerHTML = "";
-
-            if (Array.isArray(data.placas) && data.placas.length > 0) {
-                data.placas.forEach(placa => {
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                        <td>${placa}</td>
-                        <td><button onclick="deletarVeiculo('${placa}')">Deletar</button></td>
-                    `;
-                    tbody_veiculos.appendChild(tr);
-                });
-            } else {
-                console.log("Nenhum veículo cadastrado");
-            }
-
-
-            const tbody_notas = document.querySelector("#tabelaNotas tbody");
-            tbody_notas.innerHTML = "";
-
-            if (Array.isArray(data.notas)) {
-                data.notas.forEach(nf => {
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                        <td>${nf.dataEmissao}</td>
-                        <td>R$ ${parseFloat(nf.valor).toFixed(2).replace(".", ",")}</td>
-                        <td><button onclick='mostrarDetalhesNota(${JSON.stringify(nf.id)})'>Detalhes</button></td>
-                    `;
-                    tbody_notas.appendChild(tr);
-                });
-            } else {
-                console.log("Nenhuma nota fiscal disponível");
-            }
-        })
-        .catch(error => console.error(error));
-}
-
-
-/* Página Agendamento/Pagamento */
-
-async function carregarInfosAgendamento() {
-    fetch("/api/veiculo.php?action=retornar_infos_agendamento")
-        .then(response => response.json())
-        .then(data => {
-
-        })
-        .catch(error => console.error(error));
-
+        .catch(error => {
+            console.error("Erro ao enviar notificação:", error);
+            alert("Erro ao enviar notificação.");
+        });
 }
