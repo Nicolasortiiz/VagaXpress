@@ -2,6 +2,7 @@
 require_once __DIR__ . "/../dao/VagaAgendadaDAO.php";
 require_once __DIR__ . "/../model/VagaAgnendada.php";
 
+header('Content-Type: application/json');
 session_start();
 date_default_timezone_set('America/Sao_Paulo');
 
@@ -30,20 +31,18 @@ class VagaAgendadaController
             return false;
         }
     }
-    public function retornarInfosAgendamento()
+    public function retornarInfosAgendamento($placas)
     {
         if (!$this->validarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
 
-        $usuario_id = intval($_SESSION["usuario_id"]);
-
         $resposta = [
             "agendamentos" => null
         ];    
 
-        $resposta['agendamentos'] = $this->VagaAgendadaDAO->retornarAgendamentos($usuario_id);
+        $resposta['agendamentos'] = $this->VagaAgendadaDAO->retornarAgendamentos($placas);
         echo json_encode($resposta);
 
     }

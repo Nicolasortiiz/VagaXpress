@@ -7,6 +7,7 @@ require_once __DIR__ . "/../vendor/autoload.php";
 use PHPMailer\PHPMailer\PHPMailer;
 use OTPHP\TOTP;
 
+header('Content-Type: application/json');
 session_start();
 date_default_timezone_set('America/Sao_Paulo');
 

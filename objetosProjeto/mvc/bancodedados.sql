@@ -53,7 +53,7 @@ CREATE TABLE VagaAgendada (
     horaEntrada TIME NOT NULL,
 );
 
-CREATE TABLE VagasOcupada (
+CREATE TABLE VagaOcupada (
     idVagas INT AUTO_INCREMENT PRIMARY KEY,
     idVeiculoEstacionado INT NOT NULL,
     FOREIGN KEY (idRegistro) REFERENCES VagaHistorico(idRegistro) ON DELETE CASCADE
@@ -62,6 +62,12 @@ CREATE TABLE VagasOcupada (
 CREATE TABLE Mensagem (
     idMensagem INT AUTO_INCREMENT PRIMARY KEY,
     mensagem TEXT NOT NULL
+);
+
+CREATE TABLE Suporte (
+    idSuporte INT AUTO_INCREMENT PRIMARY KEY,
+    mensagem TEXT NOT NULL,
+    email VARCHAR(100) NOT NULL
 );
 
 INSERT INTO Usuario (nome, email, senha) VALUES ('Admin', 'admin@vagaxpress.com', 'admin.senha123');

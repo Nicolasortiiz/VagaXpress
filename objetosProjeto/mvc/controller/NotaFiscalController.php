@@ -2,6 +2,7 @@
 require_once __DIR__ . "/../dao/NotaFiscalDAO.php";
 require_once __DIR__ . "/../model/NotaFiscal.php";
 
+header('Content-Type: application/json');
 session_start();
 date_default_timezone_set('America/Sao_Paulo');
 

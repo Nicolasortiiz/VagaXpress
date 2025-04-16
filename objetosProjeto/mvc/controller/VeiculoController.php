@@ -2,6 +2,7 @@
 require_once __DIR__ . "/../dao/VeiculoDAO.php";
 require_once __DIR__ . "/../model/Veiculo.php";
 
+header('Content-Type: application/json');
 session_start();
 date_default_timezone_set('America/Sao_Paulo');
 
@@ -78,7 +79,6 @@ class VeiculoController
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
-        // Validar que a placa não está devendo
         $veiculo = new Veiculo();
         $veiculo->setIdVeiculo($id);
         if($this->VeiculoDAO->deletarPlaca($veiculo)){
@@ -89,11 +89,23 @@ class VeiculoController
 
     }
 
+    public function validarCadastroPlaca($placa)
+    {
+        if (!$this->validarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        } 
 
+        $veiculo = new Veiculo();
+        $veiculo->setIdVeiculo($placa);
+        $veiculo->setIdUsuario($_SESSION['usuario_id']);
 
-
-
-
+        if($this->VeiculoDAO->procurarCadastroPlaca($veiculo)){
+            echo json_encode(['error'=> false]);
+        }else{
+            echo json_encode(['error'=> true, 'msg'=> 'Placa nao cadastrada!']);
+        }
+    }
 }
 
 ?>
