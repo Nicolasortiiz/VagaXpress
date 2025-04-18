@@ -68,6 +68,10 @@ function abrirTela(event) {
         case "excluir_usuario":
             conteudo.innerHTML = `
                 <h2>Menu de exclusão de usuários</h2>
+                <form onsubmit="event.preventDefault(); excluir_usuario();">
+                    <input id="usuario" placeholder="Qual usuário deseja excluir?" required>
+                    <button type="submit">Enviar</button>
+                </form>
             `;
             break;
 
