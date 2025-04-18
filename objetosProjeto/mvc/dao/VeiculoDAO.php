@@ -41,10 +41,10 @@ class VeiculoDAO {
     }
 
     public function deletarPlaca(Veiculo $veiculo) {
-        $querryDelete = "DELETE FROM Veiculo WHERE idVeiculo = ?";
-        $id = $veiculo->getIdVeiculo();
+        $querryDelete = "DELETE FROM Veiculo WHERE placa = ?";
+        $placa = $veiculo->getPlaca();
         $stmt = $this->conn->prepare($querryDelete);
-        $stmt->bind_param("i", $id);
+        $stmt->bind_param("s", $placa);
         $result = $stmt->execute();
         $stmt->close();
         return $result;

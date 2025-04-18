@@ -74,14 +74,14 @@ class VeiculoController
         echo json_encode($resposta);
     }
 
-    public function deletarPlaca($id){
+    public function deletarPlaca($placa){
         if (!$this->validarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
         $veiculo = new Veiculo();
-        $veiculo->setIdVeiculo($id);
-        if($this->VeiculoDAO->deletarPlaca($veiculo)){
+        $veiculo->setPlaca($placa);
+        if($this->VeiculoDAO->deletarPlaca( $veiculo)){
             echo json_encode(['error' => false]);
         }else{
             echo json_encode(['error' => true, 'msg' => 'Erro ao deletar a placa!']);

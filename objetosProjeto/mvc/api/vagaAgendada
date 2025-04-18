@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/../utils/decrypt.php";
-require_once __DIR__ . "/../controller/UsuarioController.php";
+require_once __DIR__ . "/../controller/VeiculoController.php";
 
 header('Content-Type: application/json');
 date_default_timezone_set('America/Sao_Paulo');
@@ -13,20 +13,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 $action = $_GET['action'] ?? '';
 
-$controller = new NotaFiscalController();
-$idNotaFiscal = $data['idNotaFiscal'] ?? '';
-
+$controller = new VagaAgendadaController();
+$placa = $data['placa'] ?? '';
 
 switch ($action) {
-    case 'retornar_notas_fiscais':
-        $controller->retornarInfosNotasFiscaisUsuario();
-        break;
-    case 'retornar_detalhes_nf':
-        $controller->retornarDetalhesNotaFiscal($idNotaFiscal);
+    case 'deletar_agendamentos_placa':
+        $controller->cancelarTodosAgendamentos($placa);
         break;
     default:
         http_response_code(400);
         echo json_encode(['erro' => 'Erro ao executar a action!']);
 }
 
-?>

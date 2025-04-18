@@ -40,32 +40,15 @@ class VagaAgendadaController
 
         $resposta = [
             "agendamentos" => null
-        ];    
+        ];
 
         $resposta['agendamentos'] = $this->VagaAgendadaDAO->retornarAgendamentos($placas);
         echo json_encode($resposta);
 
     }
 
-    public function criarAgendamento($placa, $dataEntrada, $horaEntrada){
-        if (!$this->validarLogin()) {
-            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
-            exit;
-        }
-        
-        $vagaAgendada = new VagaAgendada();
-        $vagaAgendada->setDataEntrada($dataEntrada);
-        $vagaAgendada->setHoraEntrada($horaEntrada);
-        $vagaAgendada->setPlaca($placa);
-        if($this->VagaAgendadaDAO->criarAgendamento($vagaAgendada)){
-            echo json_encode(['error'=> false]);
-        }else{
-            echo json_encode(['error'=> true, 'msg' => 'Erro ao agendar vaga, tente novamente!']);
-        }
-
-    }
-
-    public function cancelarAgendamento($idAgendamento){
+    public function cancelarAgendamento($idAgendamento)
+    {
         if (!$this->validarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
@@ -77,23 +60,76 @@ class VagaAgendadaController
         $dataChegada = $this->VagaAgendadaDAO->retornarDataChegada($agendamento);
 
         $dataHoraChegada = DateTime::createFromFormat('Y-m-d H:i:s', $dataChegada . ' ' . $horaChegada);
-    
+
         $agora = new DateTime();
-        $intervalo = $agora->diff($dataHoraChegada);
         $minutosParaChegada = ($dataHoraChegada->getTimestamp() - $agora->getTimestamp()) / 60;
-    
+
         if ($minutosParaChegada < 30) {
             echo json_encode(["error" => true, "msg" => "O cancelamento só pode ser feito com até 30 minutos de antecedência!"]);
             exit;
         }
-    
+
         $removido = $this->VagaAgendadaDAO->removerAgendamento($agendamento);
-        
+
         if ($removido) {
             echo json_encode(["error" => false]);
         } else {
             echo json_encode(["error" => true, "msg" => "Erro ao cancelar o agendamento, tente novamente!"]);
         }
+    }
+
+    public function cancelarTodosAgendamentos($placa)
+    {
+        if (!$this->validarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        }
+        $agendamento = new VagaAgendada();
+        $agendamento->setplaca($placa);
+        $agendamentos = [];
+        $agendamentos = $this->VagaAgendadaDAO->retornarAgendamentos($agendamento);
+        foreach ($agendamentos as $agdt) {
+            $horaChegada = $agdt['hora'];
+            $dataChegada = $agdt['data'];
+
+            $dataHoraChegada = DateTime::createFromFormat('Y-m-d H:i:s', $dataChegada . ' ' . $horaChegada);
+
+            $agora = new DateTime();
+            $minutosParaChegada = ($dataHoraChegada->getTimestamp() - $agora->getTimestamp()) / 60;
+
+            if ($minutosParaChegada < 30) {
+                echo json_encode(["error" => true, "msg" => "A placa não pode ser deletada, existe agendamentos incanceláveis!"]);
+                exit;
+            }
+        }
+        $this->VagaAgendadaDAO->removerTodosAgendamentos($agendamento);
+        
+        
+        //mudar url
+        json_encode(["error" => false, "url" => "/gateway.php/api/veiculo?action=deletar_placa"]);
+    }
+
+    public function criarAgendamento($placa, $dataEntrada, $horaEntrada)
+    {
+
+    if(!$this->validarLogin()){
+        echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+        exit;
+    }
+    $agendamento = new VagaAgendada(0, $placa, $dataEntrada, $horaEntrada);
+
+
+    if($this->VagaAgendadaDAO->procurarAgendamento($agendamento)){
+        json_encode(["error"=> true, "msg"=> "Agendamento já existe!"]);
+        exit;
+    }
+
+    if ($this->VagaAgendadaDAO->criarAgendamento($agendamento)) {
+        echo json_encode(['error' => false]);
+    } else {
+        echo json_encode(['error' => true, 'msg' => 'Erro ao agendar vaga, tente novamente!']);
+    }
+
     }
 }
 

@@ -49,7 +49,13 @@ class RegistroController
         ]);
     }
     
-  
+    public function validarExcluir($placa){
+        if($this->RegistroDAO->validarPlaca($placa)){
+            //mudar url
+            echo json_encode(['error' => false, 'url' => '/gateway.php/api/veiculo?action=']);
+        }
+        return json_encode(['error'=> true, 'msg' => 'Pague o estacionamento para excluir a placa!']);
+    }
 }
 
 ?>

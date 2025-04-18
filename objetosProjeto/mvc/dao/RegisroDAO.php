@@ -36,10 +36,21 @@ class RegistroDAO
             $stmt->close();
         }
         
-
         return $devedoras;
     }
 
+    public function validarPlaca($placa): bool
+    {
+        $querySelect = 'SELECT placa FROM Registro WHERE placa = ? AND statusPagamento = 0';
+        $stm = $this->conn->prepare($querySelect);
+        $stm->bind_param('s', $placa);
+        $stm->execute();
+        $result = $stm->get_result();
+        if($result->num_rows > 0) {
+            return false;
+        }
+        return true;
+    }
 
 }
 

@@ -39,18 +39,20 @@ class NotaFiscalDAO
         $stmt->bind_param('i', $idNotaFiscal);
         $stmt->execute();
         $result = $stmt->get_result();
+        $row = $result->fetch_assoc(); 
         $stmt->close();
-
+    
         $notaFiscal = [
-            'dataEmissao' => $result->fetch_assoc()['dataEmissao'],
-            'cpf' => $result->fetch_assoc()['cpf'],
-            'nome' => $result->fetch_assoc()['nome'],
-            'valor' => $result->fetch_assoc()['valor'],
-            'descricao' => $result->fetch_assoc()['descricao']
+            'dataEmissao' => $row['dataEmissao'],
+            'cpf' => $row['cpf'],
+            'nome' => $row['nome'],
+            'valor' => $row['valor'],
+            'descricao' => $row['descricao']
         ];
-
+    
         return $notaFiscal;
     }
+    
 
     public function gerarNotaFiscal(NotaFiscal $notaFiscal){
         $queryInsert = 'INSERT INTO NotaFiscal (idUsuario,dataEmissao,cpf,nome,valor,descricao) VALUES (?,?,?,?,?,?)';

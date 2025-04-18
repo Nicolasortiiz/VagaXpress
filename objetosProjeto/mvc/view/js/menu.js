@@ -26,7 +26,7 @@ window.onload = function () {
             document.querySelector('body').style.display = 'flex';
         })
         .catch(error => console.error(error));
-    
+
 }
 
 async function criptografar(dados) {
@@ -90,7 +90,7 @@ function abrirTela(event) {
             break;
 
         case "perfil_usuario":
-            
+
             conteudo.innerHTML = `
             <div class="divTelaUsuario">
             <h2>Perfil do Usuário</h2>
@@ -138,6 +138,10 @@ function abrirTela(event) {
                         </thead>
                         <tbody></tbody>
                     </table>
+                </div>
+                <div id="modalDetalhesNF" class="modal hidden">
+                    <div class="modalConteudoNF" id="conteudoNotaFiscal">         
+                    </div>
                 </div>
             </div>
         </div>
@@ -330,82 +334,188 @@ async function carregarInfosPerfil() {
     await carregaUsuario();
     await carregaNF();
     await carregaVeiculo();
-    
+
 }
 
-async function carregaUsuario(){
+async function carregaUsuario() {
     fetch("/gateway.php/api/usuario?action=retornar_infos_perfil")
-    .then(response => response.json())
-    .then(data => {
-        if (data.erro) {
-            window.alert(data.msg);
-        }
+        .then(response => response.json())
+        .then(data => {
+            if (data.erro) {
+                window.alert(data.msg);
+            }
 
-        if (data.saldo > 0) {
-            document.getElementById('saldoTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
-        } else {
-            document.getElementById('saldoTotal').textContent = "0,00";
-        }
+            if (data.saldo > 0) {
+                document.getElementById('saldoTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
+            } else {
+                document.getElementById('saldoTotal').textContent = "0,00";
+            }
 
-        document.getElementById('nomeUsuario').textContent = data.nome;
-        
-    })
-    .catch(error => console.error(error));
-} 
+            document.getElementById('nomeUsuario').textContent = data.nome;
 
-async function carregaNF(){
+        })
+        .catch(error => console.error(error));
+}
+
+async function carregaNF() {
     fetch("/gateway.php/api/notaFiscal?action=retornar_notas_fiscais")
-    .then(response => response.json())
-    .then(data => {
-        if (data.erro) {
-            window.alert(data.msg);
-        }
-        const tbody_notas = document.querySelector("#tabelaNotas tbody");
-        tbody_notas.innerHTML = "";
+        .then(response => response.json())
+        .then(data => {
+            if (data.erro) {
+                window.alert(data.msg);
+            }
+            const tbody_notas = document.querySelector("#tabelaNotas tbody");
+            tbody_notas.innerHTML = "";
 
-        if (Array.isArray(data.notas)) {
-            data.notas.forEach(nf => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
+            if (Array.isArray(data.notas)) {
+                data.notas.forEach(nf => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
                     <td>${nf.dataEmissao}</td>
                     <td>R$ ${parseFloat(nf.valor).toFixed(2).replace(".", ",")}</td>
                     <td><button onclick='mostrarDetalhesNota(${JSON.stringify(nf.id)})'>Detalhes</button></td>
                 `;
-                tbody_notas.appendChild(tr);
-            });
-        } else {
-            console.log("Nenhuma nota fiscal disponível");
-        }
-    })
-    .catch(error => console.error(error));
+                    tbody_notas.appendChild(tr);
+                });
+            } else {
+                console.log("Nenhuma nota fiscal disponível");
+            }
+        })
+        .catch(error => console.error(error));
 }
 
-async function carregaVeiculo(){
+async function carregaVeiculo() {
     fetch("/gateway.php/api/veiculo?action=retornar_placas")
-    .then(response => response.json())
-    .then(data => {
-        if (data.erro) {
-            window.alert(data.msg);
-        }
-        
-        const tbody_veiculos = document.querySelector("#tabelaVeiculos tbody");
-        tbody_veiculos.innerHTML = "";
+        .then(response => response.json())
+        .then(data => {
+            if (data.erro) {
+                window.alert(data.msg);
+            }
 
-        if (Array.isArray(data.placas) && data.placas.length > 0) {
-            data.placas.forEach(placa => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
+            const tbody_veiculos = document.querySelector("#tabelaVeiculos tbody");
+            tbody_veiculos.innerHTML = "";
+
+            if (Array.isArray(data.placas) && data.placas.length > 0) {
+                data.placas.forEach(placa => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
                     <td>${placa}</td>
                     <td><button onclick="deletarVeiculo('${placa}')">Deletar</button></td>
                 `;
-                tbody_veiculos.appendChild(tr);
-            });
-        } else {
-            console.log("Nenhum veículo cadastrado");
-        }
-    })
-    .catch(error => console.error(error));
+                    tbody_veiculos.appendChild(tr);
+                });
+            } else {
+                console.log("Nenhum veículo cadastrado");
+            }
+        })
+        .catch(error => console.error(error));
 }
+
+async function deletarVeiculo(placa) {
+    if (!confirm(`Tem certeza que deseja deletar o veículo com placa e seus agendamentos ${placa}?`)) {
+        return;
+    }
+
+    document.getElementById('botaoAdicionarSaldo').disabled = true;
+    var dados = { placa: placa };
+
+    res = await criptografar(dados);
+
+    fetch("/gateway.php/api/vagaAgendada?action=deletar_agendamentos_placa", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cript: res })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.msg);
+                document.getElementById('botaoAdicionarSaldo').disabled = false;
+                return;
+            }
+
+            return fetch(data.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ cript: res })
+            });
+        })
+        .then(response => {
+            if (!response) return;
+            return response.json();
+        })
+        .then(data => {
+            if (!data) return;
+            if (data.error) {
+                alert(data.msg);
+            } else {
+                alert("Veículo e agendamentos deletados com sucesso!");
+                carregarVeiculo();
+            }
+        })
+        .catch(error => {
+            console.error("Erro:", error);
+            alert("Erro ao deletar o veículo.");
+        })
+        .finally(() => {
+            document.getElementById('botaoAdicionarSaldo').disabled = false;
+        });
+
+
+}
+
+async function mostrarDetalhesNota(idNota) {
+
+    var dados = { idNotaFiscal: idNota };
+
+    res = await criptografar(dados);
+
+    fetch("/gateway.php/api/notaFiscal?action=retornar_detalhes_nf", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cript: res })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.nota) {
+                alert("Nota fiscal não encontrada.");
+                return;
+            }
+
+            const nota = data.nota;
+
+            const conteudo = `
+            <span class="detalhesNF" onclick="fecharModalNota()">&times;</span>
+            <h2>Detalhes da Nota Fiscal</h2>
+            <div class="detalhes-nota">
+                <p><strong>Data de Emissão:</strong> ${nota.dataEmissao}</p>
+                <p><strong>CPF:</strong> ${nota.cpf}</p>
+                <p><strong>Nome:</strong> ${nota.nome}</p>
+                <p><strong>Valor:</strong> R$ ${parseFloat(nota.valor).toFixed(2).replace(".", ",")}</p>
+                <p><strong>Descrição:</strong> ${nota.descricao}</p>
+            </div>
+        `;
+
+            document.getElementById("conteudoNotaFiscal").innerHTML = conteudo;
+            document.getElementById("modalNotaFiscal").classList.remove("hidden");
+        })
+        .catch(error => {
+            console.error("Erro ao buscar detalhes da nota fiscal:", error);
+            alert("Erro ao buscar os detalhes.");
+        });
+}
+
+function fecharModalNota() {
+    document.getElementById("modalNotaFiscal").classList.add("hidden");
+}
+
+
 
 
 /* Página Agendamento/Pagamento */

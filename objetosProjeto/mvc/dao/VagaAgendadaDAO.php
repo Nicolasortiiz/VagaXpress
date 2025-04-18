@@ -70,7 +70,7 @@ class VagaAgendadaDAO
         return $row['dataChegada'];
     }
 
-    public function removerAgendamento(VagaAgendada $agendamento){
+    public function removerAgendamento(VagaAgendada $agendamento): bool{
         $queryDelete = 'DELETE FROM VagaAgendada WHERE idVagaAgendada = ?';
         $id = $agendamento->getidVagaAgendada();
         $stmt = $this->conn->prepare($queryDelete);
@@ -83,6 +83,36 @@ class VagaAgendadaDAO
         if($linhasAfetadas > 0){
             return true;
         }
+        return false;
+    }
+
+    public function removerTodosAgendamentos(VagaAgendada $agendamento){
+        $queryDelete = 'DELETE FROM VagaAgendada WHERE placa = ?';
+        $placa = $agendamento->getidVagaAgendada();
+        $stmt = $this->conn->prepare($queryDelete);
+        $stmt->bind_param('s', $placa);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    public function procurarAgendamento(VagaAgendada $agendamento){
+        $querySelect = 'SELECT idVagaAgendada FROM VagaAgendada WHERE placa = ? AND dataEntrada = ? AND horaEntrada = ?';
+        
+        $placa = $agendamento->getPlaca();
+        $dataEntrada = $agendamento->getDataEntrada();
+        $horaEntrada = $agendamento->getHoraEntrada();
+    
+        $stmt = $this->conn->prepare($querySelect);
+        $stmt->bind_param('sss', $placa, $dataEntrada, $horaEntrada);
+        $stmt->execute();
+    
+        $result = $stmt->get_result(); 
+        $stmt->close();
+    
+        if ($result && $result->num_rows > 0) {
+            return true;
+        }
+    
         return false;
     }
     
