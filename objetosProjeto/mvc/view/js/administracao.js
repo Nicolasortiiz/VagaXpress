@@ -164,8 +164,8 @@ function carregarNotificacoes() {
 
 async function enviar_notificacao() {
     var notificacao = { placa: document.getElementById("notificacao").value };
-    res = await criptografar(dados);
     const dados = {notificacao: notificacao};
+    res = await criptografar(dados);
 
     fetch("/api/mensagem.php?action=enviar_notificacao", {
         method: "POST",
