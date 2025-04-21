@@ -71,16 +71,20 @@ class NotaFiscalController
         
     }
 
-    public function gerarNotaFiscal($cpf, $nome, $valor, $descricao){
+    public function gerarNotaFiscal($id, $cpf, $nome, $valor, $descricao){
         $nf = new NotaFiscal();
         $nf->setCpf($cpf);
         $nf->setNome($nome);
         $nf->setValor($valor);
         $nf->setDescricao($descricao);
         $nf->setDataEmissao(date('Y-m-d'));
-        $nf->setIdUsuario($_SESSION['usuario_id']);
+        $nf->setIdUsuario($id);
 
-        return $this->NotaFiscalDAO->gerarNotaFiscal($nf);
+        if($this->NotaFiscalDAO->gerarNotaFiscal($nf)){
+            echo json_encode(['error' => false]);
+        }else{
+            echo json_encode(['error'=> true, 'msg' => 'Erro ao gerar nota fiscal, contate o suporte!']);
+        }
 
     }
 }

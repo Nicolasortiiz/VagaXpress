@@ -39,6 +39,9 @@ class VagaAgendadaDAO
     {
         $query = 'INSERT INTO VagaAgendada (placa, horaEntrada, dataEntrada) VALUES (?, ?, ?)';
         $stmt = $this->conn->prepare($query);
+        $placa = $vagaAgendada->getPlaca();
+        $horaEntrada = $vagaAgendada->getHoraEntrada();
+        $dataEntrada = $vagaAgendada->getDataEntrada();
         $stmt->bind_param('sss', $placa, $horaEntrada, $dataEntrada);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -95,8 +98,8 @@ class VagaAgendadaDAO
         $stmt->close();
     }
 
-    public function procurarAgendamento(VagaAgendada $agendamento){
-        $querySelect = 'SELECT idVagaAgendada FROM VagaAgendada WHERE placa = ? AND dataEntrada = ? AND horaEntrada = ?';
+    public function procurarAgendamento(VagaAgendada $agendamento):bool{
+        $querySelect = 'SELECT * FROM VagaAgendada WHERE placa = ? AND DATE(dataEntrada) = ? AND TIME(horaEntrada) = ?';
         
         $placa = $agendamento->getPlaca();
         $dataEntrada = $agendamento->getDataEntrada();
@@ -108,11 +111,11 @@ class VagaAgendadaDAO
     
         $result = $stmt->get_result(); 
         $stmt->close();
-    
-        if ($result && $result->num_rows > 0) {
+        
+        if ($result ->num_rows > 0) {
             return true;
         }
-    
+        
         return false;
     }
     

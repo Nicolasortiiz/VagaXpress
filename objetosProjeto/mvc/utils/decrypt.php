@@ -1,23 +1,35 @@
 <?php
 
 function removePadding($data) {
-
-    $pad = ord($data[strlen($data) - 1]);
-    if ($pad < 1 || $pad > 16) {
-        return $data; 
+    if (empty($data)) {
+        return $data;
     }
-    if (strspn($data, chr($pad), strlen($data) - $pad) != $pad) {
+    $length = strlen($data);
+    $pad = ord($data[$length - 1]);
+    
+    if ($pad < 1 || $pad > 16) {
         return $data;
     }
 
-    return substr($data, 0, -$pad);
+    if ($length < $pad) {
+        return $data;
+    }
+
+    $padding = substr($data, -$pad);
+    $expectedPadding = str_repeat(chr($pad), $pad);
+    
+    if (hash_equals($padding, $expectedPadding)) {
+        return substr($data, 0, $length - $pad);
+    }
+    
+    return $data;
 }
 
 function decrypt($data){   
 
     $senhaGPG = "senha@gpg";
     $tempDir = sys_get_temp_dir();
-
+    
     if (empty($data)) {
         throw new Exception("Dados criptografados não fornecidos");
     }
@@ -65,7 +77,9 @@ function decrypt($data){
         echo json_encode(["erro" => true]);
     } else {
         $decrypted = removePadding($decrypted);
+        $decrypted = preg_replace('/[^\x20-\x7E]/', '', $decrypted);
         $decrypted = json_decode($decrypted, true);
+        
         return $decrypted;
     }
 }

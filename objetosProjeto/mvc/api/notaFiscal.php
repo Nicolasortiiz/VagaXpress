@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/../utils/decrypt.php";
-require_once __DIR__ . "/../controller/UsuarioController.php";
+require_once __DIR__ . "/../controller/NotaFiscalController.php";
 
 header('Content-Type: application/json');
 date_default_timezone_set('America/Sao_Paulo');
@@ -15,7 +15,11 @@ $action = $_GET['action'] ?? '';
 
 $controller = new NotaFiscalController();
 $idNotaFiscal = $data['idNotaFiscal'] ?? '';
-
+$valor = $data['valor'] ?? 0.0;
+$id = $data['id'] ?? 0.0;
+$nome = $data['nome'] ?? 0.0;
+$cpf = $data['cpf'] ?? 0.0;
+$descricao = $data['descricao'] ?? 0.0;
 
 switch ($action) {
     case 'retornar_notas_fiscais':
@@ -23,6 +27,9 @@ switch ($action) {
         break;
     case 'retornar_detalhes_nf':
         $controller->retornarDetalhesNotaFiscal($idNotaFiscal);
+        break;
+    case 'gerar_nota_fiscal':
+        $controller->gerarNotaFiscal($id, $cpf, $nome, $valor, $descricao);
         break;
     default:
         http_response_code(400);

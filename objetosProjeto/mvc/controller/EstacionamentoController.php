@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . "/../dao/VagaAgendadaDAO.php";
-require_once __DIR__ . "/../model/VagaAgnendada.php";
+require_once __DIR__ . "/../dao/EstacionamentoDAO.php";
+require_once __DIR__ . "/../model/Estacionamento.php";
 
 header('Content-Type: application/json');
 session_start();
@@ -26,6 +26,7 @@ class EstacionamentoController
     {
         return intval($this->retornarTotalVagas());
     }
+
 
 }
 

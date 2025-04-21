@@ -74,36 +74,26 @@ class VeiculoController
         echo json_encode($resposta);
     }
 
-    public function deletarPlaca($placa){
-        if (!$this->validarLogin()) {
-            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
-            exit;
-        }
+    public function deletarPlaca($placa, $id):void{
         $veiculo = new Veiculo();
         $veiculo->setPlaca($placa);
-        if($this->VeiculoDAO->deletarPlaca( $veiculo)){
-            echo json_encode(['error' => false]);
-        }else{
-            echo json_encode(['error' => true, 'msg' => 'Erro ao deletar a placa!']);
-        }
+        $veiculo->setIdUsuario($id);
+        $this->VeiculoDAO->deletarPlaca($veiculo);
+        echo json_encode(['error' => false, 'msg' => "Placa $placa deletada com sucesso!"]);
+        exit;
 
     }
 
-    public function validarCadastroPlaca($placa)
+    public function validarCadastroPlaca($placa, $id)
     {
-        if (!$this->validarLogin()) {
-            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
-            exit;
-        } 
-
         $veiculo = new Veiculo();
         $veiculo->setIdVeiculo($placa);
-        $veiculo->setIdUsuario($_SESSION['usuario_id']);
+        $veiculo->setIdUsuario($id);
 
-        if($this->VeiculoDAO->procurarCadastroPlaca($veiculo)){
-            echo json_encode(['error'=> false]);
+        if($this->VeiculoDAO->procurarCadastroPlaca($veiculo) !== null){
+            return true;
         }else{
-            echo json_encode(['error'=> true, 'msg'=> 'Placa nao cadastrada!']);
+            return false;
         }
     }
 }

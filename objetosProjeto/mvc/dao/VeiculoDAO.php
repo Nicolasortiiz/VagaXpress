@@ -41,10 +41,12 @@ class VeiculoDAO {
     }
 
     public function deletarPlaca(Veiculo $veiculo) {
-        $querryDelete = "DELETE FROM Veiculo WHERE placa = ?";
+        error_log('teste');
+        $querryDelete = "DELETE FROM Veiculo WHERE placa = ? AND idUsuario = ?";
         $placa = $veiculo->getPlaca();
+        $id = $veiculo->getIdusuario();
         $stmt = $this->conn->prepare($querryDelete);
-        $stmt->bind_param("s", $placa);
+        $stmt->bind_param("si", $placa, $id);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
@@ -66,24 +68,23 @@ class VeiculoDAO {
         return $placas;
     }
 
-    public function procurarCadastroPlaca(Veiculo $veiculo){
+    public function procurarCadastroPlaca(Veiculo $veiculo) {
         $querySelect = 'SELECT placa FROM Veiculo WHERE placa = ? AND idUsuario = ?';
         $idUsuario = $veiculo->getIdUsuario();
         $placa = $veiculo->getPlaca();
+    
         $stmt = $this->conn->prepare($querySelect);
         $stmt->bind_param('si', $placa, $idUsuario);
         $stmt->execute();
+    
         $result = $stmt->get_result();
-        $placaEncontrada = $result->fetch_assoc(); 
-
+        $placaEncontrada = $result->fetch_assoc();
+    
         $stmt->close();
-
-        if(count($placaEncontrada) > 0){
-            return true;
-        }
-
-        return false;
+    
+        return $placaEncontrada !== null;
     }
+    
 
 }
 

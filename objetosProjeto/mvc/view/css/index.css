@@ -4,6 +4,11 @@
     box-sizing: border-box;
 }
 
+.desativado {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
 body {
     display: flex;
     height: 100vh;
@@ -224,4 +229,35 @@ tr:nth-child(even) {
     right: 15px;
     font-size: 24px;
     cursor: pointer;
+}
+
+/*
+Estilos tela de pagamento/agendamento
+*/
+
+.divPagamento {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    max-width: 400px;
+    margin: 30px auto;
+}
+.divPagamento input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+}
+.divPagamento button {
+    margin-top: 10px;
+    padding: 10px;
+    width: 100%;
+    background-color: #008cff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.divPagamento button:hover {
+    background-color: #006fcd;
 }

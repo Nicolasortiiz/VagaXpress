@@ -182,6 +182,19 @@ class UsuarioDAO {
         return $result->fetch_assoc()['nome'];
     }   
 
+
+    public function atualizarSaldo(Usuario $usuario)
+    {
+        $queryUpdate = 'UPDATE Usuario SET saldo=? WHERE idUsuario=?';
+        $id = $usuario->getIdUsuario();
+        $saldo = $usuario->getSaldo();
+        $stmt = $this->conn->prepare($queryUpdate);
+        $stmt->bind_param('di', $saldo, $id);
+        $result = $stmt->execute();
+        $stmt->close();
+    
+        return $result;
+    }
 }
 
 ?>

@@ -50,7 +50,7 @@ CREATE TABLE VagaAgendada (
     idVagaAgendada INT AUTO_INCREMENT PRIMARY KEY,
     placa VARCHAR(10) NOT NULL,
     dataEntrada DATE NOT NULL,
-    horaEntrada TIME NOT NULL,
+    horaEntrada TIME NOT NULL
 );
 
 CREATE TABLE VagaOcupada (

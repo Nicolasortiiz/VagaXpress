@@ -10,11 +10,14 @@ $data = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dataCrypt = file_get_contents('php://input');
     $data = decrypt($dataCrypt);
+
 }
 $action = $_GET['action'] ?? '';
 
 $controller = new VeiculoController();
 $placa = $data['placa'] ?? '';
+$id = $data['id'] ?? '';
+
 
 switch ($action) {
     case 'cadastrar_placa':
@@ -24,11 +27,12 @@ switch ($action) {
         $controller->retornarPlacas();
         break;
     case 'deletar_placa':
-        $controller->deletarPlaca($placa)();
+        $controller->deletarPlaca($placa, $id);
         break;
     default:
         http_response_code(400);
-        echo json_encode(['erro' => 'Erro ao executar a action!']);
+        echo json_encode(['error' => true, 'msg' => 'Ação inválida ou não reconhecida.']);
+        exit;
 }
 
 ?>

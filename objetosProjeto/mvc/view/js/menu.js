@@ -57,7 +57,9 @@ async function criptografar(dados) {
 function abrirTela(event) {
     const elementoClicado = event.target.id;
     const conteudo = document.getElementById("conteudo");
-
+    document.querySelectorAll('[id]').forEach(i => {
+        i.classList.remove('desativado');
+    });
     switch (elementoClicado) {
         case "tela_inicial":
             conteudo.innerHTML = `
@@ -78,19 +80,27 @@ function abrirTela(event) {
             break;
 
         case "agendamento":
+            document.getElementById('agendamento').classList.add('desativado');
             conteudo.innerHTML = `
                 <h2>Agendamento de Estacionamento</h2>
-                <form onsubmit="event.preventDefault();">
-                    <input placeholder="Placa" required>
-                    <input type="date" required>
-                    <input type="time" required>
-                    <button type="submit">Agendar</button>
+                <form id='formAgendamento' onsubmit="event.preventDefault();validarAgendamento();">
+                    <label for="carros">Escolha uma placa:</label>
+                    <select id="carros">
+                        <option value="">Carregando...</option>
+                    </select>
+                    <input id="data_agendamento" type="date" required>
+                    <input id="hora_agendamento" type="time" required>
+                    <button id="botaoAgendar" type="submit">Agendar</button>
+                    
                 </form>
+                <div id='divTelaPagamento'></div>
             `;
+            carregarPlacasPerfil();
+
             break;
 
         case "perfil_usuario":
-
+            document.getElementById('perfil_usuario').classList.add('desativado');
             conteudo.innerHTML = `
             <div class="divTelaUsuario">
             <h2>Perfil do Usuário</h2>
@@ -147,6 +157,7 @@ function abrirTela(event) {
         </div>
         `;
             carregarInfosPerfil();
+
             break;
 
         case "notificacao":
@@ -193,7 +204,7 @@ async function gravarPlaca() {
 
     var dados = { placa: document.getElementById("placa").value };
 
-    res = await criptografar(dados);
+    const res = await criptografar(dados);
 
     fetch("/gateway.php/api/veiculo?action=cadastrar_placa", {
         method: "POST",
@@ -202,14 +213,10 @@ async function gravarPlaca() {
             cript: res
         })
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Erro na resposta do servidor: " + response.status);
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             alert(data.msg);
+            carregaVeiculo();
         })
         .catch(error => {
 
@@ -307,7 +314,7 @@ async function adicionarSaldo() {
     document.getElementById('botaoAdicionarSaldo').disabled = true;
     var dados = { saldo: valorSaldo };
 
-    res = await criptografar(dados);
+    const res = await criptografar(dados);
     fetch("/gateway.php/api/usuario?action=adicionar_saldo", {
         method: "POST",
         headers: {
@@ -400,7 +407,7 @@ async function carregaVeiculo() {
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
                     <td>${placa}</td>
-                    <td><button onclick="deletarVeiculo('${placa}')">Deletar</button></td>
+                    <td><button id="botaoDeletarPlaca" onclick="deletarVeiculo('${placa}')">Deletar</button></td>
                 `;
                     tbody_veiculos.appendChild(tr);
                 });
@@ -416,10 +423,10 @@ async function deletarVeiculo(placa) {
         return;
     }
 
-    document.getElementById('botaoAdicionarSaldo').disabled = true;
+    document.getElementById('botaoDeletarPlaca').disabled = true;
     var dados = { placa: placa };
 
-    res = await criptografar(dados);
+    const res = await criptografar(dados);
 
     fetch("/gateway.php/api/vagaAgendada?action=deletar_agendamentos_placa", {
         method: 'POST',
@@ -432,47 +439,26 @@ async function deletarVeiculo(placa) {
         .then(data => {
             if (data.error) {
                 alert(data.msg);
-                document.getElementById('botaoAdicionarSaldo').disabled = false;
                 return;
+            } else {
+                alert(data.msg);
+                carregaVeiculo();
             }
 
-            return fetch(data.url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ cript: res })
-            });
-        })
-        .then(response => {
-            if (!response) return;
-            return response.json();
-        })
-        .then(data => {
-            if (!data) return;
-            if (data.error) {
-                alert(data.msg);
-            } else {
-                alert("Veículo e agendamentos deletados com sucesso!");
-                carregarVeiculo();
-            }
         })
         .catch(error => {
             console.error("Erro:", error);
-            alert("Erro ao deletar o veículo.");
         })
         .finally(() => {
-            document.getElementById('botaoAdicionarSaldo').disabled = false;
+            document.getElementById('botaoDeletarPlaca').disabled = false;
         });
-
-
 }
 
 async function mostrarDetalhesNota(idNota) {
 
     var dados = { idNotaFiscal: idNota };
 
-    res = await criptografar(dados);
+    const res = await criptografar(dados);
 
     fetch("/gateway.php/api/notaFiscal?action=retornar_detalhes_nf", {
         method: "POST",
@@ -507,7 +493,6 @@ async function mostrarDetalhesNota(idNota) {
         })
         .catch(error => {
             console.error("Erro ao buscar detalhes da nota fiscal:", error);
-            alert("Erro ao buscar os detalhes.");
         });
 }
 
@@ -527,5 +512,143 @@ async function carregarInfosAgendamento() {
 
         })
         .catch(error => console.error(error));
+
+}
+
+function validarAgendamento() {
+    document.getElementById('formAgendamento').classList.add('desativado');
+    document.getElementById('botaoAgendar').disabled = true;
+    document.getElementById('divTelaPagamento').innerHTML = `
+        <div id="divPagamento" class="divPagamento">
+            <h2>Informações de Pagamento</h2>
+            <form onsubmit="event.preventDefault(); confirmarPagamento();">
+                <label for="nome_pagador">Nome do Pagador:</label><br>
+                <input type="text" id="nome_pagador" placeholder="Nome completo" required><br><br>
+
+                <label for="cpf_pagador">CPF do Pagador:</label><br>
+                <input type="text" id="cpf_pagador" placeholder="000.000.000-00" oninput="formatarCpf(this)" maxlength="14" required><br><br>
+
+                <button id="botaoPagamento" type="submit">Confirmar Pagamento</button>
+                <button id="botaoCancelarPagamento" onclick="cancelarPagamento()">Cancelar</button>
+            </form>
+        </div>
+    `;
+
+}
+function cancelarPagamento() {
+    document.getElementById('formAgendamento').classList.remove('desativado');
+    document.getElementById('divPagamento').remove();
+    document.getElementById('botaoAgendar').disabled = false;
+}
+
+
+
+function carregarPlacasPerfil() {
+    fetch("/gateway.php/api/veiculo?action=retornar_placas")
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+            } else {
+                const select = document.getElementById("carros");
+                select.innerHTML = "";
+                data.placas.forEach(placa => {
+                    const option = document.createElement("option");
+                    option.value = placa;
+                    option.textContent = placa;
+                    select.appendChild(option);
+                })
+            }
+        })
+        .catch(error => console.error(error));
+}
+
+function formatarCpf(input) {
+    let value = input.value;
+
+    value = value.replace(/\D/g, '');
+
+    if (value.length > 3) {
+        value = value.replace(/^(\d{3})(\d)/, '$1.$2');
+    }
+    if (value.length > 6) {
+        value = value.replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3');
+    }
+    if (value.length > 9) {
+        value = value.replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
+    }
+
+    input.value = value;
+}
+
+
+async function confirmarPagamento() {
+    document.getElementById('botaoPagamento').disabled = true;
+    document.getElementById('botaoPagamento').textContent = 'Validando...';
+    
+    
+    var dados = {
+        placa: document.getElementById('carros').value,
+        data: document.getElementById('data_agendamento').value,
+        hora: document.getElementById('hora_agendamento').value
+    };
+
+    const res1 = await criptografar(dados);
+
+    const validar = await fetch("/gateway.php/api/vagaAgendada?action=procurar_agendamento", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cript: res1
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+                return false;
+            } else {
+                return true;
+            }
+        })
+        .catch(error => console.error(error))
+        .finally(() => {
+            document.getElementById('botaoPagamento').disabled = false;
+            document.getElementById('botaoAgendar').disabled = false;
+            document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+        });
+    if (validar == true) {
+        dados.nome = document.getElementById('nome_pagador').value;
+        dados.cpf = document.getElementById('cpf_pagador').value;
+
+        const res2 = await criptografar(dados);
+        fetch("/gateway.php/api/vagaAgendada?action=criar_agendamento", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                cript: res2
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    window.alert(data.msg);
+                } 
+                window.alert('Pagamento realizado com sucesso!');
+                document.getElementById('formAgendamento').classList.remove('desativado');
+                document.getElementById('divPagamento').remove();
+                document.getElementById('botaoAgendar').disabled = false;
+            })
+            .catch(error => console.error(error))
+            .finally(() => {
+                document.getElementById('botaoPagamento').disabled = false;
+                document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+            });
+    }
+
 
 }
