@@ -56,7 +56,7 @@ class VeiculoController
 
     }
 
-    public function retornarPlacas(){
+    public function retornarPlacas($id = null){
         if (!$this->validarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
@@ -67,8 +67,12 @@ class VeiculoController
         ];
 
         $veiculo = new Veiculo();
-        $veiculo->setIdUsuario($_SESSION['usuario_id']);
-
+        if($id == null){
+            $veiculo->setIdUsuario($_SESSION['usuario_id']);
+        }else{
+            $veiculo->setIdUsuario($id);
+        }
+        
         $placas = $this->VeiculoDAO->retornarPlacas($veiculo);
         $resposta["placas"] = $placas;
         echo json_encode($resposta);

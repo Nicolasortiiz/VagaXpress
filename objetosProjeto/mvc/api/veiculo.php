@@ -16,7 +16,7 @@ $action = $_GET['action'] ?? '';
 
 $controller = new VeiculoController();
 $placa = $data['placa'] ?? '';
-$id = $data['id'] ?? '';
+$id = $data['id'] ?? null;
 
 
 switch ($action) {

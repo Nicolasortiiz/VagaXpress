@@ -13,13 +13,18 @@ class RegistroDAO
 
     public function procurarPlacasDevedoras($placas): array
     {
-        $query = 'SELECT placa, dataEntrada, dataSaida, horaEntrada, horaSaida FROM Registro 
-              WHERE placa = ? AND satatusPagamento = 0 AND dataSaida IS NOT NULL AND horaSaida IS NOT NULL';
+
+        $query = 'SELECT placa, dataEntrada, dataSaida, horaEntrada, horaSaida 
+                  FROM Registro 
+                  WHERE placa = ? 
+                  AND statusPagamento = 0 
+                  AND dataSaida IS NOT NULL 
+                  AND horaSaida IS NOT NULL';
 
         $devedoras = [];
+        $stmt = $this->conn->prepare($query);
 
         foreach ($placas as $placa) {
-            $stmt = $this->conn->prepare($query);
             $stmt->bind_param('s', $placa);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -33,11 +38,12 @@ class RegistroDAO
                     'horaSaida' => $row['horaSaida']
                 ];
             }
-            $stmt->close();
         }
-        
+
+        $stmt->close();
         return $devedoras;
     }
+
 
     public function validarPlaca($placa): bool
     {
@@ -46,7 +52,7 @@ class RegistroDAO
         $stm->bind_param('s', $placa);
         $stm->execute();
         $result = $stm->get_result();
-        if($result->num_rows > 0) {
+        if ($result->num_rows > 0) {
             return false;
         }
         return true;

@@ -56,6 +56,8 @@ class RegistroController
         }
         return json_encode(['error'=> true, 'msg' => 'Pague o estacionamento para excluir a placa!']);
     }
+
+
 }
 
 ?>

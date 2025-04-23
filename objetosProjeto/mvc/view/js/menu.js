@@ -652,3 +652,7 @@ async function confirmarPagamento() {
 
 
 }
+
+function carregarDadosPagamento(){
+    fetch("/gateway.php/api/vagaAgendada?action=dados_pagina_pagamento")
+}

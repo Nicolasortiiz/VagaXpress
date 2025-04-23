@@ -37,17 +37,11 @@ class VagaAgendadaController
     }
     public function retornarInfosAgendamento($placas)
     {
-        if (!$this->validarLogin()) {
-            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
-            exit;
-        }
 
-        $resposta = [
-            "agendamentos" => null
-        ];
+        $agendamentos = [];
 
-        $resposta['agendamentos'] = $this->VagaAgendadaDAO->retornarAgendamentos($placas);
-        echo json_encode($resposta);
+        $agendamentos = $this->VagaAgendadaDAO->retornarAgendamentos($placas);
+        return $agendamentos;
 
     }
 
@@ -188,6 +182,40 @@ class VagaAgendadaController
 
 
     }
+
+    public function retornarDadosPaginaPagamento(){
+        if (!$this->validarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        }
+        $url = "http://localhost:8001/veiculo.php?action=retornar_placas";
+        $dados = [
+            "id" => $_SESSION["usuario_id"]
+        ];
+        $resposta = enviaDados($url, $dados);  
+        $resposta = json_decode($resposta);
+
+        if($resposta->placas){
+            $placas = $resposta->placas;
+            $url = "http://localhost:8001/registro.php?action=retornar_vagas_devedoras";
+            $dados = [
+                "id" => $_SESSION["usuario_id"],
+                "placas" => $placas
+            ];
+            $resposta = enviaDados($url, $dados);  
+            $resposta = json_decode($resposta);
+            if($resposta->devedoras){
+                $devedoras = $resposta->devedoras;
+                $total = $resposta->total;                
+            }
+            $agendamentos = $this->retornarInfosAgendamento($placas);
+            echo json_encode(["error" => false, "devedoras" => $devedoras, "total" => $total, "agendamentos" => $agendamentos]);
+        }else{
+            echo json_encode(["error" => true, "msg" => "Nenhuma placa cadastrada encontrada!"]);
+        }
+       
+    }
+
 }
 
 ?>

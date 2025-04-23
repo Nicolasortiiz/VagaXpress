@@ -11,6 +11,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dataCrypt = file_get_contents('php://input');
     $data = decrypt($dataCrypt);
 }
-$action = $_GET['action'] ?? '';
 
-$controller = new UsuarioController();
+$action = $_GET['action'] ?? '';
+$controller = new RegistroController();
+$placas = $data['placas'] ?? '';
+$id = $data['id'] ?? '';
+
+
+switch ($action) {
+    case 'retornar_vagas_devedoras':
+        $controller->procurarPlacasDevedoras($id, $placas);
+        break;
+    default:
+        http_response_code(400);
+        echo json_encode(['erro' => 'Erro ao executar a action!']);
+        exit;  
+    }

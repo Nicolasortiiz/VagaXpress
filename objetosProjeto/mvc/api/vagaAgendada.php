@@ -33,8 +33,12 @@ switch ($action) {
     case 'criar_agendamento':
         $controller->criarAgendamento($placa,$dataEntrada,$horaEntrada,$nome, $cpf);
         break;
+    case 'dados_pagina_pagamento':
+        $controller->retornarDadosPaginaPagamento();
+        break;
     default:
         http_response_code(400);
         echo json_encode(['erro' => 'Erro ao executar a action!']);
+        exit;
 }
 
