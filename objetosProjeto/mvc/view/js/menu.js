@@ -96,6 +96,7 @@ function abrirTela(event) {
                 <div id='divTelaPagamento'></div>
             `;
             carregarPlacasPerfil();
+            carregarDadosPagamento();
 
             break;
 
@@ -653,6 +654,80 @@ async function confirmarPagamento() {
 
 }
 
-function carregarDadosPagamento(){
+function carregarDadosPagamento() {
     fetch("/gateway.php/api/vagaAgendada?action=dados_pagina_pagamento")
+    .then(response => response.json())
+    .then(data => {
+        const divPagamento = document.getElementById('divTelaPagamento');
+
+        if (data.error) {
+            divPagamento.innerHTML = `<p>${data.msg}</p>`;
+            return;
+        }
+
+        let html = `
+            <h2>Vagas Agendadas</h2>
+            <table border="1" style="margin-bottom: 20px;">
+                <thead>
+                    <tr>
+                        <th>Placa</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        data.agendamentos.forEach(ag => {
+            html += `
+                <tr>
+                    <td>${ag.placa}</td>
+                    <td>${ag.data}</td>
+                    <td>${ag.hora}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                </tbody>
+            </table>
+
+            <h2>Vagas com Dívida</h2>
+            <table border="1" style="margin-bottom: 20px;">
+                <thead>
+                    <tr>
+                        <th>Placa</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Valor (R$)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        data.devedoras.forEach(dev => {
+            html += `
+                <tr>
+                    <td>${dev.placa}</td>
+                    <td>${dev.data}</td>
+                    <td>${dev.hora}</td>
+                    <td>R$ ${parseFloat(dev.valor).toFixed(2)}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                </tbody>
+            </table>
+
+            <h3>Total da Dívida: R$ ${parseFloat(data.total).toFixed(2)}</h3>
+        `;
+
+        divPagamento.innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Erro ao carregar dados de pagamento:', error);
+        const divPagamento = document.getElementById('divTelaPagamento');
+        divPagamento.innerHTML = `<p>Erro ao carregar dados. Tente novamente.</p>`;
+    });
 }
