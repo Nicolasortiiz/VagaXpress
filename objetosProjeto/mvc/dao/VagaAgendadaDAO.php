@@ -44,33 +44,37 @@ class VagaAgendadaDAO
         $dataEntrada = $vagaAgendada->getDataEntrada();
         $stmt->bind_param('sss', $placa, $horaEntrada, $dataEntrada);
         $stmt->execute();
-        $result = $stmt->get_result();
+        $result = $stmt->affected_rows > 0;
         $stmt->close();
         return $result;
     }
 
     public function retornarHoraChegada(VagaAgendada $agendamento){
-        $querySelect = 'SELECT horaChegada FROM VagaAgendada WHERE idVagaAgendada = ?';
+        $querySelect = 'SELECT horaEntrada FROM VagaAgendada WHERE idVagaAgendada = ?';
         $id = $agendamento->getidVagaAgendada();
         $stmt = $this->conn->prepare($querySelect);
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();
-        $row = $result->fetch_assoc();
-        return $row['horaChegada'];
+        if ($row = $result->fetch_assoc()) {
+            return $row['horaEntrada'];
+        }
+        return null;
     }
 
     public function retornarDataChegada(VagaAgendada $agendamento){
-        $querySelect = 'SELECT dataChegada FROM VagaAgendada WHERE idVagaAgendada = ?';
+        $querySelect = 'SELECT dataEntrada FROM VagaAgendada WHERE idVagaAgendada = ?';
         $id = $agendamento->getidVagaAgendada();
         $stmt = $this->conn->prepare($querySelect);
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();
-        $row = $result->fetch_assoc();
-        return $row['dataChegada'];
+        if ($row = $result->fetch_assoc()) {
+            return $row['dataEntrada']; 
+        }
+        return null;
     }
 
     public function removerAgendamento(VagaAgendada $agendamento): bool{
@@ -91,7 +95,7 @@ class VagaAgendadaDAO
 
     public function removerTodosAgendamentos(VagaAgendada $agendamento){
         $queryDelete = 'DELETE FROM VagaAgendada WHERE placa = ?';
-        $placa = $agendamento->getidVagaAgendada();
+        $placa = $agendamento->getPlaca();
         $stmt = $this->conn->prepare($queryDelete);
         $stmt->bind_param('s', $placa);
         $stmt->execute();

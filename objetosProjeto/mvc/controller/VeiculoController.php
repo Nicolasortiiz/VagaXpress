@@ -57,7 +57,7 @@ class VeiculoController
     }
 
     public function retornarPlacas($id = null){
-        if (!$this->validarLogin()) {
+        if (!$this->validarLogin() && $id == null) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -65,7 +65,6 @@ class VeiculoController
         $resposta = [
             "placas" => null
         ];
-
         $veiculo = new Veiculo();
         if($id == null){
             $veiculo->setIdUsuario($_SESSION['usuario_id']);

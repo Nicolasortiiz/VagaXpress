@@ -21,6 +21,7 @@ $valor = $data['valor'] ?? 0.0;
 $nome = $data['nome'] ?? '';
 $cpf = $data['cpf'] ?? '';
 $horaEntrada = $data['hora'] ??'';
+$id = $data['id'] ?? '';
 
 
 switch ($action) {
@@ -35,6 +36,9 @@ switch ($action) {
         break;
     case 'dados_pagina_pagamento':
         $controller->retornarDadosPaginaPagamento();
+        break;
+    case 'cancelar_agendamento':
+        $controller->cancelarAgendamento($id);
         break;
     default:
         http_response_code(400);

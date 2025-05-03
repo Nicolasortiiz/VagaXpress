@@ -94,9 +94,44 @@ function abrirTela(event) {
                     
                 </form>
                 <div id='divTelaPagamento'></div>
+                <p class="totalDivida">Total Dívida: R$ <span id="dividaTotal"></span></p>
+                <button id="pagarDivida" onclick="pagarDivida()">Pagar Divida</button>
+                <div class="tabelas-usuario">
+                <div class="tabela-container">
+                    <h2>Vagas Agendadas</h2>
+                    <table id="tabelaAgendadas">
+                        <thead>
+                            <tr>
+                                <th>Placa</th>
+                                <th>Data</th>
+                                <th>Hora</th> 
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="tabela-container">
+                    <h2>Registro de Cobranças</h2>
+                    <table id="tabelaRegistros">
+                        <thead>
+                            <tr>
+                                <th>Placa</th>
+                                <th>Data</th>
+                                <th>Hora</th>
+                                <th>Valor (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
             `;
             carregarPlacasPerfil();
             carregarDadosPagamento();
+    
 
             break;
 
@@ -379,7 +414,7 @@ async function carregaNF() {
                 data.notas.forEach(nf => {
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
-                    <td>${nf.dataEmissao}</td>
+                    <td>${nf.data}</td>
                     <td>R$ ${parseFloat(nf.valor).toFixed(2).replace(".", ",")}</td>
                     <td><button onclick='mostrarDetalhesNota(${JSON.stringify(nf.id)})'>Detalhes</button></td>
                 `;
@@ -490,7 +525,7 @@ async function mostrarDetalhesNota(idNota) {
         `;
 
             document.getElementById("conteudoNotaFiscal").innerHTML = conteudo;
-            document.getElementById("modalNotaFiscal").classList.remove("hidden");
+            document.getElementById("modalDetalhesNF").classList.remove("hidden");
         })
         .catch(error => {
             console.error("Erro ao buscar detalhes da nota fiscal:", error);
@@ -498,7 +533,7 @@ async function mostrarDetalhesNota(idNota) {
 }
 
 function fecharModalNota() {
-    document.getElementById("modalNotaFiscal").classList.add("hidden");
+    document.getElementById("modalDetalhesNF").classList.add("hidden");
 }
 
 
@@ -658,76 +693,98 @@ function carregarDadosPagamento() {
     fetch("/gateway.php/api/vagaAgendada?action=dados_pagina_pagamento")
     .then(response => response.json())
     .then(data => {
+        const tabelaAgendadas = document.getElementById('tabelaAgendadas').querySelector('tbody');
+        const tabelaRegistros = document.getElementById('tabelaRegistros').querySelector('tbody');
         const divPagamento = document.getElementById('divTelaPagamento');
+
+        tabelaAgendadas.innerHTML = "";
+        tabelaRegistros.innerHTML = "";
+        divPagamento.innerHTML = "";
 
         if (data.error) {
             divPagamento.innerHTML = `<p>${data.msg}</p>`;
             return;
         }
 
-        let html = `
-            <h2>Vagas Agendadas</h2>
-            <table border="1" style="margin-bottom: 20px;">
-                <thead>
-                    <tr>
-                        <th>Placa</th>
-                        <th>Data</th>
-                        <th>Hora</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-        data.agendamentos.forEach(ag => {
-            html += `
+        if (!data.agendamentos || data.agendamentos.length === 0) {
+            tabelaAgendadas.innerHTML = `
                 <tr>
-                    <td>${ag.placa}</td>
-                    <td>${ag.data}</td>
-                    <td>${ag.hora}</td>
+                    <td colspan="3">Nenhuma vaga agendada.</td>
                 </tr>
             `;
-        });
-
-        html += `
-                </tbody>
-            </table>
-
-            <h2>Vagas com Dívida</h2>
-            <table border="1" style="margin-bottom: 20px;">
-                <thead>
+        } else {
+            data.agendamentos.forEach(ag => {
+                tabelaAgendadas.innerHTML += `
                     <tr>
-                        <th>Placa</th>
-                        <th>Data</th>
-                        <th>Hora</th>
-                        <th>Valor (R$)</th>
+                        <td>${ag.placa}</td>
+                        <td>${ag.data}</td>
+                        <td>${ag.hora}</td>
+                        <td><button onclick='cancelarAgendamento(${JSON.stringify(ag.id)})'>Cancelar</button></td>
                     </tr>
-                </thead>
-                <tbody>
-        `;
+                `;
+            });
+        }
 
-        data.devedoras.forEach(dev => {
-            html += `
+
+        if (!data.devedoras || data.devedoras.length === 0) {
+            tabelaRegistros.innerHTML = `
                 <tr>
-                    <td>${dev.placa}</td>
-                    <td>${dev.data}</td>
-                    <td>${dev.hora}</td>
-                    <td>R$ ${parseFloat(dev.valor).toFixed(2)}</td>
+                    <td colspan="4">Nenhuma dívida encontrada.</td>
                 </tr>
             `;
-        });
+        } else {
+            data.devedoras.forEach(dev => {
+                tabelaRegistros.innerHTML += `
+                    <tr>
+                        <td>${dev.placa}</td>
+                        <td>${dev.data}</td>
+                        <td>${dev.hora}</td>
+                        <td>R$ ${parseFloat(dev.valor).toFixed(2)}</td>
+                    </tr>
+                `;
+            });
 
-        html += `
-                </tbody>
-            </table>
 
-            <h3>Total da Dívida: R$ ${parseFloat(data.total).toFixed(2)}</h3>
-        `;
+           
+        }
+        if (data.total != null) {
+            document.getElementById('dividaTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
+        } else {
+            document.getElementById('dividaTotal').textContent = "0,00";
+        }
 
-        divPagamento.innerHTML = html;
     })
     .catch(error => {
         console.error('Erro ao carregar dados de pagamento:', error);
         const divPagamento = document.getElementById('divTelaPagamento');
         divPagamento.innerHTML = `<p>Erro ao carregar dados. Tente novamente.</p>`;
     });
+}
+
+async function cancelarAgendamento($id){
+    var dados = {
+        id: $id
+    };
+
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/vagaAgendada?action=cancelar_agendamento", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cript: res
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+            } else {
+                window.alert('Agendamento cancelado com sucesso!');
+                carregarDadosPagamento();
+            }
+        })
+        .catch(error => console.error(error));
 }

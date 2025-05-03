@@ -24,7 +24,7 @@ switch ($action) {
         $controller->cadastrarPlaca($placa);
         break;
     case 'retornar_placas':
-        $controller->retornarPlacas();
+        $controller->retornarPlacas($id);
         break;
     case 'deletar_placa':
         $controller->deletarPlaca($placa, $id);

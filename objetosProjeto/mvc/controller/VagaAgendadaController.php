@@ -62,7 +62,7 @@ class VagaAgendadaController
         $agora = new DateTime();
         $minutosParaChegada = ($dataHoraChegada->getTimestamp() - $agora->getTimestamp()) / 60;
 
-        if ($minutosParaChegada < 30) {
+        if ($minutosParaChegada < 30 && $minutosParaChegada >= 0) {
             echo json_encode(["error" => true, "msg" => "O cancelamento só pode ser feito com até 30 minutos de antecedência!"]);
             exit;
         }
@@ -122,6 +122,15 @@ class VagaAgendadaController
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
+        $dataHora = $dataEntrada . ' ' . $horaEntrada;
+        $dataHora = DateTime::createFromFormat('Y-m-d H:i', $dataHora);
+
+        $agora = new DateTime();
+        if ($dataHora <= $agora) {
+            echo json_encode(["error" => true, "msg" => "Agendamento deve ser feito para uma data e hora futuras!"]);
+            exit;
+        }
+
         $agendamento = new VagaAgendada(0, $placa, $dataEntrada, $horaEntrada);
 
         if ($this->VagaAgendadaDAO->procurarAgendamento($agendamento) === true) {
@@ -147,6 +156,9 @@ class VagaAgendadaController
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
+
+      
+
         $valor = $this->EstacionamentoController->retornarValorHora();
         $url = "http://localhost:8001/usuario.php?action=realizar_pagamento_agendamento";
         $dados = [
@@ -195,7 +207,7 @@ class VagaAgendadaController
         $resposta = enviaDados($url, $dados);  
         $resposta = json_decode($resposta);
 
-        if($resposta->placas){
+        if(!empty($resposta->placas)){
             $placas = $resposta->placas;
             $url = "http://localhost:8001/registro.php?action=retornar_vagas_devedoras";
             $dados = [
@@ -203,10 +215,10 @@ class VagaAgendadaController
                 "placas" => $placas
             ];
             $resposta = enviaDados($url, $dados);  
-            $resposta = json_decode($resposta);
+            $resposta = json_decode(printf($resposta));
             if($resposta->devedoras){
                 $devedoras = $resposta->devedoras;
-                $total = $resposta->total;                
+                $total = $resposta->total;        
             }
             $agendamentos = $this->retornarInfosAgendamento($placas);
             echo json_encode(["error" => false, "devedoras" => $devedoras, "total" => $total, "agendamentos" => $agendamentos]);
