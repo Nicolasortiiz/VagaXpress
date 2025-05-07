@@ -61,8 +61,8 @@ switch ($action) {
     case 'validar_pagamento_agendamento':
         $controller->validarPagamentoAgendamento($valor,$placa, $id);
         break;
-    case 'realizar_pagamento_agendamento':
-        $controller->realizarPagamentoAgendamento($valor, $id);
+    case 'realizar_pagamento':
+        $controller->realizarPagamento($valor, $id);
         break;
     default:
         http_response_code(400);

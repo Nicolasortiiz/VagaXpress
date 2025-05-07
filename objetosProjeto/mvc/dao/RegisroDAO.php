@@ -13,22 +13,25 @@ class RegistroDAO
 
     public function procurarPlacasDevedoras($placas): array
     {
-
         $query = 'SELECT placa, dataEntrada, dataSaida, horaEntrada, horaSaida 
                   FROM Registro 
                   WHERE placa = ? 
                   AND statusPagamento = 0 
                   AND dataSaida IS NOT NULL 
                   AND horaSaida IS NOT NULL';
-
+    
         $devedoras = [];
-        $stmt = $this->conn->prepare($query);
-
+    
         foreach ($placas as $placa) {
+            $stmt = $this->conn->prepare($query);
+            if ($stmt === false) {
+                throw new Exception("Erro ao preparar a consulta: " . $this->conn->error);
+            }
+    
             $stmt->bind_param('s', $placa);
             $stmt->execute();
             $result = $stmt->get_result();
-
+    
             while ($row = $result->fetch_assoc()) {
                 $devedoras[] = [
                     'placa' => $row['placa'],
@@ -38,25 +41,43 @@ class RegistroDAO
                     'horaSaida' => $row['horaSaida']
                 ];
             }
+    
+            $stmt->close();
         }
-
-        $stmt->close();
+    
         return $devedoras;
     }
+    
 
 
     public function validarPlaca($placa): bool
     {
         $querySelect = 'SELECT placa FROM Registro WHERE placa = ? AND statusPagamento = 0';
-        $stm = $this->conn->prepare($querySelect);
-        $stm->bind_param('s', $placa);
-        $stm->execute();
-        $result = $stm->get_result();
+        $stmt = $this->conn->prepare($querySelect);
+        $stmt->bind_param('s', $placa);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
         if ($result->num_rows > 0) {
             return false;
         }
         return true;
     }
+
+    public function atualizarStatusPagamento($placas){
+        $queryUpdate = 'UPDATE Registro SET statusPagamento = 1 WHERE placa = ?';
+        foreach ($placas as $placa) {
+            $stmt = $this->conn->prepare($queryUpdate);
+            $stmt->bind_param('s', $placa);
+            if (!$stmt->execute()) {
+                $stmt->close();
+                return false;
+            }
+            $stmt->close();
+        }
+        return true;
+    }
+    
 
 }
 

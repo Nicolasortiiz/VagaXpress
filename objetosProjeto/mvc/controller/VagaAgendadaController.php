@@ -82,6 +82,16 @@ class VagaAgendadaController
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
+        $url = "http://localhost:8001/registro.php?action=validar_remocao";
+        $dados = [
+            'placa' => $placa
+        ];
+        $resposta = enviaDados($url, $dados);
+        $status = json_decode($resposta);
+        if ($status->error === true) {
+            echo json_encode($resposta);
+            exit;
+        }
 
         $agendamento = new VagaAgendada();
         $agendamento->setplaca($placa);
@@ -112,7 +122,7 @@ class VagaAgendadaController
             'id' => $_SESSION['usuario_id']
         ];
         $resposta = enviaDados($url, $dados);
-        echo $resposta;
+        echo json_encode($resposta);
         exit;
     }
 
@@ -146,7 +156,7 @@ class VagaAgendadaController
         ];
         $resposta = enviaDados($url, $dados);
         error_log($resposta);
-        echo $resposta;
+        echo json_encode($resposta);
         exit;
     }
     public function criarAgendamento($placa, $dataEntrada, $horaEntrada, $nome, $cpf)
@@ -157,10 +167,8 @@ class VagaAgendadaController
             exit;
         }
 
-      
-
         $valor = $this->EstacionamentoController->retornarValorHora();
-        $url = "http://localhost:8001/usuario.php?action=realizar_pagamento_agendamento";
+        $url = "http://localhost:8001/usuario.php?action=realizar_pagamento";
         $dados = [
             "valor" => $valor,
             "id" => $_SESSION['usuario_id']
@@ -168,7 +176,7 @@ class VagaAgendadaController
         $resposta = enviaDados($url, $dados);
         $statusPagamento = json_decode($resposta);
         if ($statusPagamento->error === true) {
-            echo $resposta;
+            echo json_encode($resposta);
             exit;
         }
         $cpf = preg_replace('/\D/', '', $cpf);
@@ -183,7 +191,7 @@ class VagaAgendadaController
         $resposta = enviaDados($url, $dados);
         $statusNF = json_decode($resposta);
         if ($statusNF->error === true) {
-            echo $resposta;
+            echo json_encode($resposta);
             exit;
         }
 

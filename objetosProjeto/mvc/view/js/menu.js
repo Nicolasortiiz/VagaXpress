@@ -95,7 +95,7 @@ function abrirTela(event) {
                 </form>
                 <div id='divTelaPagamento'></div>
                 <p class="totalDivida">Total Dívida: R$ <span id="dividaTotal"></span></p>
-                <button id="pagarDivida" onclick="pagarDivida()">Pagar Divida</button>
+                <button id="pagarDivida" onclick="abrirTelaPagamento()">Pagar Divida</button>
                 <div class="tabelas-usuario">
                 <div class="tabela-container">
                     <h2>Vagas Agendadas</h2>
@@ -131,7 +131,7 @@ function abrirTela(event) {
             `;
             carregarPlacasPerfil();
             carregarDadosPagamento();
-    
+
 
             break;
 
@@ -621,8 +621,8 @@ function formatarCpf(input) {
 async function confirmarPagamento() {
     document.getElementById('botaoPagamento').disabled = true;
     document.getElementById('botaoPagamento').textContent = 'Validando...';
-    
-    
+
+
     var dados = {
         placa: document.getElementById('carros').value,
         data: document.getElementById('data_agendamento').value,
@@ -673,7 +673,7 @@ async function confirmarPagamento() {
             .then(data => {
                 if (data.error) {
                     window.alert(data.msg);
-                } 
+                }
                 window.alert('Pagamento realizado com sucesso!');
                 document.getElementById('formAgendamento').classList.remove('desativado');
                 document.getElementById('divPagamento').remove();
@@ -691,30 +691,30 @@ async function confirmarPagamento() {
 
 function carregarDadosPagamento() {
     fetch("/gateway.php/api/vagaAgendada?action=dados_pagina_pagamento")
-    .then(response => response.json())
-    .then(data => {
-        const tabelaAgendadas = document.getElementById('tabelaAgendadas').querySelector('tbody');
-        const tabelaRegistros = document.getElementById('tabelaRegistros').querySelector('tbody');
-        const divPagamento = document.getElementById('divTelaPagamento');
+        .then(response => response.json())
+        .then(data => {
+            const tabelaAgendadas = document.getElementById('tabelaAgendadas').querySelector('tbody');
+            const tabelaRegistros = document.getElementById('tabelaRegistros').querySelector('tbody');
+            const divPagamento = document.getElementById('divTelaPagamento');
 
-        tabelaAgendadas.innerHTML = "";
-        tabelaRegistros.innerHTML = "";
-        divPagamento.innerHTML = "";
+            tabelaAgendadas.innerHTML = "";
+            tabelaRegistros.innerHTML = "";
+            divPagamento.innerHTML = "";
 
-        if (data.error) {
-            divPagamento.innerHTML = `<p>${data.msg}</p>`;
-            return;
-        }
+            if (data.error) {
+                divPagamento.innerHTML = `<p>${data.msg}</p>`;
+                return;
+            }
 
-        if (!data.agendamentos || data.agendamentos.length === 0) {
-            tabelaAgendadas.innerHTML = `
+            if (!data.agendamentos || data.agendamentos.length === 0) {
+                tabelaAgendadas.innerHTML = `
                 <tr>
                     <td colspan="3">Nenhuma vaga agendada.</td>
                 </tr>
             `;
-        } else {
-            data.agendamentos.forEach(ag => {
-                tabelaAgendadas.innerHTML += `
+            } else {
+                data.agendamentos.forEach(ag => {
+                    tabelaAgendadas.innerHTML += `
                     <tr>
                         <td>${ag.placa}</td>
                         <td>${ag.data}</td>
@@ -722,19 +722,19 @@ function carregarDadosPagamento() {
                         <td><button onclick='cancelarAgendamento(${JSON.stringify(ag.id)})'>Cancelar</button></td>
                     </tr>
                 `;
-            });
-        }
+                });
+            }
 
 
-        if (!data.devedoras || data.devedoras.length === 0) {
-            tabelaRegistros.innerHTML = `
+            if (!data.devedoras || data.devedoras.length === 0) {
+                tabelaRegistros.innerHTML = `
                 <tr>
                     <td colspan="4">Nenhuma dívida encontrada.</td>
                 </tr>
             `;
-        } else {
-            data.devedoras.forEach(dev => {
-                tabelaRegistros.innerHTML += `
+            } else {
+                data.devedoras.forEach(dev => {
+                    tabelaRegistros.innerHTML += `
                     <tr>
                         <td>${dev.placa}</td>
                         <td>${dev.data}</td>
@@ -742,26 +742,26 @@ function carregarDadosPagamento() {
                         <td>R$ ${parseFloat(dev.valor).toFixed(2)}</td>
                     </tr>
                 `;
-            });
+                });
 
 
-           
-        }
-        if (data.total != null) {
-            document.getElementById('dividaTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
-        } else {
-            document.getElementById('dividaTotal').textContent = "0,00";
-        }
 
-    })
-    .catch(error => {
-        console.error('Erro ao carregar dados de pagamento:', error);
-        const divPagamento = document.getElementById('divTelaPagamento');
-        divPagamento.innerHTML = `<p>Erro ao carregar dados. Tente novamente.</p>`;
-    });
+            }
+            if (data.total != null) {
+                document.getElementById('dividaTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
+            } else {
+                document.getElementById('dividaTotal').textContent = "0,00";
+            }
+
+        })
+        .catch(error => {
+            console.error('Erro ao carregar dados de pagamento:', error);
+            const divPagamento = document.getElementById('divTelaPagamento');
+            divPagamento.innerHTML = `<p>Erro ao carregar dados. Tente novamente.</p>`;
+        });
 }
 
-async function cancelarAgendamento($id){
+async function cancelarAgendamento($id) {
     var dados = {
         id: $id
     };
@@ -787,4 +787,57 @@ async function cancelarAgendamento($id){
             }
         })
         .catch(error => console.error(error));
+}
+
+function abrirTelaPagamento() {
+    document.getElementById('pagarDivida').disabled = true;
+    document.getElementById('divTelaPagamento').innerHTML = `
+        <div id="divPagamento" class="divPagamento">
+            <h2>Informações de Pagamento</h2>
+            <form onsubmit="event.preventDefault(); pagarDivida();">
+                <label for="nome_pagador">Nome do Pagador:</label><br>
+                <input type="text" id="nome_pagador" placeholder="Nome completo" required><br><br>
+
+                <label for="cpf_pagador">CPF do Pagador:</label><br>
+                <input type="text" id="cpf_pagador" placeholder="000.000.000-00" oninput="formatarCpf(this)" maxlength="14" required><br><br>
+
+                <button id="botaoPagamento" type="submit">Confirmar Pagamento</button>
+                <button id="botaoCancelarPagamento" onclick="cancelarPagamento()">Cancelar</button>
+            </form>
+        </div>
+    `;
+}
+
+async function pagarDivida() {
+    document.getElementById('botaoPagamento').disabled = true;
+    document.getElementById('botaoPagamento').textContent = 'Validando...';
+    var dados = {
+        nome: document.getElementById('nome_pagador').value,
+        cpf: document.getElementById('cpf_pagador').value
+    };
+
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/registro?action=pagar_vagas", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cript: res
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+            } else {
+                window.alert('Pagamento realizado com sucesso!');
+                carregarDadosPagamento();
+            }
+        })
+        .catch(error => console.error(error));
+
+    document.getElementById('botaoPagamento').disabled = false;
+    document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
 }

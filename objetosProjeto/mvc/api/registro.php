@@ -15,12 +15,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $action = $_GET['action'] ?? '';
 $controller = new RegistroController();
 $placas = $data['placas'] ?? '';
-$id = $data['id'] ?? '';
+$placa = $data['placa'] ?? '';
+$nome = $data['nome'] ?? '';
+$cpf = $data['cpf'] ?? '';
 
 
 switch ($action) {
     case 'retornar_vagas_devedoras':
-        $controller->procurarPlacasDevedoras($id, $placas);
+        $controller->procurarPlacasDevedoras($placas);
+        break;
+    case 'pagar_vagas':
+        $controller->pagarVagas($placas, $nome, $cpf);
+        break;
+    case 'validar_remocao':
+        $controller->validarExcluir($placa);
         break;
     default:
         http_response_code(400);

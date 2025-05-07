@@ -344,7 +344,7 @@ class UsuarioController
         exit;
     }
 
-    public function realizarPagamentoAgendamento($valor, $id)
+    public function realizarPagamento($valor, $id)
     {
         $usuario = new Usuario();
         $usuario->setIdUsuario($id);
@@ -368,6 +368,7 @@ class UsuarioController
             exit;
         }
     }
+
 
 }
 
