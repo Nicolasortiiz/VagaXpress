@@ -3,7 +3,9 @@ require_once __DIR__ . "/../dao/VeiculoDAO.php";
 require_once __DIR__ . "/../model/Veiculo.php";
 
 header('Content-Type: application/json');
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 date_default_timezone_set('America/Sao_Paulo');
 
 class VeiculoController

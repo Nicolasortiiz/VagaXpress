@@ -1,4 +1,4 @@
-DROP DATABASE EstacionamentoDB;
+DROP DATABASE IF EXISTS EstacionamentoDB;
 CREATE DATABASE EstacionamentoDB;
 
 USE EstacionamentoDB;
@@ -55,8 +55,9 @@ CREATE TABLE VagaAgendada (
 
 CREATE TABLE VagaOcupada (
     idVagas INT AUTO_INCREMENT PRIMARY KEY,
+    idRegistro INT NOT NULL,
     idVeiculoEstacionado INT NOT NULL,
-    FOREIGN KEY (idRegistro) REFERENCES VagaHistorico(idRegistro) ON DELETE CASCADE
+    FOREIGN KEY (idRegistro) REFERENCES Registro(idRegistro) ON DELETE CASCADE
 );
 
 CREATE TABLE Mensagem (

@@ -8,7 +8,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 use OTPHP\TOTP;
 
 header('Content-Type: application/json');
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 date_default_timezone_set('America/Sao_Paulo');
 
 
@@ -122,8 +124,10 @@ class UsuarioController
                 $_SESSION["usuario_id"] = $id;
                 $_SESSION["ultima_atividade"] = time();
                 echo json_encode(['error' => false]);
+                exit;
             } else {
                 echo json_encode(['error' => true, 'msg' => 'Erro ao realizar login, tente novamente!']);
+                exit;
             }
         }
 
@@ -184,7 +188,7 @@ class UsuarioController
 
     public function validarLoginAutenticacao()
     {
-        $pubkey = shell_exec("gpg --armor --export");
+        $pubkey = shell_exec("gpg --armor --export nicolas.ortiz@pucpr.edu.br");
         if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
             $email = $_SESSION["email"];
             $ultima_atividade = $_SESSION["ultima_atividade"];
@@ -193,7 +197,7 @@ class UsuarioController
                 session_unset();
                 session_destroy();
 
-                echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
+                echo json_encode(["login" => 0, "pubkey" => $pubkey]);
                 exit;
             }
             if ($email == "admin@vagaxpress.com") {
@@ -204,7 +208,7 @@ class UsuarioController
                 exit;
             }
         } else {
-            echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
+            echo json_encode(["login" => 0, "pubkey" => $pubkey]);
         }
     }
 

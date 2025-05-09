@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: php-web
+    volumes:
+      - .:/var/www
+    ports:
+      - "8080:8080"
+      - "8001:8001"
+    networks:
+      custom_net:
+        ipv4_address: 172.25.0.10
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    container_name: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    networks:
+      custom_net:
+        ipv4_address: 172.25.0.11
+
+networks:
+  custom_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/24
+

@@ -3,7 +3,9 @@ require_once __DIR__ . "/../dao/SuporteDAO.php";
 require_once __DIR__ . "/../model/Suporte.php";
 
 header('Content-Type: application/json');
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 date_default_timezone_set('America/Sao_Paulo');
 
 

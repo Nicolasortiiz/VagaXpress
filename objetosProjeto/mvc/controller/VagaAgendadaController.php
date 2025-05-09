@@ -5,7 +5,9 @@ require_once __DIR__ . "/../utils/crypt.php";
 require_once __DIR__ . "/../controller/EstacionamentoController.php";
 
 header('Content-Type: application/json');
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 date_default_timezone_set('America/Sao_Paulo');
 
 
