@@ -25,7 +25,7 @@ switch ($action) {
         $controller->procurarPlacasDevedoras($placas);
         break;
     case 'pagar_vagas':
-        $controller->pagarVagas($placas, $nome, $cpf);
+        $controller->pagarVagas( $nome, $cpf);
         break;
     case 'validar_remocao':
         $controller->validarExcluir($placa);

@@ -124,7 +124,8 @@ class VagaAgendadaController
             'id' => $_SESSION['usuario_id']
         ];
         $resposta = enviaDados($url, $dados);
-        echo json_encode($resposta);
+        
+        echo $resposta;
         exit;
     }
 
@@ -158,7 +159,7 @@ class VagaAgendadaController
         ];
         $resposta = enviaDados($url, $dados);
         error_log($resposta);
-        echo json_encode($resposta);
+        echo $resposta;
         exit;
     }
     public function criarAgendamento($placa, $dataEntrada, $horaEntrada, $nome, $cpf)
@@ -205,38 +206,49 @@ class VagaAgendadaController
 
     }
 
-    public function retornarDadosPaginaPagamento(){
+    public function retornarDadosPaginaPagamento() {
         if (!$this->validarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
+    
         $url = "http://localhost:8001/veiculo.php?action=retornar_placas";
-        $dados = [
-            "id" => $_SESSION["usuario_id"]
-        ];
+        $dados = ["id" => $_SESSION["usuario_id"]];
         $resposta = enviaDados($url, $dados);  
         $resposta = json_decode($resposta);
-
-        if(!empty($resposta->placas)){
+    
+        if (!empty($resposta->placas)) {
             $placas = $resposta->placas;
+    
             $url = "http://localhost:8001/registro.php?action=retornar_vagas_devedoras";
             $dados = [
                 "id" => $_SESSION["usuario_id"],
                 "placas" => $placas
             ];
             $resposta = enviaDados($url, $dados);  
-            $resposta = json_decode(printf($resposta));
-            if($resposta->devedoras){
+            $resposta = json_decode($resposta);
+    
+            $devedoras = [];
+            $total = 0.0;
+    
+            if (isset($resposta->devedoras)) {
                 $devedoras = $resposta->devedoras;
-                $total = $resposta->total;        
+                $total = $resposta->total;
             }
+    
             $agendamentos = $this->retornarInfosAgendamento($placas);
-            echo json_encode(["error" => false, "devedoras" => $devedoras, "total" => $total, "agendamentos" => $agendamentos]);
-        }else{
+    
+            echo json_encode([
+                "error" => false,
+                "devedoras" => $devedoras,
+                "total" => $total,
+                "agendamentos" => $agendamentos
+            ]);
+        } else {
             echo json_encode(["error" => true, "msg" => "Nenhuma placa cadastrada encontrada!"]);
         }
-       
     }
+    
 
 }
 

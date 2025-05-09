@@ -72,9 +72,11 @@ class RegistroController
     public function validarExcluir($placa)
     {
         if ($this->RegistroDAO->validarPlaca($placa)) {
-            return json_encode(['error' => false]);
+            echo json_encode(['error' => false]);
+            exit;
         }
-        return json_encode(['error' => true, 'msg' => 'Pague o estacionamento para excluir a placa!']);
+        echo json_encode(['error' => true, 'msg' => 'Pague o estacionamento para excluir a placa!']);
+        exit;
     }
 
     public function pagarVagas($nome, $cpf)
@@ -91,7 +93,6 @@ class RegistroController
         ];
         $resposta = enviaDados($url, $dados);
         $resposta = json_decode($resposta);
-
         if (!empty($resposta->placas)) {
             $placas = $resposta->placas;
             $devedoras = $this->procurarPlacasDevedoras($placas);
