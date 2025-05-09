@@ -22,4 +22,18 @@ class MensagemController{
         echo json_encode($notificacoes);
     }
 
+    public function incluirNotificacao($params) {
+        $$mensagem = $params['notificacao'] ?? null;
+    
+        $notificacao = new MensagemDAO();
+        $notificacao->setMensagem($mensagem);
+    
+        $resultado = $this->MensagemDAO->inserirNotificacao($notificacao);
+    
+        echo json_encode([
+            'status' => $resultado ? 'sucesso' : 'erro',
+            'mensagem' => $resultado ? 'Notificação inserida com sucesso.' : 'Erro ao inserir notificação.'
+        ]);
+    }
+    
 }
