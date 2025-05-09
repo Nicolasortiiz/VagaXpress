@@ -3,7 +3,10 @@ require_once __DIR__ . "/../dao/MensagemDAO.php";
 require_once __DIR__ . "/../model/Mensagem.php";
 require_once __DIR__ . "/../controller/UsuarioController.php";
 
-session_start();
+header('Content-Type: application/json');
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 date_default_timezone_set('America/Sao_Paulo');
 
 class MensagemController{

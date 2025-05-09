@@ -1,4 +1,4 @@
-DROP DATABASE EstacionamentoDB;
+DROP DATABASE IF EXISTS EstacionamentoDB;
 CREATE DATABASE EstacionamentoDB;
 
 USE EstacionamentoDB;
@@ -26,6 +26,7 @@ CREATE TABLE NotaFiscal (
     cpf VARCHAR(11) NOT NULL,
     nome VARCHAR(100) NOT NULL,
     valor DECIMAL(10,2) NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
 );
 
@@ -36,7 +37,7 @@ CREATE TABLE Estacionamento (
 );
 
 CREATE TABLE Registro (
-    idRegistroEstacionamento INT AUTO_INCREMENT PRIMARY KEY,
+    idRegistro INT AUTO_INCREMENT PRIMARY KEY,
     placa VARCHAR(10) NOT NULL,
     dataEntrada DATE NOT NULL,
     dataSaida DATE NULL,
@@ -46,24 +47,28 @@ CREATE TABLE Registro (
 );
 
 CREATE TABLE VagaAgendada (
-    idEstacionamentoReservado INT AUTO_INCREMENT PRIMARY KEY,
-    idUsuario INT NOT NULL,
-    idVeiculo INT NOT NULL,
+    idVagaAgendada INT AUTO_INCREMENT PRIMARY KEY,
+    placa VARCHAR(10) NOT NULL,
     dataEntrada DATE NOT NULL,
-    horaEntrada TIME NOT NULL,
-    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
-    FOREIGN KEY (idVeiculo) REFERENCES Veiculo(idVeiculo)
+    horaEntrada TIME NOT NULL
 );
 
-CREATE TABLE Vagas (
+CREATE TABLE VagaOcupada (
     idVagas INT AUTO_INCREMENT PRIMARY KEY,
+    idRegistro INT NOT NULL,
     idVeiculoEstacionado INT NOT NULL,
-    FOREIGN KEY (idVeiculoEstacionado) REFERENCES VeiculoEstacionado(idVeiculoEstacionado) ON DELETE CASCADE
+    FOREIGN KEY (idRegistro) REFERENCES Registro(idRegistro) ON DELETE CASCADE
 );
 
 CREATE TABLE Mensagem (
     idMensagem INT AUTO_INCREMENT PRIMARY KEY,
     mensagem TEXT NOT NULL
+);
+
+CREATE TABLE Suporte (
+    idSuporte INT AUTO_INCREMENT PRIMARY KEY,
+    mensagem TEXT NOT NULL,
+    email VARCHAR(100) NOT NULL
 );
 
 INSERT INTO Usuario (nome, email, senha) VALUES ('Admin', 'admin@vagaxpress.com', 'admin.senha123');

@@ -1,9 +1,9 @@
 <?php
 class Veiculo
 {
-    public $idVeiculo;
-    public $idUsuario;
-    public $placa;
+    private $idVeiculo;
+    private $idUsuario;
+    private $placa;
 
     public function __construct($idVeiculo = null, $idUsuario = null, $placa = '')
     {

@@ -6,14 +6,16 @@ class NotaFiscal {
     private $cpf;
     private $nome;
     private $valor;
+    private $descricao;
 
-    public function __construct($idNotaFiscal = null, $idUsuario = null, $dataEmissao = null, $cpf = null, $nome = null, $valor = null) {
+    public function __construct($idNotaFiscal = null, $idUsuario = null, $dataEmissao = null, $cpf = null, $nome = null, $valor = null, $descricao = null) {
         $this->idNotaFiscal = $idNotaFiscal;
         $this->idUsuario = $idUsuario;
         $this->dataEmissao = $dataEmissao;
         $this->cpf = $cpf;
         $this->nome = $nome;
         $this->valor = $valor;
+        $this->descricao = $descricao;
     }
 
     public function getIdNotaFiscal() {
@@ -62,6 +64,14 @@ class NotaFiscal {
 
     public function setValor($valor) {
         $this->valor = $valor;
+    }
+
+    public function getDescricao() {
+        return $this->descricao;
+    }
+
+    public function setDescricao($descricao) {
+        $this->descricao = $descricao;
     }
 }
 ?>

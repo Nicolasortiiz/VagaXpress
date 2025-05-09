@@ -4,6 +4,11 @@
     box-sizing: border-box;
 }
 
+.desativado {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
 body {
     display: flex;
     height: 100vh;
@@ -186,4 +191,163 @@ tr:nth-child(even) {
 
 .botaoPlaca{
     margin-top: 11px;
+}
+
+.modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modalConteudoNF {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+}
+
+.detalhesNF {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/*
+Estilos tela de pagamento/agendamento
+*/
+
+.divPagamento {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    max-width: 400px;
+    margin: 30px auto;
+}
+.divPagamento input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+}
+.divPagamento button {
+    margin-top: 10px;
+    padding: 10px;
+    width: 100%;
+    background-color: #008cff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.divPagamento button:hover {
+    background-color: #006fcd;
+}
+
+.totalDivida {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+#formAgendamento {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#formAgendamento label {
+    flex: 1 1 100%;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#formAgendamento select,
+#formAgendamento input[type="date"],
+#formAgendamento input[type="time"] {
+    flex: 1 1 calc(33% - 10px);
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+#formAgendamento button {
+    flex: 1 1 100%;
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+#formAgendamento button:hover {
+    background-color: #0056b3;
+}
+
+#divTelaPagamento h3 {
+    color: #c0392b;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+#dividaTotal {
+    font-weight: bold;
+    color: #e74c3c;
+}
+
+#pagarDivida {
+    display: block;
+    margin: 10px auto 0;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#pagarDivida:hover {
+    background-color: #218838;
 }

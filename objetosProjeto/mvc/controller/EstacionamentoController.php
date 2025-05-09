@@ -1,20 +1,35 @@
 <?php
-require_once __DIR__ . "/../dao/VagaAgendadaDAO.php";
-require_once __DIR__ . "/../model/VagaAgnendada.php";
+require_once __DIR__ . "/../dao/EstacionamentoDAO.php";
+require_once __DIR__ . "/../model/Estacionamento.php";
 
-session_start();
+header('Content-Type: application/json');
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 date_default_timezone_set('America/Sao_Paulo');
 
 
-class VagaAgendadaController
+class EstacionamentoController
 {
-    private $VagaAgendadaDAO;
+    private $EstacionamentoDAO;
 
     public function __construct()
     {
-        $this->VagaAgendadaDAO = new VagaAgendadaDAO();
+        $this->EstacionamentoDAO = new EstacionamentoDAO();
     }
-  
+
+    public function retornarValorHora()
+    {
+        return floatval($this->EstacionamentoDAO->retornarValorHora());
+
+    }
+
+    public function retornarTotalVagas(): int
+    {
+        return intval($this->retornarTotalVagas());
+    }
+
+
 }
 
 ?>

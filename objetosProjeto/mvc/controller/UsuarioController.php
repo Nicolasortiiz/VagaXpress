@@ -1,13 +1,16 @@
 <?php
-require_once __DIR__ . "/../controller/NotaFiscalController.php";
 require_once __DIR__ . "/../dao/UsuarioDAO.php";
 require_once __DIR__ . "/../model/Usuario.php";
 require_once __DIR__ . "/../vendor/autoload.php";
+require_once __DIR__ . "/../controller/VeiculoController.php";
 
 use PHPMailer\PHPMailer\PHPMailer;
 use OTPHP\TOTP;
 
-session_start();
+header('Content-Type: application/json');
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 date_default_timezone_set('America/Sao_Paulo');
 
 
@@ -15,12 +18,13 @@ date_default_timezone_set('America/Sao_Paulo');
 class UsuarioController
 {
     private $UsuarioDAO;
-    private $NotaFiscalController;
+    private $VeiculoController;
 
     public function __construct()
     {
         $this->UsuarioDAO = new UsuarioDAO();
-        $this->NotaFiscalController = new NotaFiscalController();
+        $this->VeiculoController = new VeiculoController();
+
     }
 
     public function encontrarEmail($email, $nome)
@@ -120,8 +124,10 @@ class UsuarioController
                 $_SESSION["usuario_id"] = $id;
                 $_SESSION["ultima_atividade"] = time();
                 echo json_encode(['error' => false]);
+                exit;
             } else {
                 echo json_encode(['error' => true, 'msg' => 'Erro ao realizar login, tente novamente!']);
+                exit;
             }
         }
 
@@ -182,7 +188,7 @@ class UsuarioController
 
     public function validarLoginAutenticacao()
     {
-        $pubkey = shell_exec("gpg --armor --export");
+        $pubkey = shell_exec("gpg --armor --export nicolas.ortiz@pucpr.edu.br");
         if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
             $email = $_SESSION["email"];
             $ultima_atividade = $_SESSION["ultima_atividade"];
@@ -191,7 +197,7 @@ class UsuarioController
                 session_unset();
                 session_destroy();
 
-                echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
+                echo json_encode(["login" => 0, "pubkey" => $pubkey]);
                 exit;
             }
             if ($email == "admin@vagaxpress.com") {
@@ -202,7 +208,7 @@ class UsuarioController
                 exit;
             }
         } else {
-            echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
+            echo json_encode(["login" => 0, "pubkey" => $pubkey]);
         }
     }
 
@@ -294,9 +300,7 @@ class UsuarioController
             "error" => false,
             "msg" => "",
             "saldo" => null,
-            "placas" => null,
-            "nome" => null,
-            "notas" => null
+            "nome" => null
         ];
 
         $nome = $this->UsuarioDAO->retornarNome($usuario);
@@ -310,13 +314,6 @@ class UsuarioController
         $saldo = $this->UsuarioDAO->retornarSaldo($usuario);
         $resposta["saldo"] = $saldo;
 
-        $placas = $this->UsuarioDAO->retornarPlacas($usuario);
-        $resposta["placas"] = $placas;
-
-        $notas = $this->NotaFiscalController->retornarInfosNotasFiscaisUsuario($usuario);
-
-        $resposta["notas"] = $notas;
-
         echo json_encode($resposta);
     }
 
@@ -325,6 +322,55 @@ class UsuarioController
         session_unset();
         session_destroy();
         echo json_encode(["logout" => true]);
+    }
+
+    public function validarPagamentoAgendamento($valor, $placa, $id)
+    {
+        if (!$this->VeiculoController->validarCadastroPlaca($placa, $id)) {
+            echo json_encode(["error" => true, "msg" => "Placa não cadastrada!"]);
+            exit;
+        }
+
+        $usuario = new Usuario();
+        $usuario->setIdUsuario($id);
+        $saldo = floatval($this->UsuarioDAO->retornarSaldo($usuario));
+        if ($valor <= 0 || $saldo <= 0) {
+            echo json_encode(["error" => true, "msg" => "Erro ao realizar pagamento, tente novamente!"]);
+            exit;
+        }
+
+        if ($valor > $saldo) {
+            echo json_encode(["error" => true, "msg" => "Saldo insuficiente!"]);
+            exit;
+        }
+
+        echo json_encode(['error' => false]);
+        exit;
+    }
+
+    public function realizarPagamento($valor, $id)
+    {
+        $usuario = new Usuario();
+        $usuario->setIdUsuario($id);
+        $saldo = floatval($this->UsuarioDAO->retornarSaldo($usuario));
+        
+        if ($saldo < $valor) {
+            echo json_encode(['error' => true, 'msg' => 'Saldo insuficiente!']);
+            exit;
+        }
+        if ($valor <= 0) {
+            echo json_encode(['error' => true, 'msg' => "Valor inválido!"]);
+            exit;
+        }
+        $novoSaldo = $saldo - floatval($valor);
+        $usuario->setSaldo($novoSaldo);
+        if ($this->UsuarioDAO->atualizarSaldo($usuario)) {
+            echo json_encode(['error' => false]);
+            exit;
+        } else {
+            echo json_encode(['error' => true, 'msg' => 'Erro ao atualizar o saldo!']);
+            exit;
+        }
     }
 
 

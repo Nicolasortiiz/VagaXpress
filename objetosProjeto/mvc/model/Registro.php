@@ -1,17 +1,16 @@
 <?php
 class Registro {
-    public $idRegistroEstacionamento;
-    public $placa;
-    public $dataEntrada;
-    public $dataSaida;
-    public $horaEntrada;
-    public $horaSaida;
-    public $statusPagamento;
+    private $idRegistro;
+    private $placa;
+    private $dataEntrada;
+    private $dataSaida;
+    private $horaEntrada;
+    private $horaSaida;
+    private $statusPagamento;
 
 
-    public function __construct($idRegistroEstacionamento = null, $placa = null, $dataEntrada = null, 
-    $dataSaida = null, $horaEntrada = null, $horaSaida = null, $statusPagamento = null) {
-        $this->idRegistroEstacionamento = $idRegistroEstacionamento;
+    public function __construct($idRegistro = null, $placa = null, $dataEntrada = null, $dataSaida = null, $horaEntrada = null, $horaSaida = null, $statusPagamento = null) {
+        $this->idRegistro = $idRegistro;
         $this->placa = $placa;
         $this->dataEntrada = $dataEntrada;
         $this->dataSaida = $dataSaida;
@@ -20,12 +19,13 @@ class Registro {
         $this->statusPagamento = $statusPagamento;
     }
 
-    public function getIdRegistroEstacionamento() {
-        return $this->idRegistroEstacionamento;
+    public function getIdRegistro() {
+        return $this->idRegistro;
     }
 
-    public function setIdRegistroEstacionamento($idRegistroEstacionamento) {
-        $this->idRegistroEstacionamento = $idRegistroEstacionamento;
+    public function setIdRegistro($idRegistro) {
+
+        $this->idRegistro = $idRegistro;
     }
 
     public function getPlaca() {

@@ -1,10 +1,10 @@
 <?php
 class Usuario {
-    public $idUsuario;
-    public $nome;
-    public $email;
-    public $saldo;
-    public $segredo;
+    private $idUsuario;
+    private $nome;
+    private $email;
+    private $saldo;
+    private $segredo;
 
     public function __construct($idUsuario = null, $nome = '', $email = '', $saldo = 0.0, $segredo = '') {
         $this->idUsuario = $idUsuario;

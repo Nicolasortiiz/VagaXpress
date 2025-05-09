@@ -18,8 +18,11 @@ $email = $data['email'] ?? '';
 $nome = $data['nome'] ?? '';
 $senha = $data['senha'] ?? '';
 $token = $data['token'] ?? '';
-$hora = strtotime($data['data']) ?? '';
+$hora = isset($data['data']) ? strtotime($data['data']) : '';
 $saldo = $data['saldo'] ?? 0.0;
+$placa = $data['placa'] ?? '';
+$id = $data['id'] ?? '';
+$valor = $data['valor'] ?? 0.0;
 
 switch ($action) {
     case 'encontrar_email':
@@ -54,6 +57,12 @@ switch ($action) {
         break;
     case 'logout':
         $controller->realizarLogout();
+        break;
+    case 'validar_pagamento_agendamento':
+        $controller->validarPagamentoAgendamento($valor,$placa, $id);
+        break;
+    case 'realizar_pagamento':
+        $controller->realizarPagamento($valor, $id);
         break;
     default:
         http_response_code(400);

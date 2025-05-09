@@ -1,12 +1,11 @@
 let chavePublica;
 window.onload = function () {
+    document.querySelector('body').style.display = 'none';
 
-    fetch("/api/usuario.php?action=verificar_login_principal")
+    fetch("/gateway.php/api/usuario?action=verificar_login_principal")
         .then(response => response.json())
         .then(data => {
             if (data.login == 0) {
-                document.getElementById("cadastro_veiculos").style.disabled = true;
-                document.getElementById("cadastro_veiculos").style.display = "none";
                 document.getElementById("agendamento").style.disabled = true;
                 document.getElementById("agendamento").style.display = "none";
                 document.getElementById("perfil_usuario").style.disabled = true;
@@ -24,8 +23,10 @@ window.onload = function () {
             } else {
                 window.alert("Ocorreu um erro, reinicie a página!")
             }
+            document.querySelector('body').style.display = 'flex';
         })
         .catch(error => console.error(error));
+
 }
 
 async function criptografar(dados) {
@@ -56,7 +57,9 @@ async function criptografar(dados) {
 function abrirTela(event) {
     const elementoClicado = event.target.id;
     const conteudo = document.getElementById("conteudo");
-
+    document.querySelectorAll('[id]').forEach(i => {
+        i.classList.remove('desativado');
+    });
     switch (elementoClicado) {
         case "tela_inicial":
             conteudo.innerHTML = `
@@ -77,18 +80,63 @@ function abrirTela(event) {
             break;
 
         case "agendamento":
+            document.getElementById('agendamento').classList.add('desativado');
             conteudo.innerHTML = `
                 <h2>Agendamento de Estacionamento</h2>
-                <form onsubmit="event.preventDefault();">
-                    <input placeholder="Placa" required>
-                    <input type="date" required>
-                    <input type="time" required>
-                    <button type="submit">Agendar</button>
+                <form id='formAgendamento' onsubmit="event.preventDefault();validarAgendamento();">
+                    <label for="carros">Escolha uma placa:</label>
+                    <select id="carros">
+                        <option value="">Carregando...</option>
+                    </select>
+                    <input id="data_agendamento" type="date" required>
+                    <input id="hora_agendamento" type="time" required>
+                    <button id="botaoAgendar" type="submit">Agendar</button>
+                    
                 </form>
+                <div id='divTelaPagamento'></div>
+                <p class="totalDivida">Total Dívida: R$ <span id="dividaTotal"></span></p>
+                <button id="pagarDivida" onclick="abrirTelaPagamento()">Pagar Divida</button>
+                <div class="tabelas-usuario">
+                <div class="tabela-container">
+                    <h2>Vagas Agendadas</h2>
+                    <table id="tabelaAgendadas">
+                        <thead>
+                            <tr>
+                                <th>Placa</th>
+                                <th>Data</th>
+                                <th>Hora</th> 
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="tabela-container">
+                    <h2>Registro de Cobranças</h2>
+                    <table id="tabelaRegistros">
+                        <thead>
+                            <tr>
+                                <th>Placa</th>
+                                <th>Data</th>
+                                <th>Hora</th>
+                                <th>Valor (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
             `;
+            carregarPlacasPerfil();
+            carregarDadosPagamento();
+
+
             break;
 
         case "perfil_usuario":
+            document.getElementById('perfil_usuario').classList.add('desativado');
             conteudo.innerHTML = `
             <div class="divTelaUsuario">
             <h2>Perfil do Usuário</h2>
@@ -137,10 +185,15 @@ function abrirTela(event) {
                         <tbody></tbody>
                     </table>
                 </div>
+                <div id="modalDetalhesNF" class="modal hidden">
+                    <div class="modalConteudoNF" id="conteudoNotaFiscal">         
+                    </div>
+                </div>
             </div>
         </div>
         `;
             carregarInfosPerfil();
+
             break;
 
         case "notificacao":
@@ -172,7 +225,7 @@ function abrirTela(event) {
 }
 
 async function realizarLogout() {
-    fetch("/api/usuario.php?action=logout")
+    fetch("/gateway.php/api/usuario?action=logout")
         .then(response => response.json())
         .then(data => {
             if (data.logout) {
@@ -187,23 +240,19 @@ async function gravarPlaca() {
 
     var dados = { placa: document.getElementById("placa").value };
 
-    res = await criptografar(dados);
+    const res = await criptografar(dados);
 
-    fetch("/api/veiculo.php?action=cadastrar_placa", {
+    fetch("/gateway.php/api/veiculo?action=cadastrar_placa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             cript: res
         })
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Erro na resposta do servidor: " + response.status);
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             alert(data.msg);
+            carregaVeiculo();
         })
         .catch(error => {
 
@@ -214,7 +263,7 @@ async function gravarPlaca() {
 /* Scripts Página Notificação */
 
 function carregarNotificacoes() {
-    fetch("/api/mensagem.php?action=buscar_notificacoes")
+    fetch("/gateway.php/api/mensagem?action=buscar_notificacoes")
         .then(response => response.json())
         .then(data => {
             const conteudo = document.getElementById("conteudo");
@@ -301,8 +350,8 @@ async function adicionarSaldo() {
     document.getElementById('botaoAdicionarSaldo').disabled = true;
     var dados = { saldo: valorSaldo };
 
-    res = await criptografar(dados);
-    fetch("/api/usuario.php?action=adicionar_saldo", {
+    const res = await criptografar(dados);
+    fetch("/gateway.php/api/usuario?action=adicionar_saldo", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -325,7 +374,14 @@ async function adicionarSaldo() {
 }
 
 async function carregarInfosPerfil() {
-    fetch("/api/usuario.php?action=retornar_infos_perfil")
+    await carregaUsuario();
+    await carregaNF();
+    await carregaVeiculo();
+
+}
+
+async function carregaUsuario() {
+    fetch("/gateway.php/api/usuario?action=retornar_infos_perfil")
         .then(response => response.json())
         .then(data => {
             if (data.erro) {
@@ -339,24 +395,18 @@ async function carregarInfosPerfil() {
             }
 
             document.getElementById('nomeUsuario').textContent = data.nome;
-            
-            const tbody_veiculos = document.querySelector("#tabelaVeiculos tbody");
-            tbody_veiculos.innerHTML = "";
 
-            if (Array.isArray(data.placas) && data.placas.length > 0) {
-                data.placas.forEach(placa => {
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                        <td>${placa}</td>
-                        <td><button onclick="deletarVeiculo('${placa}')">Deletar</button></td>
-                    `;
-                    tbody_veiculos.appendChild(tr);
-                });
-            } else {
-                console.log("Nenhum veículo cadastrado");
+        })
+        .catch(error => console.error(error));
+}
+
+async function carregaNF() {
+    fetch("/gateway.php/api/notaFiscal?action=retornar_notas_fiscais")
+        .then(response => response.json())
+        .then(data => {
+            if (data.erro) {
+                window.alert(data.msg);
             }
-
-
             const tbody_notas = document.querySelector("#tabelaNotas tbody");
             tbody_notas.innerHTML = "";
 
@@ -364,10 +414,10 @@ async function carregarInfosPerfil() {
                 data.notas.forEach(nf => {
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
-                        <td>${nf.dataEmissao}</td>
-                        <td>R$ ${parseFloat(nf.valor).toFixed(2).replace(".", ",")}</td>
-                        <td><button onclick='mostrarDetalhesNota(${JSON.stringify(nf.id)})'>Detalhes</button></td>
-                    `;
+                    <td>${nf.data}</td>
+                    <td>R$ ${parseFloat(nf.valor).toFixed(2).replace(".", ",")}</td>
+                    <td><button onclick='mostrarDetalhesNota(${JSON.stringify(nf.id)})'>Detalhes</button></td>
+                `;
                     tbody_notas.appendChild(tr);
                 });
             } else {
@@ -377,15 +427,417 @@ async function carregarInfosPerfil() {
         .catch(error => console.error(error));
 }
 
+async function carregaVeiculo() {
+    fetch("/gateway.php/api/veiculo?action=retornar_placas")
+        .then(response => response.json())
+        .then(data => {
+            if (data.erro) {
+                window.alert(data.msg);
+            }
+
+            const tbody_veiculos = document.querySelector("#tabelaVeiculos tbody");
+            tbody_veiculos.innerHTML = "";
+
+            if (Array.isArray(data.placas) && data.placas.length > 0) {
+                data.placas.forEach(placa => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                    <td>${placa}</td>
+                    <td><button id="botaoDeletarPlaca" onclick="deletarVeiculo('${placa}')">Deletar</button></td>
+                `;
+                    tbody_veiculos.appendChild(tr);
+                });
+            } else {
+                console.log("Nenhum veículo cadastrado");
+            }
+        })
+        .catch(error => console.error(error));
+}
+
+async function deletarVeiculo(placa) {
+    if (!confirm(`Tem certeza que deseja deletar o veículo com placa e seus agendamentos ${placa}?`)) {
+        return;
+    }
+
+    document.getElementById('botaoDeletarPlaca').disabled = true;
+    var dados = { placa: placa };
+
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/vagaAgendada?action=deletar_agendamentos_placa", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cript: res })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.msg);
+                return;
+            } else {
+                alert(data.msg);
+                carregaVeiculo();
+            }
+
+        })
+        .catch(error => {
+            console.error("Erro:", error);
+        })
+        .finally(() => {
+            document.getElementById('botaoDeletarPlaca').disabled = false;
+        });
+}
+
+async function mostrarDetalhesNota(idNota) {
+
+    var dados = { idNotaFiscal: idNota };
+
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/notaFiscal?action=retornar_detalhes_nf", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cript: res })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.nota) {
+                alert("Nota fiscal não encontrada.");
+                return;
+            }
+
+            const nota = data.nota;
+
+            const conteudo = `
+            <span class="detalhesNF" onclick="fecharModalNota()">&times;</span>
+            <h2>Detalhes da Nota Fiscal</h2>
+            <div class="detalhes-nota">
+                <p><strong>Data de Emissão:</strong> ${nota.dataEmissao}</p>
+                <p><strong>CPF:</strong> ${nota.cpf}</p>
+                <p><strong>Nome:</strong> ${nota.nome}</p>
+                <p><strong>Valor:</strong> R$ ${parseFloat(nota.valor).toFixed(2).replace(".", ",")}</p>
+                <p><strong>Descrição:</strong> ${nota.descricao}</p>
+            </div>
+        `;
+
+            document.getElementById("conteudoNotaFiscal").innerHTML = conteudo;
+            document.getElementById("modalDetalhesNF").classList.remove("hidden");
+        })
+        .catch(error => {
+            console.error("Erro ao buscar detalhes da nota fiscal:", error);
+        });
+}
+
+function fecharModalNota() {
+    document.getElementById("modalDetalhesNF").classList.add("hidden");
+}
+
+
+
 
 /* Página Agendamento/Pagamento */
 
 async function carregarInfosAgendamento() {
-    fetch("/api/veiculo.php?action=retornar_infos_agendamento")
+    fetch("/gateway.php/api/veiculo?action=retornar_infos_agendamento")
         .then(response => response.json())
         .then(data => {
 
         })
         .catch(error => console.error(error));
 
+}
+
+function validarAgendamento() {
+    document.getElementById('formAgendamento').classList.add('desativado');
+    document.getElementById('botaoAgendar').disabled = true;
+    document.getElementById('divTelaPagamento').innerHTML = `
+        <div id="divPagamento" class="divPagamento">
+            <h2>Informações de Pagamento</h2>
+            <form onsubmit="event.preventDefault(); confirmarPagamento();">
+                <label for="nome_pagador">Nome do Pagador:</label><br>
+                <input type="text" id="nome_pagador" placeholder="Nome completo" required><br><br>
+
+                <label for="cpf_pagador">CPF do Pagador:</label><br>
+                <input type="text" id="cpf_pagador" placeholder="000.000.000-00" oninput="formatarCpf(this)" maxlength="14" required><br><br>
+
+                <button id="botaoPagamento" type="submit">Confirmar Pagamento</button>
+                <button id="botaoCancelarPagamento" onclick="cancelarPagamento()">Cancelar</button>
+            </form>
+        </div>
+    `;
+
+}
+function cancelarPagamento() {
+    document.getElementById('formAgendamento').classList.remove('desativado');
+    document.getElementById('divPagamento').remove();
+    document.getElementById('botaoAgendar').disabled = false;
+}
+
+
+
+function carregarPlacasPerfil() {
+    fetch("/gateway.php/api/veiculo?action=retornar_placas")
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+            } else {
+                const select = document.getElementById("carros");
+                select.innerHTML = "";
+                data.placas.forEach(placa => {
+                    const option = document.createElement("option");
+                    option.value = placa;
+                    option.textContent = placa;
+                    select.appendChild(option);
+                })
+            }
+        })
+        .catch(error => console.error(error));
+}
+
+function formatarCpf(input) {
+    let value = input.value;
+
+    value = value.replace(/\D/g, '');
+
+    if (value.length > 3) {
+        value = value.replace(/^(\d{3})(\d)/, '$1.$2');
+    }
+    if (value.length > 6) {
+        value = value.replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3');
+    }
+    if (value.length > 9) {
+        value = value.replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
+    }
+
+    input.value = value;
+}
+
+
+async function confirmarPagamento() {
+    document.getElementById('botaoPagamento').disabled = true;
+    document.getElementById('botaoPagamento').textContent = 'Validando...';
+
+
+    var dados = {
+        placa: document.getElementById('carros').value,
+        data: document.getElementById('data_agendamento').value,
+        hora: document.getElementById('hora_agendamento').value
+    };
+
+    const res1 = await criptografar(dados);
+
+    const validar = await fetch("/gateway.php/api/vagaAgendada?action=procurar_agendamento", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cript: res1
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+                return false;
+            } else {
+                return true;
+            }
+        })
+        .catch(error => console.error(error))
+        .finally(() => {
+            document.getElementById('botaoPagamento').disabled = false;
+            document.getElementById('botaoAgendar').disabled = false;
+            document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+        });
+    if (validar == true) {
+        dados.nome = document.getElementById('nome_pagador').value;
+        dados.cpf = document.getElementById('cpf_pagador').value;
+
+        const res2 = await criptografar(dados);
+        fetch("/gateway.php/api/vagaAgendada?action=criar_agendamento", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                cript: res2
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    window.alert(data.msg);
+                }
+                window.alert('Pagamento realizado com sucesso!');
+                document.getElementById('formAgendamento').classList.remove('desativado');
+                document.getElementById('divPagamento').remove();
+                document.getElementById('botaoAgendar').disabled = false;
+            })
+            .catch(error => console.error(error))
+            .finally(() => {
+                document.getElementById('botaoPagamento').disabled = false;
+                document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+            });
+    }
+
+
+}
+
+function carregarDadosPagamento() {
+    fetch("/gateway.php/api/vagaAgendada?action=dados_pagina_pagamento")
+        .then(response => response.json())
+        .then(data => {
+            const tabelaAgendadas = document.getElementById('tabelaAgendadas').querySelector('tbody');
+            const tabelaRegistros = document.getElementById('tabelaRegistros').querySelector('tbody');
+            const divPagamento = document.getElementById('divTelaPagamento');
+
+            tabelaAgendadas.innerHTML = "";
+            tabelaRegistros.innerHTML = "";
+            divPagamento.innerHTML = "";
+
+            if (data.error) {
+                divPagamento.innerHTML = `<p>${data.msg}</p>`;
+                return;
+            }
+
+            if (!data.agendamentos || data.agendamentos.length === 0) {
+                tabelaAgendadas.innerHTML = `
+                <tr>
+                    <td colspan="3">Nenhuma vaga agendada.</td>
+                </tr>
+            `;
+            } else {
+                data.agendamentos.forEach(ag => {
+                    tabelaAgendadas.innerHTML += `
+                    <tr>
+                        <td>${ag.placa}</td>
+                        <td>${ag.data}</td>
+                        <td>${ag.hora}</td>
+                        <td><button onclick='cancelarAgendamento(${JSON.stringify(ag.id)})'>Cancelar</button></td>
+                    </tr>
+                `;
+                });
+            }
+
+
+            if (!data.devedoras || data.devedoras.length === 0) {
+                tabelaRegistros.innerHTML = `
+                <tr>
+                    <td colspan="4">Nenhuma dívida encontrada.</td>
+                </tr>
+            `;
+            } else {
+                data.devedoras.forEach(dev => {
+                    tabelaRegistros.innerHTML += `
+                    <tr>
+                        <td>${dev.placa}</td>
+                        <td>${dev.data}</td>
+                        <td>${dev.hora}</td>
+                        <td>R$ ${parseFloat(dev.valor).toFixed(2)}</td>
+                    </tr>
+                `;
+                });
+
+
+
+            }
+            if (data.total != null) {
+                document.getElementById('dividaTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
+            } else {
+                document.getElementById('dividaTotal').textContent = "0,00";
+            }
+
+        })
+        .catch(error => {
+            console.error('Erro ao carregar dados de pagamento:', error);
+            const divPagamento = document.getElementById('divTelaPagamento');
+            divPagamento.innerHTML = `<p>Erro ao carregar dados. Tente novamente.</p>`;
+        });
+}
+
+async function cancelarAgendamento($id) {
+    var dados = {
+        id: $id
+    };
+
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/vagaAgendada?action=cancelar_agendamento", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cript: res
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+            } else {
+                window.alert('Agendamento cancelado com sucesso!');
+                carregarDadosPagamento();
+            }
+        })
+        .catch(error => console.error(error));
+}
+
+function abrirTelaPagamento() {
+    document.getElementById('pagarDivida').disabled = true;
+    document.getElementById('divTelaPagamento').innerHTML = `
+        <div id="divPagamento" class="divPagamento">
+            <h2>Informações de Pagamento</h2>
+            <form onsubmit="event.preventDefault(); pagarDivida();">
+                <label for="nome_pagador">Nome do Pagador:</label><br>
+                <input type="text" id="nome_pagador" placeholder="Nome completo" required><br><br>
+
+                <label for="cpf_pagador">CPF do Pagador:</label><br>
+                <input type="text" id="cpf_pagador" placeholder="000.000.000-00" oninput="formatarCpf(this)" maxlength="14" required><br><br>
+
+                <button id="botaoPagamento" type="submit">Confirmar Pagamento</button>
+                <button id="botaoCancelarPagamento" onclick="cancelarPagamento()">Cancelar</button>
+            </form>
+        </div>
+    `;
+}
+
+async function pagarDivida() {
+    document.getElementById('botaoPagamento').disabled = true;
+    document.getElementById('botaoPagamento').textContent = 'Validando...';
+    var dados = {
+        nome: document.getElementById('nome_pagador').value,
+        cpf: document.getElementById('cpf_pagador').value
+    };
+
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/registro?action=pagar_vagas", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cript: res
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+            } else {
+                window.alert('Pagamento realizado com sucesso!');
+                carregarDadosPagamento();
+            }
+        })
+        .catch(error => console.error(error));
+
+    document.getElementById('botaoPagamento').disabled = false;
+    document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
 }

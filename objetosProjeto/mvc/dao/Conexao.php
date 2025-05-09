@@ -3,7 +3,7 @@ class Conexao{
     
     private static $instancia = null;
     private $conn;
-    private $ip = "127.0.0.1";
+    private $ip = "172.25.0.11";
     private $username = "root";
     private $password = "root";
     private $dbname = "EstacionamentoDB";

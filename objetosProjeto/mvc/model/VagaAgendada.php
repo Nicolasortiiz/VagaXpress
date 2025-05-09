@@ -1,41 +1,31 @@
 <?php
 class VagaAgendada {
-    private $idEstacionamentoReservado;
-    private $idUsuario;
-    private $idVeiculo;
+    private $idVagaAgendada;
+    private $placa;
     private $dataEntrada;
     private $horaEntrada;
 
-    public function __construct($idEstacionamentoReservado = null, $idUsuario = null, $idVeiculo = null, $dataEntrada = null, $horaEntrada = null) {
-        $this->idEstacionamentoReservado = $idEstacionamentoReservado;
-        $this->idUsuario = $idUsuario;
-        $this->idVeiculo = $idVeiculo;
+    public function __construct($idVagaAgendada = null, $placa = null, $dataEntrada = null, $horaEntrada = null) {
+        $this->idVagaAgendada = $idVagaAgendada;
+        $this->placa = $placa;
         $this->dataEntrada = $dataEntrada;
         $this->horaEntrada = $horaEntrada;
     }
 
-    public function getIdEstacionamentoReservado() {
-        return $this->idEstacionamentoReservado;
+    public function getidVagaAgendada() {
+        return $this->idVagaAgendada;
     }
 
-    public function setIdEstacionamentoReservado($idEstacionamentoReservado) {
-        $this->idEstacionamentoReservado = $idEstacionamentoReservado;
+    public function setidVagaAgendada($idVagaAgendada) {
+        $this->idVagaAgendada = $idVagaAgendada;
+    }
+    
+    public function getPlaca() {
+        return $this->placa;
     }
 
-    public function getIdUsuario() {
-        return $this->idUsuario;
-    }
-
-    public function setIdUsuario($idUsuario) {
-        $this->idUsuario = $idUsuario;
-    }
-
-    public function getIdVeiculo() {
-        return $this->idVeiculo;
-    }
-
-    public function setIdVeiculo($idVeiculo) {
-        $this->idVeiculo = $idVeiculo;
+    public function setPlaca($placa){
+        $this->placa = $placa;
     }
 
     public function getDataEntrada() {

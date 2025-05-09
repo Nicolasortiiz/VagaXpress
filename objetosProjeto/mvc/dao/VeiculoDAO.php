@@ -1,7 +1,6 @@
 <?php
 require_once 'Conexao.php';
 require_once __DIR__ . '/../model/Veiculo.php';
-require_once __DIR__ .'/../model/Usuario.php';
 
 class VeiculoDAO {
     private $conn;
@@ -24,10 +23,10 @@ class VeiculoDAO {
         }
     }
 
-    public function inserirPlaca(Veiculo $veiculo, Usuario $usuario) {
+    public function inserirPlaca(Veiculo $veiculo) {
         $querryInsert = "INSERT INTO Veiculo (placa, idUsuario) VALUES (?, ?)";
         $placa = $veiculo->getPlaca();
-        $id = $usuario->getIdusuario();
+        $id = $veiculo->getIdusuario();
         $stmt = $this->conn->prepare($querryInsert);
         $stmt->bind_param("si", $placa,$id);
     
@@ -41,6 +40,51 @@ class VeiculoDAO {
         
     }
 
+    public function deletarPlaca(Veiculo $veiculo) {
+        error_log('teste');
+        $querryDelete = "DELETE FROM Veiculo WHERE placa = ? AND idUsuario = ?";
+        $placa = $veiculo->getPlaca();
+        $id = $veiculo->getIdusuario();
+        $stmt = $this->conn->prepare($querryDelete);
+        $stmt->bind_param("si", $placa, $id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    public function retornarPlacas(Veiculo $veiculo): array{
+        $querySelect = "SELECT placa FROM Veiculo WHERE idUsuario = ?";
+        $idUsuario = $veiculo->getIdUsuario();
+
+        $stmt = $this->conn->prepare($querySelect);
+        $stmt->bind_param("i", $idUsuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        $placas = [];
+        while ($row = $result->fetch_assoc()) {
+            $placas[] = $row['placa'];
+        }
+        return $placas;
+    }
+
+    public function procurarCadastroPlaca(Veiculo $veiculo) {
+        $querySelect = 'SELECT placa FROM Veiculo WHERE placa = ? AND idUsuario = ?';
+        $idUsuario = $veiculo->getIdUsuario();
+        $placa = $veiculo->getPlaca();
+    
+        $stmt = $this->conn->prepare($querySelect);
+        $stmt->bind_param('si', $placa, $idUsuario);
+        $stmt->execute();
+    
+        $result = $stmt->get_result();
+        $placaEncontrada = $result->fetch_assoc();
+    
+        $stmt->close();
+    
+        return $placaEncontrada !== null;
+    }
+    
 
 }
 

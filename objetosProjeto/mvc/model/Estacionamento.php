@@ -1,9 +1,9 @@
 <?php
 
 class Estacionamento{
-    public $idEstacionamento;
-    public $totalVagas;
-    public $valorHora;
+    private $idEstacionamento;
+    private $totalVagas;
+    private $valorHora;
 
     public function __construct($idEstacionamento, $totalVagas, $valorHora) {
         $this->idEstacionamento = $idEstacionamento;
