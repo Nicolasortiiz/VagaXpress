@@ -4,7 +4,7 @@ WORKDIR /var/www
 
 # Dependências do sistema
 RUN apt-get update && apt-get install -y \
-    gnupg2 unzip git libgpgme-dev libgpg-error-dev libassuan-dev \
+    gnupg2 unzip git libgpgme-dev libgpg-error-dev libassuan-dev dos2unix \
     libgcrypt20-dev libxml2-dev libssl-dev \
     && pecl install gnupg \
     && docker-php-ext-enable gnupg
@@ -36,6 +36,7 @@ RUN composer install
 
 
 COPY entrypoint.sh /var/www/entrypoint.sh
+RUN dos2unix entrypoint.sh
 RUN chmod +x /var/www/entrypoint.sh
 
 EXPOSE 8080 8001

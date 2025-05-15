@@ -373,6 +373,14 @@ class UsuarioController
         }
     }
 
+    public function validarLoginSuporte(){
+        if (!$this->validarLogin()) {
+            echo json_encode(["error" => false, "login" => 0]);
+            exit;
+        }
+        echo json_encode(["error" => false, "lgoin" => 1]);
+    }
+
 
 }
 

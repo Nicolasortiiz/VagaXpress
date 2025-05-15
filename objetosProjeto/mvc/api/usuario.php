@@ -64,6 +64,9 @@ switch ($action) {
     case 'realizar_pagamento':
         $controller->realizarPagamento($valor, $id);
         break;
+    case 'verificar_login_suporte':
+        $controller->validarLoginSuporte();
+        break;
     default:
         http_response_code(400);
         echo json_encode(['erro' => 'Erro ao executar a action!']);

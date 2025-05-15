@@ -68,17 +68,6 @@ function abrirTela(event) {
             `;
             break;
 
-        case "cadastro_veiculos":
-            conteudo.innerHTML = `
-                <h2>Cadastro de Veículo</h2>
-                <form onsubmit="event.preventDefault(); gravarPlaca();">
-                    <input id="placa" placeholder="Placa" required>
-                    <input id="usuario_id" type="hidden" value="1">
-                    <button type="submit">Cadastrar</button>
-                </form>
-            `;
-            break;
-
         case "agendamento":
             document.getElementById('agendamento').classList.add('desativado');
             conteudo.innerHTML = `
@@ -204,10 +193,12 @@ function abrirTela(event) {
             break;
 
         case "suporte":
+            document.getElementById('suporte').classList.add('desativado');
             conteudo.innerHTML = `
                 <h2>Suporte</h2>
                 <p>Entre em contato com o suporte se precisar de ajuda.</p>
             `;
+            carregaSuporte();
             break;
 
         case "login":
@@ -840,4 +831,112 @@ async function pagarDivida() {
 
     document.getElementById('botaoPagamento').disabled = false;
     document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+}
+
+/* Scripts Página Suporte */
+
+function carregarSuporter() {
+    fetch("/gateway.php/api/usuario?action=verificar_login_suporte")
+        .then(response => response.json())
+        .then(data => {
+            if (data.login == 0) {
+                document.getElementById("conteudo").innerHTML = `
+                <h2>Suporte</h2>
+                <form onsubmit="event.preventDefault(); enviarSuporteDeslogado();">
+                    <label for="email">Email de contato:</label>
+                    <input id="email" placeholder="Email" required>
+                    <select id="tipoMensagem" required>
+                        <option value="Problema">Problema</option>
+                        <option value="Duvida">Dúvida</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                    <label for="textoSuporte">Mensagem para o suporte:</label>
+                    <input id="textoSuporte" placeholder="Mensagem" required>
+                    <button id="botaoEnviarSuporte" type="submit">Enviar</button>
+                </form>
+                `;
+            } else if (data.login == 1) {
+                document.getElementById("conteudo").innerHTML = `
+                <h2>Suporte</h2>
+                <form onsubmit="event.preventDefault(); enviarSuporteLogado();">
+                    <label for="tipoMensagem">Tipo de mensagem:</label> 
+                    <select id="tipoMensagem" required>
+                        <option value="Problema">Problema</option>
+                        <option value="Duvida">Dúvida</option>
+                        <option value="Colaborador">Se tornar afiliado</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                    <label for="textoSuporte">Mensagem para o suporte:</label>
+                    <input id="textoSuporte" placeholder="Mensagem" required>
+                    <button id="botaoEnviarSuporte" type="submit">Enviar</button>
+                </form>
+                `;
+            }
+        })
+        .catch(error => console.error(error));
+}
+
+async function enviarSuporteDeslogado() {
+    document.getElementById('botaoEnviarSuporte').disabled = true;
+    document.getElementById('botaoEnviarSuporte').textContent = 'Validando...';
+    var dados = {
+        email: document.getElementById('email').value,
+        tipo: document.getElementById('tipoMensagem').value,
+        texto: document.getElementById('textoSuporte').value
+    };
+
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/suporte?action=enviar_suporte_deslogado", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cript: res
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+            }
+        })
+        .catch(error => console.error(error));
+
+
+
+    document.getElementById('botaoEnviarSuporte').disabled = false;
+    document.getElementById('botaoEnviarSuporte').textContent = 'Enviar';
+}
+
+async function enviarSuporteLogado() {
+    document.getElementById('botaoEnviarSuporte').disabled = true;
+    document.getElementById('botaoEnviarSuporte').textContent = 'Validando...';
+    var dados = {
+        tipo: document.getElementById('tipoMensagem').value,
+        texto: document.getElementById('textoSuporte').value
+    };
+
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/suporte?action=enviar_suporte_logado", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cript: res
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+            }
+        })
+        .catch(error => console.error(error));
+
+    document.getElementById('botaoEnviarSuporte').disabled = false;
+    document.getElementById('botaoEnviarSuporte').textContent = 'Enviar';
 }
