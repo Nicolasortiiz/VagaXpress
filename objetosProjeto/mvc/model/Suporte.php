@@ -5,6 +5,7 @@ class Suporte
     private $idSuporte;
     private $email;
     private $mensagem;
+    private $tipo;
 
     public function __construct($idSuporte = null, $email = '', $mensagem = '')
     {
@@ -41,6 +42,13 @@ class Suporte
     public function getMensagem()
     {
         return $this->mensagem;
+    }
+
+    public function getTipo(){
+        return $this->tipo;
+    }
+    public function setTipo($tipo){
+        $this->tipo = $tipo;
     }
     
 }

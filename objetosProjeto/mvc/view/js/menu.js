@@ -107,8 +107,10 @@ function abrirTela(event) {
                         <thead>
                             <tr>
                                 <th>Placa</th>
-                                <th>Data</th>
-                                <th>Hora</th>
+                                <th>DataEntrada</th>
+                                <th>HoraEntrada</th>
+                                <th>DataSaida</th>
+                                <th>HoraSaida</th>
                                 <th>Valor (R$)</th>
                             </tr>
                         </thead>
@@ -198,7 +200,7 @@ function abrirTela(event) {
                 <h2>Suporte</h2>
                 <p>Entre em contato com o suporte se precisar de ajuda.</p>
             `;
-            carregaSuporte();
+            carregarSuporte();
             break;
 
         case "login":
@@ -532,16 +534,6 @@ function fecharModalNota() {
 
 /* Página Agendamento/Pagamento */
 
-async function carregarInfosAgendamento() {
-    fetch("/gateway.php/api/veiculo?action=retornar_infos_agendamento")
-        .then(response => response.json())
-        .then(data => {
-
-        })
-        .catch(error => console.error(error));
-
-}
-
 function validarAgendamento() {
     document.getElementById('formAgendamento').classList.add('desativado');
     document.getElementById('botaoAgendar').disabled = true;
@@ -728,8 +720,10 @@ function carregarDadosPagamento() {
                     tabelaRegistros.innerHTML += `
                     <tr>
                         <td>${dev.placa}</td>
-                        <td>${dev.data}</td>
-                        <td>${dev.hora}</td>
+                        <td>${dev.dataEntrada}</td>
+                        <td>${dev.horaEntrada}</td>
+                        <td>${dev.dataSaida}</td>
+                        <td>${dev.horaSaida}</td>
                         <td>R$ ${parseFloat(dev.valor).toFixed(2)}</td>
                     </tr>
                 `;
@@ -835,14 +829,14 @@ async function pagarDivida() {
 
 /* Scripts Página Suporte */
 
-function carregarSuporter() {
+function carregarSuporte() {
     fetch("/gateway.php/api/usuario?action=verificar_login_suporte")
         .then(response => response.json())
         .then(data => {
             if (data.login == 0) {
                 document.getElementById("conteudo").innerHTML = `
                 <h2>Suporte</h2>
-                <form onsubmit="event.preventDefault(); enviarSuporteDeslogado();">
+                <form onsubmit="event.preventDefault(); validarEmailSuporte();">
                     <label for="email">Email de contato:</label>
                     <input id="email" placeholder="Email" required>
                     <select id="tipoMensagem" required>
@@ -854,6 +848,7 @@ function carregarSuporter() {
                     <input id="textoSuporte" placeholder="Mensagem" required>
                     <button id="botaoEnviarSuporte" type="submit">Enviar</button>
                 </form>
+                <div id="conteudo_suporte"></div>
                 `;
             } else if (data.login == 1) {
                 document.getElementById("conteudo").innerHTML = `
@@ -876,10 +871,43 @@ function carregarSuporter() {
         .catch(error => console.error(error));
 }
 
+async function validarEmailSuporte(){
+    var dados = {email: document.getElementById('email').value};
+
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/suporte?action=validar_email", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            cript: res
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+            } else {
+                document.getElementById("conteudo_suporte").innerHTML = `
+                <form onsubmit="event.preventDefault(); enviarSuporteDeslogado();">
+                    <h2>Um token foi enviado para o email: ${document.getElementById('email').value}</h2>
+                    <label for="token">Token:</label>
+                    <input id="token" placeholder="token" required>
+                    <button id="botaoEnviarSuporte" type="submit">Enviar</button>
+                </form>
+                `
+            }
+        })
+        .catch(error => console.error(error));
+}
+
 async function enviarSuporteDeslogado() {
     document.getElementById('botaoEnviarSuporte').disabled = true;
     document.getElementById('botaoEnviarSuporte').textContent = 'Validando...';
     var dados = {
+        token: document.getElementById('token').value,
         email: document.getElementById('email').value,
         tipo: document.getElementById('tipoMensagem').value,
         texto: document.getElementById('textoSuporte').value

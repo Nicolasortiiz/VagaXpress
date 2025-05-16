@@ -68,7 +68,8 @@ CREATE TABLE Mensagem (
 CREATE TABLE Suporte (
     idSuporte INT AUTO_INCREMENT PRIMARY KEY,
     mensagem TEXT NOT NULL,
-    email VARCHAR(100) NOT NULL
+    email VARCHAR(100) NOT NULL,
+    tipo VARCHAR(50) NOT NULL
 );
 
 INSERT INTO Usuario (nome, email, senha) VALUES ('Admin', 'admin@vagaxpress.com', 'admin.senha123');

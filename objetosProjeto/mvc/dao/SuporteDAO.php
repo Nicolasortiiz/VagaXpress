@@ -12,12 +12,13 @@ class SuporteDAO
 
     public function enviarMensagem(Suporte $suporte)
     {
-        $queryInsert = 'INSERT INTO Suporte (email, mensagem) VALUES (?, ?)';
+        $queryInsert = 'INSERT INTO Suporte (email, mensagem, tipo) VALUES (?, ?, ?)';
         $email = $suporte->getEmail();
         $msg = $suporte->getMensagem();
+        $tipo = $suporte->getTipo();
 
         $stmt = $this->conn->prepare($queryInsert);
-        $stmt->bind_param('ss', $email, $msg);
+        $stmt->bind_param('sss', $email, $msg, $tipo);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
