@@ -14,7 +14,7 @@ RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-COPY . /var/www
+COPY . .
 
 # Criação da chave GPG
 RUN echo "Key-Type: RSA\n\
@@ -35,11 +35,11 @@ RUN composer install
 # Copia todos os arquivos do host (serão sobrescritos se for montado como volume)
 
 
-COPY entrypoint.sh /var/www/entrypoint.sh
-RUN dos2unix entrypoint.sh
-RUN chmod +x /var/www/entrypoint.sh
+COPY entrypoint.sh /usr/local/bin/
+RUN dos2unix /usr/local/bin/entrypoint.sh \
+    && chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 8080 8001
 
-CMD ["/var/www/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
 

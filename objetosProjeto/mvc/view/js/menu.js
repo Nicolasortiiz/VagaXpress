@@ -197,8 +197,7 @@ function abrirTela(event) {
         case "suporte":
             document.getElementById('suporte').classList.add('desativado');
             conteudo.innerHTML = `
-                <h2>Suporte</h2>
-                <p>Entre em contato com o suporte se precisar de ajuda.</p>
+                <div id="conteudoSuporte"></div>
             `;
             carregarSuporte();
             break;
@@ -834,7 +833,7 @@ function carregarSuporte() {
         .then(response => response.json())
         .then(data => {
             if (data.login == 0) {
-                document.getElementById("conteudo").innerHTML = `
+                document.getElementById("conteudoSuporte").innerHTML = `
                 <h2>Suporte</h2>
                 <form onsubmit="event.preventDefault(); validarEmailSuporte();">
                     <label for="email">Email de contato:</label>
@@ -851,7 +850,7 @@ function carregarSuporte() {
                 <div id="conteudo_suporte"></div>
                 `;
             } else if (data.login == 1) {
-                document.getElementById("conteudo").innerHTML = `
+                document.getElementById("conteudoSuporte").innerHTML = `
                 <h2>Suporte</h2>
                 <form onsubmit="event.preventDefault(); enviarSuporteLogado();">
                     <label for="tipoMensagem">Tipo de mensagem:</label> 
