@@ -834,41 +834,52 @@ function carregarSuporte() {
         .then(data => {
             if (data.login == 0) {
                 document.getElementById("conteudoSuporte").innerHTML = `
-                <h2>Suporte</h2>
-                <form onsubmit="event.preventDefault(); validarEmailSuporte();">
-                    <label for="email">Email de contato:</label>
-                    <input id="email" placeholder="Email" required>
-                    <select id="tipoMensagem" required>
-                        <option value="Problema">Problema</option>
-                        <option value="Duvida">Dúvida</option>
-                        <option value="Outro">Outro</option>
-                    </select>
-                    <label for="textoSuporte">Mensagem para o suporte:</label>
-                    <input id="textoSuporte" placeholder="Mensagem" required>
-                    <button id="botaoEnviarSuporte" type="submit">Enviar</button>
-                </form>
-                <div id="conteudo_suporte"></div>
+                <div class="divSuporte">
+                    <h2>Suporte</h2>
+                    <form class="formSuporte" onsubmit="event.preventDefault(); validarEmailSuporte();">
+                        <label for="email">Email de contato:</label>
+                        <input class="inputSuporte" id="email" placeholder="Email" required>
+
+                        <label for="tipoMensagem">Tipo de mensagem:</label>
+                        <select class="inputSuporte" id="tipoMensagem" required>
+                            <option value="Problema">Problema</option>
+                            <option value="Duvida">Dúvida</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+
+                        <label for="textoSuporte">Mensagem:</label>
+                        <input class="inputSuporte" id="textoSuporte" placeholder="Mensagem" required>
+
+                        <button class="botaoSuporte" id="botaoEnviarSuporte" type="submit">Enviar</button>
+                    </form>
+                    <div id="conteudo_suporte"></div>
+                </div>
                 `;
             } else if (data.login == 1) {
                 document.getElementById("conteudoSuporte").innerHTML = `
-                <h2>Suporte</h2>
-                <form onsubmit="event.preventDefault(); enviarSuporteLogado();">
-                    <label for="tipoMensagem">Tipo de mensagem:</label> 
-                    <select id="tipoMensagem" required>
-                        <option value="Problema">Problema</option>
-                        <option value="Duvida">Dúvida</option>
-                        <option value="Colaborador">Se tornar afiliado</option>
-                        <option value="Outro">Outro</option>
-                    </select>
-                    <label for="textoSuporte">Mensagem para o suporte:</label>
-                    <input id="textoSuporte" placeholder="Mensagem" required>
-                    <button id="botaoEnviarSuporte" type="submit">Enviar</button>
-                </form>
+                <div class="divSuporte">
+                    <h2>Suporte</h2>
+                    <form class="formSuporte" onsubmit="event.preventDefault(); enviarSuporteLogado();">
+                        <label for="tipoMensagem">Tipo de mensagem:</label>
+                        <select class="inputSuporte" id="tipoMensagem" required>
+                            <option value="Problema">Problema</option>
+                            <option value="Duvida">Dúvida</option>
+                            <option value="Colaborador">Se tornar afiliado</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+
+                        <label for="textoSuporte">Mensagem:</label>
+                        <input class="inputSuporte" id="textoSuporte" placeholder="Mensagem" required>
+
+                        <button class="botaoSuporte" id="botaoEnviarSuporte" type="submit">Enviar</button>
+                    </form>
+                </div>
                 `;
             }
         })
         .catch(error => console.error(error));
 }
+
 
 async function validarEmailSuporte(){
     var dados = {email: document.getElementById('email').value};
