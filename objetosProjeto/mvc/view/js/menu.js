@@ -65,6 +65,24 @@ function abrirTela(event) {
             conteudo.innerHTML = `
                 <h2>Página Inicial</h2>
                 <p>Bem-vindo ao VagaXpress! Escolha uma opção no menu lateral.</p>
+
+                <h1>Seja bem vindo!</h1>
+
+                <div class="info-container">
+                    <h2>Como funciona o nosso estacionamento?</h2>
+                    <p>
+                        Nosso estacionamento é lindo e icrível blablabla
+                    </p>
+                </div>
+
+                <img 
+                    src="foto do nicolas" 
+                    alt="Imagem de divulgação do estacionamento" 
+                    class="imagem-divulgacao"
+                />
+
+</body>
+</html>
             `;
             break;
 
