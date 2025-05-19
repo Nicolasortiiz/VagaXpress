@@ -71,12 +71,15 @@ function abrirTela(event) {
                 <div class="info-container">
                     <h2>Como funciona o nosso estacionamento?</h2>
                     <p>
-                        Nosso estacionamento é lindo e icrível blablabla
+                        VagaXpress oferece agendamento fácil e rápido para garantir sua vaga com antecedência. 
+                        Basta selecionar sua placa, escolher a data e horário desejados, e pronto! 
+                        Você poderá acompanhar suas vagas agendadas e os registros de cobrança diretamente na sua conta.
+                        Além disso, facilitamos o pagamento das suas dívidas para que você possa utilizar nossos serviços com tranquilidade.
                     </p>
                 </div>
 
                 <img 
-                    src="foto do nicolas" 
+                    src="imagem_promocional.png" 
                     alt="Imagem de divulgação do estacionamento" 
                     class="imagem-divulgacao"
                 />
