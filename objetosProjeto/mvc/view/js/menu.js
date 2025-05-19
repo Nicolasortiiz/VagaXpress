@@ -1,5 +1,6 @@
 let chavePublica;
 window.onload = function () {
+    document.getElementById('tela_inicial').click();
     document.querySelector('body').style.display = 'none';
 
     fetch("/gateway.php/api/usuario?action=verificar_login_principal")
@@ -62,6 +63,7 @@ function abrirTela(event) {
     });
     switch (elementoClicado) {
         case "tela_inicial":
+            document.getElementById('tela_inicial').classList.add('desativado');
             conteudo.innerHTML = `
                 <h2>Página Inicial</h2>
                 <p>Bem-vindo ao VagaXpress! Escolha uma opção no menu lateral.</p>
@@ -79,13 +81,13 @@ function abrirTela(event) {
                 </div>
 
                 <img 
-                    src="imagem_promocional.png" 
+                    src="view/imgs/imagem_promocional.png" 
                     alt="Imagem de divulgação do estacionamento" 
                     class="imagem-divulgacao"
                 />
 
-</body>
-</html>
+            </body>
+            </html>
             `;
             break;
 
@@ -209,9 +211,10 @@ function abrirTela(event) {
             break;
 
         case "notificacao":
+            document.getElementById('notificacao').classList.add('desativado');
             conteudo.innerHTML = `
                 <h2>Notificações</h2>
-        ;`
+            ;`
             carregarNotificacoes();
             break;
 
@@ -224,10 +227,12 @@ function abrirTela(event) {
             break;
 
         case "login":
+            document.getElementById('login').classList.add('desativado');
             window.location.href = "view/login.html";
             break;
 
         case "logout":
+            document.getElementById('logout').classList.add('desativado');
             realizarLogout();
             break;
 
@@ -902,8 +907,8 @@ function carregarSuporte() {
 }
 
 
-async function validarEmailSuporte(){
-    var dados = {email: document.getElementById('email').value};
+async function validarEmailSuporte() {
+    var dados = { email: document.getElementById('email').value };
 
     const res = await criptografar(dados);
 
