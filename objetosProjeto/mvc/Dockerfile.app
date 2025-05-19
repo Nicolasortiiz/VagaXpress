@@ -28,11 +28,11 @@ Passphrase: senha@gpg" > keygen && \
     gpg --batch --generate-key keygen && \
     rm keygen
 
-# Instalando dependências do PHP via Composer
+
 COPY composer.json composer.lock ./
 RUN composer install
 
-# Copia todos os arquivos do host (serão sobrescritos se for montado como volume)
+
 
 
 COPY entrypoint.sh /usr/local/bin/

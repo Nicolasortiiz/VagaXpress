@@ -378,7 +378,7 @@ class UsuarioController
             echo json_encode(["error" => false, "login" => 0]);
             exit;
         }
-        echo json_encode(["error" => false, "lgoin" => 1]);
+        echo json_encode(["error" => false, "login" => 1]);
     }
 
 
