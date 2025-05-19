@@ -67,11 +67,11 @@ function abrirTela(event) {
             conteudo.innerHTML = `
                 <h2>Página Inicial</h2>
                 <p>Bem-vindo ao VagaXpress! Escolha uma opção no menu lateral.</p>
-
-                <h1>Seja bem vindo!</h1>
-
-                <div class="info-container">
-                    <h2>Como funciona o nosso estacionamento?</h2>
+                <br>
+                <h1 class="info-container">Seja bem vindo!</h1>
+                <br>
+                <div>
+                    <h2>Como funciona o nosso estacionamento?</h2><br>
                     <p>
                         VagaXpress oferece agendamento fácil e rápido para garantir sua vaga com antecedência. 
                         Basta selecionar sua placa, escolher a data e horário desejados, e pronto! 
@@ -79,7 +79,7 @@ function abrirTela(event) {
                         Além disso, facilitamos o pagamento das suas dívidas para que você possa utilizar nossos serviços com tranquilidade.
                     </p>
                 </div>
-
+                <br>
                 <img 
                     src="view/imgs/imagem_promocional.png" 
                     alt="Imagem de divulgação do estacionamento" 
