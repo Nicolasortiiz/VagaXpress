@@ -39,6 +39,10 @@ body {
     overflow-y: auto;
 }
 
+.info-container{
+    border-bottom: black solid 1px;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
