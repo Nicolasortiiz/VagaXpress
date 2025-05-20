@@ -18,6 +18,7 @@ window.onload = function () {
                 document.getElementById("login").style.display = "none";
             } else if (data.login == 0) {
                 //encaminhar para index.html
+                //window.location.href = "../index.html";
             }
             if (data.pubkey) {
                 chavePublica = data.pubkey;
@@ -124,7 +125,7 @@ async function realizarLogout() {
         .then(response => response.json())
         .then(data => {
             if (data.logout) {
-                location.reload();
+                window.location.href = "../index.html";
             }
 
         })
