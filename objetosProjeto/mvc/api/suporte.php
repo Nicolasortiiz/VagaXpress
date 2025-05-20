@@ -21,11 +21,11 @@ $texto = $data['texto'] ?? '';
 $token = $data['token'] ?? '';
 
 switch ($action) {
-    case 'confirmar_email':
+    case 'validar_email':
         $controller->confirmarEmail($email);
         break;
     case 'enviar_suporte_deslogado':
-        $controller->enviarSuporteDeslogado($email,$texto, $token);
+        $controller->enviarSuporteDeslogado($email,$texto, $token, $tipoMsg);
         break;
     case 'enviar_suporte_logado':
         $controller->enviarSuporteLogado($texto,$tipoMsg);

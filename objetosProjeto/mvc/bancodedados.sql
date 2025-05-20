@@ -69,6 +69,7 @@ CREATE TABLE Suporte (
     idSuporte INT AUTO_INCREMENT PRIMARY KEY,
     mensagem TEXT NOT NULL,
     email VARCHAR(100) NOT NULL,
+    assunto VARCHAR(100) NOT NULL,
     tipo VARCHAR(50) NOT NULL
 );
 

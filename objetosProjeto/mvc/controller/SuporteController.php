@@ -34,19 +34,19 @@ class SuporteController
         }
     }
 
-    public function enviarSuporteDeslogado($email, $texto, $token){
+    public function enviarSuporteDeslogado($email, $texto, $token, $tipoMsg){
         if($texto == null || $email == null){
-            json_encode(['error' => true, 'msg' => 'A mensagem e o e-mail nao podem ser vazios!']);
+            echo json_encode(['error' => true, 'msg' => 'A mensagem e o e-mail nao podem ser vazios!']);
             exit;
         }
         if($token != $_SESSION['token'] || $_SESSION['token'] == null){
-            json_encode(['error' => true, 'msg' => 'Token invalido!']);
+            echo json_encode(['error' => true, 'msg' => 'Token invalido!']);
             exit;
         }else{
             $suporte = new Suporte();
             $suporte->setEmail($email);
             $suporte->setMensagem($texto);
-            $suporte->setTipo("Deslogado");
+            $suporte->setTipo($tipoMsg);
 
             if($this->SuporteDAO->enviarMensagem($suporte)){
                 echo json_encode(['error' => false]);

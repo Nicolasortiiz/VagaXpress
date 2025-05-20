@@ -96,7 +96,7 @@ function abrirTela(event) {
             conteudo.innerHTML = `
                 <h2>Agendamento de Estacionamento</h2>
                 <form id='formAgendamento' onsubmit="event.preventDefault();validarAgendamento();">
-                    <label for="carros">Escolha uma placa:</label>
+                    <label id="LabelCarros" for="carros">Escolha uma placa:</label>
                     <select id="carros">
                         <option value="">Carregando...</option>
                     </select>
@@ -143,7 +143,9 @@ function abrirTela(event) {
             </div>
         </div>
             `;
+
             carregarPlacasPerfil();
+
             carregarDadosPagamento();
 
 
@@ -587,6 +589,7 @@ function cancelarPagamento() {
 
 
 
+
 function carregarPlacasPerfil() {
     fetch("/gateway.php/api/veiculo?action=retornar_placas")
         .then(response => response.json())
@@ -605,6 +608,7 @@ function carregarPlacasPerfil() {
             }
         })
         .catch(error => console.error(error));
+        
 }
 
 function formatarCpf(input) {
@@ -703,15 +707,18 @@ function carregarDadosPagamento() {
         .then(data => {
             const tabelaAgendadas = document.getElementById('tabelaAgendadas').querySelector('tbody');
             const tabelaRegistros = document.getElementById('tabelaRegistros').querySelector('tbody');
-            const divPagamento = document.getElementById('divTelaPagamento');
+            const labelCarros = document.getElementById('LabelCarros');
 
             tabelaAgendadas.innerHTML = "";
             tabelaRegistros.innerHTML = "";
-            divPagamento.innerHTML = "";
+            labelCarros.innerHTML = "";
 
             if (data.error) {
-                divPagamento.innerHTML = `<p>${data.msg}</p>`;
-                return;
+                labelCarros.innerHTML = `<p>${data.msg}</p>`;
+                document.getElementById('botaoAgendar').disabled = true;
+                document.getElementById('botaoAgendar').classList.add('desativado');
+                document.getElementById('pagarDivida').disabled = true;
+                document.getElementById('pagarDivida').classList.add('desativado');
             }
 
             if (!data.agendamentos || data.agendamentos.length === 0) {
@@ -766,8 +773,6 @@ function carregarDadosPagamento() {
         })
         .catch(error => {
             console.error('Erro ao carregar dados de pagamento:', error);
-            const divPagamento = document.getElementById('divTelaPagamento');
-            divPagamento.innerHTML = `<p>Erro ao carregar dados. Tente novamente.</p>`;
         });
 }
 
@@ -964,6 +969,12 @@ async function enviarSuporteDeslogado() {
         .then(data => {
             if (data.error) {
                 window.alert(data.msg);
+            } else {
+                window.alert('Mensagem enviada com sucesso!');
+                document.getElementById("conteudo_suporte").innerHTML = ``
+                document.getElementById('email').value = '';
+                document.getElementById('textoSuporte').value = '';
+
             }
         })
         .catch(error => console.error(error));
@@ -997,6 +1008,11 @@ async function enviarSuporteLogado() {
         .then(data => {
             if (data.error) {
                 window.alert(data.msg);
+            }else{
+                document.alert("Mensagem enviada com sucesso!");
+                document.getElementById("conteudo_suporte").innerHTML = ``
+                document.getElementById('textoSuporte').value = '';
+
             }
         })
         .catch(error => console.error(error));
