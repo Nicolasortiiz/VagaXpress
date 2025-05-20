@@ -22,18 +22,26 @@ class MensagemController{
         echo json_encode($notificacoes);
     }
 
-    public function incluirNotificacao($params) {
-        $$mensagem = $params['notificacao'] ?? null;
-    
-        $notificacao = new MensagemDAO();
-        $notificacao->setMensagem($mensagem);
-    
-        $resultado = $this->MensagemDAO->inserirNotificacao($notificacao);
-    
+    public function enviar_notificacao($params) {
+        $mensagemTexto = $params['notificacao']['placa'] ?? null;
+
+        if (!$mensagemTexto) {
+            echo json_encode([
+                'status' => 'erro',
+                'mensagem' => 'Nenhuma mensagem recebida.'
+            ]);
+            return;
+        }
+
+        $mensagem = new Mensagem();
+        $mensagem->setMensagem($mensagemTexto);
+
+        $resultado = $this->MensagemDAO->inserirNotificacao($mensagem);
+
         echo json_encode([
             'status' => $resultado ? 'sucesso' : 'erro',
             'mensagem' => $resultado ? 'Notificação inserida com sucesso.' : 'Erro ao inserir notificação.'
         ]);
     }
-    
+
 }

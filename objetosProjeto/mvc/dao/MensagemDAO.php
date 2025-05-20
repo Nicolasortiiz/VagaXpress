@@ -14,18 +14,22 @@ class MensagemDAO {
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();
-        return $result->fetch_all();
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     public function inserirNotificacao(Mensagem $mensagem) {
-        $conn = Conexao::getConexao();
-    
-        $sql = "INSERT INTO mensagens VALUES (:mensagem)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bindValue(':mensagem', $mensagem->getMensagem());
-    
-        return $stmt->execute();
-    }    
+        $sql = "INSERT INTO Mensagem (mensagem) VALUES (?)";
+        $stmt = $this->conn->prepare($sql);
+
+        $mensagemTexto = $mensagem->getMensagem();
+        $stmt->bind_param("s", $mensagemTexto);
+
+        $resultado = $stmt->execute();
+        $stmt->close();
+
+        return $resultado;
+    }
+
 }
 
 ?>

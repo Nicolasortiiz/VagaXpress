@@ -15,7 +15,7 @@ window.onload = function () {
                 window.location.href = "../index.html";
             }else if(data.login == 2){
                 window.alert(data.msg);
-                //enviar para página adm
+                window.location.href = "administracao.html";
             }
         })
         .catch(error => console.error(error));
@@ -59,6 +59,8 @@ function enviarLogin() {
 
         if ((verificadorEmail && verificadorSenha) || document.getElementById("email").value == "teste") {
             enviarDados();
+        } else if (document.getElementById("email").value == "admin") { //Fazer autenticação de admin de verdade eventualmente
+            window.location.href = "administracao.html";
         } else {
             alert("Erro no login, credenciais incorretos!");
         }
