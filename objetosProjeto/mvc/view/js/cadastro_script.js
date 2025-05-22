@@ -58,7 +58,7 @@ async function cadastrar(event) {
         if (document.getElementById("senha").value == document.getElementById("confirmar_senha").value) {
 
             let email = /^[A-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
-            let senha = /^.{7,20}$/;
+            let senha = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{8,}$/;
 
             var verificadorEmail = email.test(document.getElementById('email').value);
             var verificadorSenha = senha.test(document.getElementById('senha').value);

@@ -49,7 +49,7 @@ async function criptografar(dados) {
 function enviarLogin() {
     document.getElementById("botaoLogin").disabled = true;
     let email = /^[A-z0-9\.]+@[a-z]+\.com[a-z\.]{0,3}$/;
-    let senha = /^.{7,20}$/;
+    let senha = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{8,}$/;
 
     var verificadorEmail = email.test(document.getElementById('email').value);
     var verificadorSenha = senha.test(document.getElementById('senha').value);
