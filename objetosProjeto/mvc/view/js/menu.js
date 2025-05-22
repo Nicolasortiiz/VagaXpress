@@ -27,7 +27,7 @@ window.onload = function () {
             document.querySelector('body').style.display = 'flex';
         })
         .catch(error => console.error(error));
-
+    carregarVagas();
 }
 
 async function criptografar(dados) {
@@ -69,6 +69,8 @@ function abrirTela(event) {
                 <p>Bem-vindo ao VagaXpress! Escolha uma opção no menu lateral.</p>
                 <br>
                 <h1 class="info-container">Seja bem vindo!</h1>
+                <br>
+                <p>Vagas Disponíveis: <span id="vagasTotal"></span></p>
                 <br>
                 <div>
                     <h2>Como funciona o nosso estacionamento?</h2><br>
@@ -252,6 +254,19 @@ async function realizarLogout() {
                 location.reload();
             }
 
+        })
+        .catch(error => console.error(error));
+}
+
+function carregarVagas(){
+    fetch("/gateway.php/api/vagaOcupada?action=retornar_vagas")
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                window.alert(data.msg);
+            } else {
+                document.getElementById('vagasTotal').textContent = parseFloat(data.vagasLivres);
+            }
         })
         .catch(error => console.error(error));
 }

@@ -149,6 +149,8 @@ class RegistroController
             exit;
         }
     }
+
+
 }
 
 ?>
