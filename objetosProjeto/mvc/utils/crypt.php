@@ -15,7 +15,6 @@ function encrypt($data) {
     $dataGPG = [
         "k" => base64_encode($key),
         "iv" => base64_encode($iv),
-        "resultado" => base64_encode($encrypted_data)
     ];
     
     $gnupg = new gnupg();
@@ -27,8 +26,11 @@ function encrypt($data) {
     if (empty($encryptedGPG)) {
         throw new Exception("Falha na criptografia GPG");
     }
-    
-    return ['cript' => $encryptedGPG];
+    $encryptedData = [
+        "key" => $encryptedGPG,
+        "data" => base64_encode($encrypted_data)
+    ];
+    return ['cript' => $encryptedData];
 }
 
 function enviaDados($url,$data){
