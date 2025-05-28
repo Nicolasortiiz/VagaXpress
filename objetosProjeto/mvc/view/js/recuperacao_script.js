@@ -65,7 +65,7 @@ function enviaEmail() {
 
 function verificaSenha() {
     document.getElementById("botaoSenha").disabled = true;
-    let senha = /^.{7,20}$/;
+    let senha = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{8,}$/;
 
     var verificadorSenha = senha.test(document.getElementById('senha').value);
     if (document.getElementById('senha').value != "" &&
