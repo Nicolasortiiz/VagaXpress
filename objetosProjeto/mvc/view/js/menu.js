@@ -780,7 +780,7 @@ function carregarDadosPagamento() {
 
             }
             if (data.total != null) {
-                document.getElementById('dividaTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
+                document.getElementById('dividaTotal').textContent = parseFloat(data.total).toFixed(2).replace(".", ",");
             } else {
                 document.getElementById('dividaTotal').textContent = "0,00";
             }

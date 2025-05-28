@@ -14,18 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $action = $_GET['action'] ?? '';
 $controller = new RegistroController();
-$placas = $data['placas'] ?? '';
 $placa = $data['placa'] ?? '';
 $nome = $data['nome'] ?? '';
 $cpf = $data['cpf'] ?? '';
 
 
 switch ($action) {
-    case 'retornar_vagas_devedoras':
-        $controller->procurarPlacasDevedoras($placas);
-        break;
     case 'pagar_vagas':
-        $controller->pagarVagas( $nome, $cpf);
+        $controller->pagarVagas($nome, $cpf);
         break;
     case 'validar_remocao':
         $controller->validarExcluir($placa);

@@ -56,7 +56,6 @@ CREATE TABLE VagaAgendada (
 CREATE TABLE VagaOcupada (
     idVagas INT AUTO_INCREMENT PRIMARY KEY,
     idRegistro INT NOT NULL,
-    idVeiculoEstacionado INT NOT NULL,
     FOREIGN KEY (idRegistro) REFERENCES Registro(idRegistro) ON DELETE CASCADE
 );
 

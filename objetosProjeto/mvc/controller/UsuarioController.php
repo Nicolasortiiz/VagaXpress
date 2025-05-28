@@ -334,12 +334,12 @@ class UsuarioController
         $usuario = new Usuario();
         $usuario->setIdUsuario($id);
         $saldo = floatval($this->UsuarioDAO->retornarSaldo($usuario));
-        if ($valor <= 0 || $saldo <= 0) {
+        if ($valor <= 0) {
             echo json_encode(["error" => true, "msg" => "Erro ao realizar pagamento, tente novamente!"]);
             exit;
         }
 
-        if ($valor > $saldo) {
+        if ($valor > $saldo || $saldo <= 0) {
             echo json_encode(["error" => true, "msg" => "Saldo insuficiente!"]);
             exit;
         }
