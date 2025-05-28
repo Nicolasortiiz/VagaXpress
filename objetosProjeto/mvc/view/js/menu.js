@@ -178,6 +178,15 @@ function abrirTela(event) {
                         <button class="botaoPlaca" type="submit">Cadastrar</button>
                     </form>
                 </div>
+                <div>
+                    <p>Cadastrar Telegram</p>
+                    <form onsubmit="event.preventDefault(); cadastraChatId();">
+                        <input id="chatId" placeholder="Chave API"> <br>
+                        <button id='botaoAdicionarTelegram' class="botaoPlaca" type="submit">Adicionar</button>
+                        
+                    </form>
+                    <button id='botaoRemoverTelegram' class="botaoPlaca" style="background-color: red;" onclick="removerChatId()">Remover</button>
+                </div>
             </div>
 
             <div class="tabelas-usuario">
@@ -576,7 +585,56 @@ function fecharModalNota() {
 }
 
 
+async function cadastraChatId() {
+    if(document.getElementById('chatId').value == '') {
+        window.alert("Por favor, preencha o campo com a chave API do Telegram.");
+        return;
+    }
+    document.getElementById('botaoAdicionarTelegram').classList.add('desativado');
+    document.getElementById('botaoAdicionarTelegram').disabled = true;
+    document.getElementById('botaoAdicionarTelegram').textContent = 'Adicionando...';
+    
+    var dados = { chatId: document.getElementById('chatId').value };
 
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/usuario?action=adicionar_chat", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cript: res })
+    })
+        .then(response => response.json())
+        .then(data => {
+            window.alert(data.msg);
+        })
+        .catch(error => {
+            console.error("Erro ao buscar detalhes da nota fiscal:", error);
+        });
+    document.getElementById('botaoAdicionarTelegram').classList.remove('desativado');
+    document.getElementById('botaoAdicionarTelegram').disabled = false;
+    document.getElementById('botaoAdicionarTelegram').textContent = 'Adicionar';
+
+}
+
+function removerChatId() {
+    document.getElementById('botaoRemoverTelegram').classList.add('desativado');
+    document.getElementById('botaoRemoverTelegram').disabled = true;
+    document.getElementById('botaoRemoverTelegram').textContent = 'Removendo...';
+
+    fetch("/gateway.php/api/usuario?action=remover_chat")
+        .then(response => response.json())
+        .then(data => {
+            window.alert(data.msg);
+        })
+        .catch(error => {
+            console.error("Erro ao buscar detalhes da nota fiscal:", error);
+        });
+    document.getElementById('botaoRemoverTelegram').classList.remove('desativado');
+    document.getElementById('botaoRemoverTelegram').disabled = false;
+    document.getElementById('botaoRemoverTelegram').textContent = 'Remover';
+}
 
 /* Página Agendamento/Pagamento */
 

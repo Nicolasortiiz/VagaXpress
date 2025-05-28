@@ -381,6 +381,61 @@ class UsuarioController
         echo json_encode(["error" => false, "login" => 1]);
     }
 
+    public function removerChat()
+    {
+        if (!$this->validarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        }
+        $usuario = new Usuario();
+        $usuario->setIdUsuario($_SESSION["usuario_id"]);
+        $msg = $this->UsuarioDAO->removerChat($usuario);
+        echo json_encode(["error" => false, "msg" => $msg]);
+
+    }
+
+    public function adicionarChat($chatId)
+    {
+        if (!$this->validarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        }
+        $usuario = new Usuario();
+        $usuario->setChatId($chatId);
+        $usuario->setIdUsuario($_SESSION["usuario_id"]);
+        $msg = $this->UsuarioDAO->adicionarChat($usuario);
+        echo json_encode(["error" => false, "msg" => $msg]);
+        
+    }
+
+    function enviarNotificacaoTelegram($mensagem) {
+        if (!$this->validarLogin()) {
+            return false;
+        }
+        $token = '';
+
+        $usuario = new Usuario();
+        $usuario->setIdUsuario($_SESSION["usuario_id"]);
+        $chatId = $this->UsuarioDAO->retornarChatId($usuario);
+        if($chatId == null || $chatId == '') {
+            return false;
+        }
+
+        $url = "https://api.telegram.org/bot$token/sendMessage";
+
+        $dados = [
+            'chat_id' => $chatId,
+            'text' => $mensagem
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $dados);
+        $resposta = curl_exec($ch);
+        curl_close($ch);
+
+        return $resposta;
+    }
 
 }
 
