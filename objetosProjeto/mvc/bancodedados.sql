@@ -73,6 +73,6 @@ CREATE TABLE Suporte (
     tipo VARCHAR(50) NOT NULL
 );
 
-INSERT INTO Usuario (nome, email, senha) VALUES ('Admin', 'admin@vagaxpress.com', 'admin.senha123');
-INSERT INTO Usuario (nome, email, senha) VALUES ('teste', 'teste@mail.com', 'teste');
+INSERT INTO Usuario (nome, email) VALUES ('Admin', 'admin@vagaxpress.com');
+INSERT INTO Usuario (nome, email) VALUES ('teste', 'teste@mail.com');
 INSERT INTO Estacionamento (totalVagas, valorHora) VALUES (100, 5.00);

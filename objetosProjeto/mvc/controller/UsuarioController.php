@@ -3,6 +3,7 @@ require_once __DIR__ . "/../dao/UsuarioDAO.php";
 require_once __DIR__ . "/../model/Usuario.php";
 require_once __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . "/../controller/VeiculoController.php";
+require_once __DIR__ . "/../utils/auth.php";
 
 use PHPMailer\PHPMailer\PHPMailer;
 use OTPHP\TOTP;
@@ -19,11 +20,13 @@ class UsuarioController
 {
     private $UsuarioDAO;
     private $VeiculoController;
+    private $Auth;
 
     public function __construct()
     {
         $this->UsuarioDAO = new UsuarioDAO();
         $this->VeiculoController = new VeiculoController();
+        $this->Auth = new Auth();
 
     }
 
@@ -38,9 +41,11 @@ class UsuarioController
         }
     }
 
-    public function enviarEmail($email, $nome, $token = false)
+    public function enviarEmail($email, $nome)
     {
+        $token = random_int(100000, 999999);
 
+        $_SESSION['token'] = $token;
         $otp = TOTP::create();
         $otp->setLabel('VagaXpress');
         $secret = $otp->getSecret();
@@ -62,7 +67,7 @@ class UsuarioController
         $mail->addAddress($email, $nome);
         $mail->Subject = "Confirmação de conta";
 
-        $token = random_int(100000, 999999);
+
 
         $mensagem = "<div style='font-family: Arial, sans-serif;'>";
         $mensagem .= "<h2>Código de autenticação:</h2>";
@@ -74,9 +79,8 @@ class UsuarioController
         $mail->msgHTML($mensagem);
         $mail->send();
 
-
         $_SESSION['qr'] = $secret;
-        $_SESSION['token'] = $token;
+
 
         echo json_encode(['error' => false]);
     }
@@ -86,11 +90,13 @@ class UsuarioController
         if ($token == $_SESSION['token']) {
             $segredo = $_SESSION['qr'];
             $saldo = 0.00;
-            unset($_SESSION['token']);
-            unset($_SESSION['qr']);
+
 
             $usuario = new Usuario(0, $nome, $email, $saldo, $segredo);
-            if ($this->UsuarioDAO->cadastrar($usuario, $senha)) {
+            if ($this->Auth->registro($email, $senha)) {
+                $this->UsuarioDAO->cadastrar($usuario);
+                unset($_SESSION['token']);
+                unset($_SESSION['qr']);
                 echo json_encode(['error' => false]);
             } else {
                 echo json_encode(['error' => true, 'msg' => 'Erro ao cadastrar a conta!']);
@@ -101,18 +107,7 @@ class UsuarioController
         }
     }
 
-    public function validarConta($email, $senha)
-    {
-
-        $usuario = new Usuario(0, '', $email, 0.0, '');
-        if ($this->UsuarioDAO->validarConta($usuario, $senha)) {
-            echo json_encode(['error' => false]);
-        } else {
-            echo json_encode(['error' => true, 'msg' => 'Conta nao encontrada, verifique o e-mail e a senha!']);
-        }
-    }
-
-    public function validarOTP($email, $token, $hora)
+    public function validarOTP($email, $senha, $token, $hora)
     {
         // tirar usuário teste
         if ($email === "teste") {
@@ -123,12 +118,23 @@ class UsuarioController
                 $_SESSION["email"] = $email;
                 $_SESSION["usuario_id"] = $id;
                 $_SESSION["ultima_atividade"] = time();
+                $_SESSION["expires_in"] = 'teste';
+                $_SESSION["refresh_token"] = 'teste';
+                $_SESSION["id_token"] = 'teste';
+                $_SESSION["access_token"] = 'teste';
                 echo json_encode(['error' => false]);
                 exit;
             } else {
                 echo json_encode(['error' => true, 'msg' => 'Erro ao realizar login, tente novamente!']);
                 exit;
             }
+        }
+
+        $tokens = $this->Auth->login($email, $senha);
+
+        if (!$tokens) {
+            echo json_encode(['credError' => true, 'msg' => 'Conta nao encontrada, verifique o e-mail e a senha!']);
+            exit;
         }
 
         $usuario = new Usuario(0, '', $email, 0.0, '');
@@ -142,7 +148,6 @@ class UsuarioController
             if ($usuario->getIdUsuario() > 0) {
                 $_SESSION["email"] = $usuario->getEmail();
                 $_SESSION["usuario_id"] = $usuario->getIdUsuario();
-                $_SESSION["ultima_atividade"] = time();
                 echo json_encode(['error' => false]);
             } else {
                 echo json_encode(['error' => true, 'msg' => 'Erro ao realizar login, tente novamente!']);
@@ -157,10 +162,17 @@ class UsuarioController
     public function validarEmail($email)
     {
         $usuario = new Usuario(0, '', $email, 0.0, '');
-        $nome = $this->UsuarioDAO->encontrarNome($usuario);
-        if ($nome) {
-            $this->enviarEmail($email, $nome);
-        } else {
+
+        if ($this->Auth->procuraUsuario($email)) {
+
+            $nome = $this->UsuarioDAO->encontrarNome($usuario);
+            if ($nome) {
+                $this->enviarEmail($email, $nome);
+            } else {
+                echo json_encode(['error' => true, 'msg' => 'Email nao cadastrado!']);
+            }
+
+        }else{
             echo json_encode(['error' => true, 'msg' => 'Email nao cadastrado!']);
         }
     }
@@ -174,7 +186,11 @@ class UsuarioController
             $segredo = $_SESSION['qr'];
             unset($_SESSION['qr']);
             $usuario = new Usuario(0, '', $email, 0.0, $segredo);
-            if ($this->UsuarioDAO->updateUsuario($usuario, $senha, $segredo)) {
+
+            if (
+                $this->Auth->updateSenha($email, $senha) &&
+                $this->UsuarioDAO->updateUsuario($usuario, $segredo)
+            ) {
                 echo json_encode(['error' => false]);
             } else {
                 echo json_encode(['error' => true, 'msg' => 'Erro ao atualizar a conta, tente novamente!']);
@@ -189,18 +205,8 @@ class UsuarioController
     public function validarLoginAutenticacao()
     {
         $pubkey = shell_exec("gpg --armor --export nicolas.ortiz@pucpr.edu.br");
-        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
-            $email = $_SESSION["email"];
-            $ultima_atividade = $_SESSION["ultima_atividade"];
-
-            if (time() - $ultima_atividade > 3600) {
-                session_unset();
-                session_destroy();
-
-                echo json_encode(["login" => 0, "pubkey" => $pubkey]);
-                exit;
-            }
-            if ($email == "admin@vagaxpress.com") {
+        if ($this->Auth->verificarLogin()) {
+            if ($this->Auth->obterGruposDoToken() == "Admin") {
                 echo json_encode(["login" => 2, "msg" => "Administrador já está logado!"]);
                 exit;
             } else {
@@ -214,52 +220,37 @@ class UsuarioController
 
     public function validarLoginPrincipal()
     {
+
         $pubkey = shell_exec("gpg --armor --export");
-        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
-            $email = $_SESSION["email"];
-            $ultima_atividade = $_SESSION["ultima_atividade"];
-        } else {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
             exit;
         }
-
-        if (time() - $ultima_atividade > 3600) {
-            session_unset();
-            session_destroy();
-            echo json_encode(["login" => 0, "msg" => "Sessão expirada", "pubkey" => htmlspecialchars($pubkey)]);
+        $grupo = $this->verificarGrupo();
+        if($grupo){
+            echo json_encode(["login" => $grupo]);
             exit;
+        }else{
+            echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
         }
 
-        if ($email == "admin@vagaxpress.com") {
-            echo json_encode(["login" => 2, "pubkey" => htmlspecialchars($pubkey)]);
-            exit;
-        } else {
-            echo json_encode(["login" => 1, "pubkey" => htmlspecialchars($pubkey)]);
-            exit;
-        }
     }
 
-    public function validarLogin()
-    {
-        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
-            $ultima_atividade = $_SESSION["ultima_atividade"];
-            if (time() - $ultima_atividade > 3600) {
-                session_unset();
-                session_destroy();
-                return false;
-            }
-            $_SESSION["ultima_atividade"] = time();
-            return true;
+    public function verificarGrupo(){
+        $grupo = $this->Auth->obterGruposDoToken();
 
-        } else {
-            return false;
+        if(in_array('Admin', $grupo)){
+            return 2;
+        }else if(in_array('User', $grupo)){
+            return 1;
         }
+        return false;
     }
 
     public function adicionarSaldo($valor)
     {
 
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -287,7 +278,7 @@ class UsuarioController
 
     public function retornarInfosPerfil()
     {
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -353,7 +344,7 @@ class UsuarioController
         $usuario = new Usuario();
         $usuario->setIdUsuario($id);
         $saldo = floatval($this->UsuarioDAO->retornarSaldo($usuario));
-        
+
         if ($saldo < $valor) {
             echo json_encode(['error' => true, 'msg' => 'Saldo insuficiente!']);
             exit;
@@ -373,8 +364,9 @@ class UsuarioController
         }
     }
 
-    public function validarLoginSuporte(){
-        if (!$this->validarLogin()) {
+    public function validarLoginSuporte()
+    {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => false, "login" => 0]);
             exit;
         }

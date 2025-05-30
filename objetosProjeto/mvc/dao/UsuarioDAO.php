@@ -8,14 +8,14 @@ class UsuarioDAO {
         $this->conn = Conexao::getInstancia()->getConexao();
     }
 
-    public function cadastrar(Usuario $usuario, $senha){
-        $queryInsert = "INSERT INTO Usuario (nome, email, senha, segredo, saldo) VALUES (?, ?, ?, ?, ?)";
+    public function cadastrar(Usuario $usuario){
+        $queryInsert = "INSERT INTO Usuario (nome, email, segredo, saldo) VALUES (?, ?, ?, ?)";
         $stmt = $this->conn->prepare($queryInsert);
         $nome = $usuario->getNome();
         $email = $usuario->getEmail();
         $segredo = $usuario->getSegredo();
         $saldo = $usuario->getSaldo();
-        $stmt-> bind_param("ssssd", $nome,$email, $senha, $segredo, $saldo);
+        $stmt-> bind_param("sssd", $nome,$email, $segredo, $saldo);
         $result = $stmt-> execute();
         $stmt->close();
         if(!$result){
@@ -41,11 +41,11 @@ class UsuarioDAO {
         }
     }
 
-    public function validarConta(Usuario $usuario,$senha): bool {
+    public function validarConta(Usuario $usuario): bool {
         $email = $usuario->getEmail();
-        $query = "SELECT * FROM Usuario WHERE email = ? AND senha = ?";
+        $query = "SELECT * FROM Usuario WHERE email = ?";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("ss", $email, $senha);
+        $stmt->bind_param("s", $email);
         $stmt->execute();
         $resultado = $stmt->get_result();
         $stmt->close();
@@ -105,11 +105,11 @@ class UsuarioDAO {
         }
     }
 
-    public function updateUsuario(Usuario $usuario, $senha, $segredo): bool {
-        $queryUpdate = 'UPDATE Usuario SET senha = ?, segredo = ? WHERE email = ?';
+    public function updateUsuario(Usuario $usuario, $segredo): bool {
+        $queryUpdate = 'UPDATE Usuario SET segredo = ? WHERE email = ?';
         $stmt = $this->conn->prepare($queryUpdate);
         $email = $usuario->getEmail();
-        $stmt->bind_param('sss', $senha, $segredo, $email);
+        $stmt->bind_param('ss', $segredo, $email);
         $result = $stmt->execute();
         $stmt->close();
     

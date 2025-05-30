@@ -31,11 +31,8 @@ switch ($action) {
     case 'cadastro':
         $controller->cadastro($nome, $email, $senha, $token);
         break;
-    case 'validar_conta':
-        $controller->validarConta($email, $senha);
-        break;
     case 'validar_otp':
-        $controller->validarOTP($email, $token, $hora);
+        $controller->validarOTP($email, $senha,$token, $hora);
         break;
     case 'validar_email':
         $controller->validarEmail($email);
