@@ -195,6 +195,16 @@ class UsuarioDAO {
     
         return $result;
     }
+
+    public function excluir_usuario(int $id_usuario) {
+        $queryDelete = 'DELETE FROM Usuario WHERE idUsuario=?';
+        $stmt = $this->conn->prepare($queryDelete);
+        $stmt->bind_param('i', $id_usuario);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        return $result;
+    }
 }
 
 ?>

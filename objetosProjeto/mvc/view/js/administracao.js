@@ -167,6 +167,29 @@ function carregarNotificacoes() {
         });
 }
 
+async function excluir_usuario() {
+    try {
+        var id_usuario = { id: document.getElementById("usuario").value };
+        const dados = {id_usuario: id_usuario};
+        const res = await criptografar(dados);
+
+        const resposta = await fetch("/api/mensagem.php?action=excluir_usuario", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ cript: res })
+        });
+        const data = await resposta.json();
+        console.log("Resposta do servidor:", data);
+        alert("Usuário excluído com sucesso!");
+
+    } catch (error) {
+        console.error("Erro ao excluir usuário:", error);
+        alert("Erro ao excluir usuário: " + error.message);
+    }
+}
+
 async function enviar_notificacao() {
     try {
         var notificacao = { placa: document.getElementById("notificacao").value };

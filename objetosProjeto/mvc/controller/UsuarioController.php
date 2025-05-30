@@ -381,7 +381,22 @@ class UsuarioController
         echo json_encode(["error" => false, "login" => 1]);
     }
 
-
+    public function excluir_usuario($params) {
+        $usuario = $params['id_usuario'] ?? null;
+    
+        $usuario_dao = new UsuarioDAO();
+        $usuario_dao->excluir_usuario($usuario);
+    
+        $resultado = $this->MensagemDAO->inserirNotificacao($usuario);
+    
+        if ($this->UsuarioDAO->inserirNotificacao($usuario)) {
+            echo json_encode(['error' => false]);
+            exit;
+        } else {
+            echo json_encode(['error' => true, 'msg' => 'Erro ao excluir o saldo!']);
+            exit;
+        }
+    }   
 }
 
 ?>

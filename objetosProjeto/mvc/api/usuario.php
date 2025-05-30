@@ -67,6 +67,9 @@ switch ($action) {
     case 'verificar_login_suporte':
         $controller->validarLoginSuporte();
         break;
+    case 'excluir_usuario';
+        $controller->excluir_usuario($data);
+        break;
     default:
         http_response_code(400);
         echo json_encode(['erro' => 'Erro ao executar a action!']);
