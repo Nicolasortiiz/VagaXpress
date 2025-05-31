@@ -109,30 +109,10 @@ class UsuarioController
 
     public function validarOTP($email, $senha, $token, $hora)
     {
-        // tirar usuário teste
-        if ($email === "teste") {
-            $email = "teste@mail.com";
-            $usuario = new Usuario(0, '', $email, 0.0, '');
-            $id = $this->UsuarioDAO->retornaIdUsuario($usuario);
-            if ($id > 0) {
-                $_SESSION["email"] = $email;
-                $_SESSION["usuario_id"] = $id;
-                $_SESSION["ultima_atividade"] = time();
-                $_SESSION["expires_in"] = 'teste';
-                $_SESSION["refresh_token"] = 'teste';
-                $_SESSION["id_token"] = 'teste';
-                $_SESSION["access_token"] = 'teste';
-                echo json_encode(['error' => false]);
-                exit;
-            } else {
-                echo json_encode(['error' => true, 'msg' => 'Erro ao realizar login, tente novamente!']);
-                exit;
-            }
-        }
+        
+        $login = $this->Auth->login($email, $senha);
 
-        $tokens = $this->Auth->login($email, $senha);
-
-        if (!$tokens) {
+        if (!$login) {
             echo json_encode(['credError' => true, 'msg' => 'Conta nao encontrada, verifique o e-mail e a senha!']);
             exit;
         }

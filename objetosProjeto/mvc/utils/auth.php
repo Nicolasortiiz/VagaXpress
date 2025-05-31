@@ -228,7 +228,7 @@ class Auth
     public function verificarLogin()
     {
         if (
-            isset($_SESSION["access_token"]) && isset($_SESSION["id_token"]) && isset($_SESSION["refresh_token"])&&
+            isset($_SESSION["access_token"]) && isset($_SESSION["id_token"]) && isset($_SESSION["refresh_token"]) &&
             isset($_SESSION["usuario_id"]) && isset($_SESSION["email"])
         ) {
             if (!$this->tokenExpirado()) {
@@ -245,6 +245,22 @@ class Auth
         }
     }
 
+    public function deletarUsuario($email)
+    {
+        try {
+            $this->client->adminDeleteUser([
+                'UserPoolId' => $this->userpoolID,
+                'Username' => $email,
+            ]);
+
+            return true;
+
+        }catch(Exception $e){
+            error_log("Erro: " . $e->getMessage());
+            return false;
+        }
+
+    }
 
 }
 

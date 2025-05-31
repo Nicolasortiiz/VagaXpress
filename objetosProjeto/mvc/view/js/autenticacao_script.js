@@ -57,7 +57,7 @@ function enviarLogin() {
     if (document.getElementById("email").value != "" &&
         document.getElementById("senha").value != "") {
 
-        if ((verificadorEmail && verificadorSenha) || document.getElementById("email").value == "teste") {
+        if ((verificadorEmail && verificadorSenha)) {
             document.querySelector(".input_box").style.display = 'none';
             document.querySelector(".divSMS").style.display = 'flex';
         } else if (document.getElementById("email").value == "admin") { //Fazer autenticação de admin de verdade eventualmente
@@ -72,6 +72,12 @@ function enviarLogin() {
 }
 
 async function validarLogin() {
+    let token = /^[0-9]{6,}$/;
+    var verificadorToken = token.test(document.getElementById('inputSMS').value);
+    if(!verificadorToken){
+        alert("Token inválido!");
+        return;
+    }
     document.getElementById("botaoSMS").disabled = true;
     var dados = {
         data: new Date().toISOString(),

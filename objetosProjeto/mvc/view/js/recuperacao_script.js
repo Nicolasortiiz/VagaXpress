@@ -10,12 +10,12 @@ window.onload = function () {
                 } else {
                     window.alert("Ocorreu um erro, reinicie a página!")
                 }
-            }else if(data.login == 1){
+            } else if (data.login == 1) {
                 window.alert(data.msg);
                 window.location.href = "../index.html";
-            }else if(data.login == 2){
+            } else if (data.login == 2) {
                 window.alert(data.msg);
-                //enviar para página adm
+                window.location.href = "administracao.html";
             }
         })
         .catch(error => console.error(error));
@@ -92,7 +92,13 @@ function verificaSenha() {
     }
 }
 async function verificaEmail() {
-
+    document.getElementById("botaoToken").disabled = true;
+    let email = /^[A-z0-9\.]+@[a-z]+\.com[a-z\.]{0,3}$/;
+    var verificadorEmail = token.test(document.getElementById('email').value);
+    if (!verificadorEmail) {
+        alert("Token inválido!");
+        return;
+    }
     var dados = {
         email: document.getElementById('email').value
     };
@@ -124,6 +130,12 @@ async function verificaEmail() {
 async function verificaToken() {
     document.getElementById("botaoToken").disabled = true;
     if (document.getElementById('token').value != "") {
+        let token = /^[0-9]{6,}$/;
+        var verificadorToken = token.test(document.getElementById('token').value);
+        if (!verificadorToken) {
+            alert("Token inválido!");
+            return;
+        }
         var dados = {
             token: document.getElementById('token').value,
             senha: CryptoJS.SHA256(document.getElementById("senha").value).toString(),
@@ -146,7 +158,7 @@ async function verificaToken() {
 
                 if (data.error) {
                     alert(data.msg);
-                }else{
+                } else {
                     window.location.href = "login.html";
                 }
             })

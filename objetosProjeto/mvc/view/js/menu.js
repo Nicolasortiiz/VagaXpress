@@ -17,7 +17,7 @@ window.onload = function () {
                 document.getElementById("login").style.disabled = true;
                 document.getElementById("login").style.display = "none";
             } else if (data.login == 2) {
-                //encaminhar para página do adm
+                window.location.href = "view/administracao.html";
             }
             if (data.pubkey) {
                 chavePublica = data.pubkey;

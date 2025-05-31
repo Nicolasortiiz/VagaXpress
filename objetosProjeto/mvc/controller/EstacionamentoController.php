@@ -12,6 +12,7 @@ date_default_timezone_set('America/Sao_Paulo');
 class EstacionamentoController
 {
     private $EstacionamentoDAO;
+    
 
     public function __construct()
     {

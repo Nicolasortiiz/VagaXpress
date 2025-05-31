@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../dao/VeiculoDAO.php";
 require_once __DIR__ . "/../model/Veiculo.php";
+require_once __DIR__ . "/../utils/auth.php";
 
 header('Content-Type: application/json');
 if (session_status() == PHP_SESSION_NONE) {
@@ -11,32 +12,17 @@ date_default_timezone_set('America/Sao_Paulo');
 class VeiculoController
 {
     private $VeiculoDAO;
+    private $Auth;
 
     public function __construct()
     {
         $this->VeiculoDAO = new VeiculoDAO();
-    }
-
-    public function validarLogin()
-    {
-        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
-            $ultima_atividade = $_SESSION["ultima_atividade"];
-            if (time() - $ultima_atividade > 3600) {
-                session_unset();
-                session_destroy();
-                return false;
-            }
-            $_SESSION["ultima_atividade"] = time();
-            return true;
-
-        } else {
-            return false;
-        }
+        $this->Auth = new Auth();
     }
 
     public function cadastrarPlaca($placa)
     {
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -59,7 +45,7 @@ class VeiculoController
     }
 
     public function retornarPlacas($id = null){
-        if (!$this->validarLogin() && $id == null) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }

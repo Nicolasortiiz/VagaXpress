@@ -15,10 +15,10 @@
 <body class="menu_cadastro" onsubmit="cadastrar(event)">
     <form class="input_box" id="formId">
        
-        <input class="textbox" name="username" id="username" placeholder="Nome Completo">
-        <input class="textbox" name="email" id="email" placeholder="E-mail"> 
-        <input type="password" class="textbox" name="hash_senha" id="senha" placeholder="Senha">
-        <input type="password" class="textbox" id="confirmar_senha" placeholder="Confirmar senha">
+        <input class="textbox" name="username" id="username" placeholder="Nome Completo" maxlength="60">
+        <input class="textbox" name="email" id="email" placeholder="E-mail" maxlength="70"> 
+        <input type="password" class="textbox" name="hash_senha" id="senha" placeholder="Senha" maxlength="50">
+        <input type="password" class="textbox" id="confirmar_senha" placeholder="Confirmar senha" maxlength="50">
         <br><br>
         <button type="submit" class="botao" id="botaoCadastrar"> Cadastrar </button>
         <a href="login.html">Retornar para login</a>
@@ -27,7 +27,7 @@
     <div class="divToken">
         <a>Um token e um QR Code foram enviados para o seu email!</a>
         <br>
-        <input class="input" type="text" placeholder="Token" id="token">
+        <input class="input" type="text" placeholder="Token" id="token" maxlength="6">
         <br>
         <button class="botao" onclick="verificaToken()" id="botaoToken">Enviar</button>
 

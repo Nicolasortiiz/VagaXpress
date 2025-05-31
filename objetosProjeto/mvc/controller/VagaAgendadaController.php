@@ -3,6 +3,7 @@ require_once __DIR__ . "/../dao/VagaAgendadaDAO.php";
 require_once __DIR__ . "/../model/VagaAgendada.php";
 require_once __DIR__ . "/../utils/crypt.php";
 require_once __DIR__ . "/../controller/EstacionamentoController.php";
+require_once __DIR__ . "/../utils/auth.php";
 
 header('Content-Type: application/json');
 if (session_status() == PHP_SESSION_NONE) {
@@ -15,28 +16,15 @@ class VagaAgendadaController
 {
     private $VagaAgendadaDAO;
     private $EstacionamentoController;
+    private $Auth;
 
     public function __construct()
     {
         $this->VagaAgendadaDAO = new VagaAgendadaDAO();
         $this->EstacionamentoController = new EstacionamentoController();
+        $this->Auth = new Auth();
     }
-    public function validarLogin()
-    {
-        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
-            $ultima_atividade = $_SESSION["ultima_atividade"];
-            if (time() - $ultima_atividade > 3600) {
-                session_unset();
-                session_destroy();
-                return false;
-            }
-            $_SESSION["ultima_atividade"] = time();
-            return true;
-
-        } else {
-            return false;
-        }
-    }
+    
     public function retornarInfosAgendamento($placas)
     {
 
@@ -49,7 +37,7 @@ class VagaAgendadaController
 
     public function cancelarAgendamento($idAgendamento)
     {
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -80,7 +68,7 @@ class VagaAgendadaController
 
     public function cancelarTodosAgendamentos($placa)
     {
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -131,7 +119,7 @@ class VagaAgendadaController
 
     public function procurarAgendamento($placa, $dataEntrada, $horaEntrada)
     {
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -165,7 +153,7 @@ class VagaAgendadaController
     public function criarAgendamento($placa, $dataEntrada, $horaEntrada, $nome, $cpf)
     {
 
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -207,11 +195,11 @@ class VagaAgendadaController
     }
 
     public function retornarDadosPaginaPagamento() {
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
-    
+        
         $url = "http://localhost:8001/veiculo.php?action=retornar_placas";
         $dados = ["id" => $_SESSION["usuario_id"]];
         $resposta = enviaDados($url, $dados);  

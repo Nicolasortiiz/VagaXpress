@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../dao/SuporteDAO.php";
 require_once __DIR__ . "/../model/Suporte.php";
+require_once __DIR__ . "/../utils/auth.php";
 
 header('Content-Type: application/json');
 if (session_status() == PHP_SESSION_NONE) {
@@ -12,26 +13,12 @@ use PHPMailer\PHPMailer\PHPMailer;
 class SuporteController
 {
     private $SuporteDAO;
+    private $Auth;
 
     public function __construct()
     {
         $this->SuporteDAO = new SuporteDAO();
-    }
-    public function validarLogin()
-    {
-        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
-            $ultima_atividade = $_SESSION["ultima_atividade"];
-            if (time() - $ultima_atividade > 3600) {
-                session_unset();
-                session_destroy();
-                return false;
-            }
-            $_SESSION["ultima_atividade"] = time();
-            return true;
-
-        } else {
-            return false;
-        }
+        $this->Auth = new Auth();
     }
 
     public function enviarSuporteDeslogado($email, $texto, $token, $tipoMsg){
@@ -99,7 +86,7 @@ class SuporteController
     }
 
     public function enviarSuporteLogado($texto, $tipoMsg){
-        if(!$this->validarLogin()){
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
