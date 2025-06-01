@@ -1,3 +1,4 @@
+// Carregamento da chave pública e verificação de login
 let chavePublica;
 window.onload = function () {
     document.getElementById('tela_inicial').click();
@@ -27,9 +28,11 @@ window.onload = function () {
             document.querySelector('body').style.display = 'flex';
         })
         .catch(error => console.error(error));
+    // Carrega o número de vagas disponíveis
     carregarVagas();
 }
 
+// Função de criptografia de mensagens
 async function criptografar(dados) {
     var k = CryptoJS.lib.WordArray.random(16);
     var iv = CryptoJS.lib.WordArray.random(16);
@@ -55,6 +58,7 @@ async function criptografar(dados) {
     return res;
 }
 
+// Função para abrir telas da aplicação
 function abrirTela(event) {
     const elementoClicado = event.target.id;
     const conteudo = document.getElementById("conteudo");
@@ -102,48 +106,48 @@ function abrirTela(event) {
                     <select id="carros">
                         <option value="">Carregando...</option>
                     </select>
-                    <input id="data_agendamento" type="date" required>
-                    <input id="hora_agendamento" type="time" required>
+                    <input id="data_agendamento" type="date" min="<?= date('Y-m-d') ?>" required>
+                    <input id="hora_agendamento" type="time" min="<?= date('H:i') ?>" required>
                     <button id="botaoAgendar" type="submit">Agendar</button>
                     
-                </form>
-                <div id='divTelaPagamento'></div>
-                <p class="totalDivida">Total Dívida: R$ <span id="dividaTotal"></span></p>
-                <button id="pagarDivida" onclick="abrirTelaPagamento()">Pagar Divida</button>
-                <div class="tabelas-usuario">
-                <div class="tabela-container">
-                    <h2>Vagas Agendadas</h2>
-                    <table id="tabelaAgendadas">
-                        <thead>
-                            <tr>
-                                <th>Placa</th>
-                                <th>Data</th>
-                                <th>Hora</th> 
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+                    </form>
+                    <div id='divTelaPagamento'></div>
+                    <p class="totalDivida">Total Dívida: R$ <span id="dividaTotal"></span></p>
+                    <button id="pagarDivida" onclick="abrirTelaPagamento()">Pagar Divida</button>
+                    <div class="tabelas-usuario">
+                    <div class="tabela-container">
+                        <h2>Vagas Agendadas</h2>
+                        <table id="tabelaAgendadas">
+                            <thead>
+                                <tr>
+                                    <th>Placa</th>
+                                    <th>Data</th>
+                                    <th>Hora</th> 
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
 
-                <div class="tabela-container">
-                    <h2>Registro de Cobranças</h2>
-                    <table id="tabelaRegistros">
-                        <thead>
-                            <tr>
-                                <th>Placa</th>
-                                <th>DataEntrada</th>
-                                <th>HoraEntrada</th>
-                                <th>DataSaida</th>
-                                <th>HoraSaida</th>
-                                <th>Valor (R$)</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <div class="tabela-container">
+                        <h2>Registro de Cobranças</h2>
+                        <table id="tabelaRegistros">
+                            <thead>
+                                <tr>
+                                    <th>Placa</th>
+                                    <th>DataEntrada</th>
+                                    <th>HoraEntrada</th>
+                                    <th>DataSaida</th>
+                                    <th>HoraSaida</th>
+                                    <th>Valor (R$)</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
             `;
 
             carregarPlacasPerfil();
@@ -170,7 +174,7 @@ function abrirTela(event) {
                 <div>
                     <p>Cadastrar Veículo</p>
                     <form onsubmit="event.preventDefault(); gravarPlaca();">
-                        <input id="placa" placeholder="Placa" required> <br>
+                        <input id="placa" placeholder="Placa" maxlength=7 required> <br>
                         <button class="botaoPlaca" type="submit">Cadastrar</button>
                     </form>
                 </div>
@@ -218,7 +222,7 @@ function abrirTela(event) {
             document.getElementById('notificacao').classList.add('desativado');
             conteudo.innerHTML = `
                 <h2>Notificações</h2>
-            ;`
+            `;
             carregarNotificacoes();
             break;
 
@@ -231,33 +235,34 @@ function abrirTela(event) {
             break;
 
         case "login":
-            document.getElementById('login').classList.add('desativado');
             window.location.href = "view/login.html";
             break;
 
         case "logout":
-            document.getElementById('logout').classList.add('desativado');
             realizarLogout();
             break;
-
 
         default:
             conteudo.innerHTML = "<h2>Bem-vindo ao VagaXpress</h2>";
     }
 }
 
+// Função para realizar logout
 async function realizarLogout() {
     fetch("/gateway.php/api/usuario?action=logout")
         .then(response => response.json())
         .then(data => {
             if (data.logout) {
                 location.reload();
+            }else{
+                window.alert(data.msg);
             }
 
         })
         .catch(error => console.error(error));
 }
 
+// Carrega número de vagas disponíveis
 function carregarVagas(){
     fetch("/gateway.php/api/vagaOcupada?action=retornar_vagas")
         .then(response => response.json())
@@ -269,30 +274,6 @@ function carregarVagas(){
             }
         })
         .catch(error => console.error(error));
-}
-
-async function gravarPlaca() {
-
-    var dados = { placa: document.getElementById("placa").value };
-
-    const res = await criptografar(dados);
-
-    fetch("/gateway.php/api/veiculo?action=cadastrar_placa", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            cript: res
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.msg);
-            carregaVeiculo();
-        })
-        .catch(error => {
-
-            alert("Erro ao cadastrar veículo. Verifique a conexão.");
-        });
 }
 
 /* Scripts Página Notificação */
@@ -333,6 +314,8 @@ function carregarNotificacoes() {
 
 /* Scripts Página Usuário */
 let valorSaldo = '';
+
+// Função para abrir tela de pagamento de saldo
 function botaoSaldo(event) {
     const elementoClicado = event.target.id;
     const conteudo = document.getElementById("conteudo_saldo");
@@ -366,6 +349,38 @@ function botaoSaldo(event) {
     }
 }
 
+// Função de cadastro de placas
+async function gravarPlaca() {
+    let placa = /^[A-Za-z0-9]+$/;
+    var verificadorPlaca = placa.test(document.getElementById("placa").value);
+    if (!verificadorPlaca) {
+        alert("Placa inválida! Use apenas letras e números.");
+        return;
+    }
+
+    var dados = { placa: document.getElementById("placa").value };
+
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/veiculo?action=cadastrar_placa", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            cript: res
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.msg);
+            carregaVeiculo();
+        })
+        .catch(error => {
+
+            alert("Erro ao cadastrar veículo. Verifique a conexão.");
+        });
+}
+
+// Função para formatar o saldo enquato é digitado
 function formatarSaldo(input) {
     let valor = input.value.replace(/\D/g, "");
     if (valor.length > 10) {
@@ -373,14 +388,14 @@ function formatarSaldo(input) {
     }
     valor = (parseFloat(valor) / 100).toFixed(2);
 
-    if (valor > 99999999.99) {
-        valor = 99999999.99;
+    if (valor > 9999.99) {
+        valor = 9999.99;
     }
 
     input.value = "R$ " + valor.replace(".", ",");
 }
 
-
+// Função para adicionar saldo a conta do usuário
 async function adicionarSaldo() {
     document.getElementById('botaoAdicionarSaldo').disabled = true;
     var dados = { saldo: valorSaldo };
@@ -483,7 +498,9 @@ async function carregaVeiculo() {
                     tbody_veiculos.appendChild(tr);
                 });
             } else {
-                console.log("Nenhum veículo cadastrado");
+                tr.innerHTML = `
+                    <td colspan="2">Nenhuma veículo cadastrado.</td>
+            `;
             }
         })
         .catch(error => console.error(error));
@@ -493,7 +510,7 @@ async function deletarVeiculo(placa) {
     if (!confirm(`Tem certeza que deseja deletar o veículo com placa e seus agendamentos ${placa}?`)) {
         return;
     }
-
+    
     document.getElementById('botaoDeletarPlaca').disabled = true;
     var dados = { placa: placa };
 
@@ -649,7 +666,12 @@ async function confirmarPagamento() {
     document.getElementById('botaoPagamento').disabled = true;
     document.getElementById('botaoPagamento').textContent = 'Validando...';
 
-
+    let placa = /^[A-Za-z0-9]+$/;
+    var verificadorPlaca = placa.test(document.getElementById("carros").value);
+    if (!verificadorPlaca) {
+        alert("Placa inválida! Use apenas letras e números.");
+        return;
+    }
     var dados = {
         placa: document.getElementById('carros').value,
         data: document.getElementById('data_agendamento').value,
@@ -739,7 +761,7 @@ function carregarDadosPagamento() {
             if (!data.agendamentos || data.agendamentos.length === 0) {
                 tabelaAgendadas.innerHTML = `
                 <tr>
-                    <td colspan="3">Nenhuma vaga agendada.</td>
+                    <td colspan="4">Nenhuma vaga agendada.</td>
                 </tr>
             `;
             } else {
@@ -759,7 +781,7 @@ function carregarDadosPagamento() {
             if (!data.devedoras || data.devedoras.length === 0) {
                 tabelaRegistros.innerHTML = `
                 <tr>
-                    <td colspan="4">Nenhuma dívida encontrada.</td>
+                    <td colspan="6">Nenhuma dívida encontrada.</td>
                 </tr>
             `;
             } else {
@@ -928,6 +950,14 @@ function carregarSuporte() {
 
 
 async function validarEmailSuporte() {
+    document.getElementById('botaoEnviarSuporte').disabled = true;
+    document.getElementById('botaoEnviarSuporte').textContent = 'Validando...';
+    let email = /^[A-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+    var verificadorEmail = email.test(document.getElementById("email").value);
+    if (!verificadorEmail) {
+        alert("Email inválido! Por favor, insira um email válido.");
+        return;
+    }
     var dados = { email: document.getElementById('email').value };
 
     const res = await criptografar(dados);
@@ -945,13 +975,15 @@ async function validarEmailSuporte() {
         .then(data => {
             if (data.error) {
                 window.alert(data.msg);
+                document.getElementById('botaoEnviarSuporte').disabled = false;
+                document.getElementById('botaoEnviarSuporte').textContent = 'Enviar';
             } else {
                 document.getElementById("conteudo_suporte").innerHTML = `
                 <form onsubmit="event.preventDefault(); enviarSuporteDeslogado();">
                     <h2>Um token foi enviado para o email: ${document.getElementById('email').value}</h2>
                     <label for="token">Token:</label>
                     <input id="token" placeholder="token" required>
-                    <button id="botaoEnviarSuporte" type="submit">Enviar</button>
+                    <button id="botaoEnviarToken" type="submit">Enviar</button>
                 </form>
                 `
             }
@@ -959,14 +991,30 @@ async function validarEmailSuporte() {
         .catch(error => console.error(error));
 }
 
+function sanitizarTexto(texto) {
+    return str
+        .replace(/&/g, " ")
+        .replace(/</g, " ")
+        .replace(/>/g, " ")
+        .replace(/"/g, " ")
+        .replace(/'/g, " ");
+}
+
 async function enviarSuporteDeslogado() {
-    document.getElementById('botaoEnviarSuporte').disabled = true;
-    document.getElementById('botaoEnviarSuporte').textContent = 'Validando...';
+    document.getElementById('botaoEnviarToken').disabled = true;
+    document.getElementById('botaoEnviarToken').textContent = 'Validando...';
+    let token = /^[0-9]{6,}$/;
+    var verificadorToken = token.test(document.getElementById('token').value);
+    
+    if (!verificadorToken) {
+        alert("Token inválido!");
+        return;
+    }
     var dados = {
         token: document.getElementById('token').value,
         email: document.getElementById('email').value,
         tipo: document.getElementById('tipoMensagem').value,
-        texto: document.getElementById('textoSuporte').value
+        texto: sanitizarTexto(document.getElementById('textoSuporte').value.trim())
     };
 
     const res = await criptografar(dados);
@@ -996,16 +1044,17 @@ async function enviarSuporteDeslogado() {
 
 
 
-    document.getElementById('botaoEnviarSuporte').disabled = false;
-    document.getElementById('botaoEnviarSuporte').textContent = 'Enviar';
+    document.getElementById('botaoEnviarToken').disabled = false;
+    document.getElementById('botaoEnviarToken').textContent = 'Enviar';
 }
 
 async function enviarSuporteLogado() {
     document.getElementById('botaoEnviarSuporte').disabled = true;
     document.getElementById('botaoEnviarSuporte').textContent = 'Validando...';
+
     var dados = {
         tipo: document.getElementById('tipoMensagem').value,
-        texto: document.getElementById('textoSuporte').value
+        texto: sanitizarTexto(document.getElementById('textoSuporte').value.trim())
     };
 
     const res = await criptografar(dados);

@@ -97,7 +97,6 @@ class UsuarioDAO {
         $stmt->execute();
         $result = $stmt->get_result();
         $stmt->close();
-
         if($result){
             return $result->fetch_assoc()['nome'];
         }else{

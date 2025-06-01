@@ -109,7 +109,7 @@ class UsuarioController
 
     public function validarOTP($email, $senha, $token, $hora)
     {
-        
+        error_log("EMAILLLLLLLLLLLLLLLLLLLLLLLLLLLLLL " . $email);
         $login = $this->Auth->login($email, $senha);
 
         if (!$login) {
@@ -198,6 +198,8 @@ class UsuarioController
         }
     }
 
+    // Verifica se o usuário está logado e retorna o grupo do usuário
+    // retorna chave pública para o usuário 
     public function validarLoginPrincipal()
     {
 
@@ -208,7 +210,7 @@ class UsuarioController
         }
         $grupo = $this->verificarGrupo();
         if($grupo){
-            echo json_encode(["login" => $grupo]);
+            echo json_encode(["login" => $grupo,"pubkey" => htmlspecialchars($pubkey)]);
             exit;
         }else{
             echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
@@ -216,6 +218,7 @@ class UsuarioController
 
     }
 
+    // Retorna 1 pra usuário comum, 2 para admin e false se não estiver logado
     public function verificarGrupo(){
         $grupo = $this->Auth->obterGruposDoToken();
 
@@ -288,11 +291,15 @@ class UsuarioController
         echo json_encode($resposta);
     }
 
+    // Realiza o logout do usuário, limpando a sessão
     public function realizarLogout()
     {
-        session_unset();
-        session_destroy();
-        echo json_encode(["logout" => true]);
+        if($this->Auth->logout()){
+            echo json_encode(["logout" => true]);
+        }else{
+            echo json_encode(["logout" => false, "msg" => "Erro ao realizar logout!"]);
+        }
+
     }
 
     public function validarPagamentoAgendamento($valor, $placa, $id)

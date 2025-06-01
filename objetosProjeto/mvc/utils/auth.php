@@ -82,7 +82,9 @@ class Auth
 
     public function login($email, $password)
     {
+        error_log($this->clientID);
         try {
+            
             $result = $this->client->initiateAuth([
                 'AuthFlow' => 'USER_PASSWORD_AUTH',
                 'ClientId' => $this->clientID,
@@ -194,21 +196,36 @@ class Auth
         return $agora >= $payload['exp'];
     }
 
+    public function retirarSubIdToken()
+{
+    $idToken = $_SESSION['id_token'] ?? null;
+    $parts = explode('.', $idToken);
+
+    $payload = base64_decode(strtr($parts[1], '-_', '+/'));
+
+    $claims = json_decode($payload, true);
+
+    return $claims['sub'] ?? null;
+}
 
     public function atualizarToken()
     {
-        $token = $_SESSION['refresh_token'];
+        $hash = $this->calculateSecretHash($this->retirarSubIdToken());
+        $token = $_SESSION['refresh_token'] ?? null;
         $result = $this->client->initiateAuth([
             'AuthFlow' => 'REFRESH_TOKEN_AUTH',
+            'ClientId' => $this->clientID,
             'AuthParameters' => [
                 'REFRESH_TOKEN' => $token,
+                'SECRET_HASH' => $hash,
             ],
         ]);
 
+
         $_SESSION['access_token'] = $result['AuthenticationResult']['AccessToken'];
         $_SESSION['id_token'] = $result['AuthenticationResult']['IdToken'];
-        $_SESSION['refresh_token'] = $result['AuthenticationResult']['RefreshToken'];
     }
+
     public function logout()
     {
         $token = $_SESSION['access_token'];

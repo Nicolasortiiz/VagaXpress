@@ -80,21 +80,19 @@ function verificaSenha() {
 
             } else {
                 alert("As duas senhas não são iguais.");
-                document.getElementById("botaoSenha").disabled = false;
             }
         } else {
-            alert("Senha inválida!");
-            document.getElementById("botaoSenha").disabled = false;
+            alert("Insira uma senha com uma letras maiúsculas e minúsculas, um número e um caractere especial (tamanho minimo 8).");
         }
     } else {
         alert("Preencha todos os campos.");
-        document.getElementById("botaoSenha").disabled = false;
     }
+    document.getElementById("botaoSenha").disabled = false;
 }
 async function verificaEmail() {
-    document.getElementById("botaoToken").disabled = true;
+    document.getElementById("botaoEmail").disabled = true;
     let email = /^[A-z0-9\.]+@[a-z]+\.com[a-z\.]{0,3}$/;
-    var verificadorEmail = token.test(document.getElementById('email').value);
+    var verificadorEmail = email.test(document.getElementById('email').value);
     if (!verificadorEmail) {
         alert("Token inválido!");
         return;

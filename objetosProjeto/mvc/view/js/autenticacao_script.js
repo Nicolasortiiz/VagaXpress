@@ -68,6 +68,7 @@ function enviarLogin() {
     } else {
         alert("Preencha todos os campos.");
     }
+    document.getElementById("botaoLogin").disabled = false;
 
 }
 

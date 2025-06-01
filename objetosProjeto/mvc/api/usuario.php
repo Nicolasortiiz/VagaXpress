@@ -32,6 +32,7 @@ switch ($action) {
         $controller->cadastro($nome, $email, $senha, $token);
         break;
     case 'validar_otp':
+        error_log("EMAILLLLLLLLLLLLLLLLLLLLLLLLLLLLLL " . $email);
         $controller->validarOTP($email, $senha,$token, $hora);
         break;
     case 'validar_email':

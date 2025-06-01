@@ -8,7 +8,6 @@ CREATE TABLE Usuario (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     saldo DECIMAL(10,2),
-    senha VARCHAR(255) NOT NULL,
     segredo VARCHAR(255)
 );
 
