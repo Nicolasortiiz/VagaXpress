@@ -27,6 +27,13 @@ services:
     networks:
       custom_net:
         ipv4_address: 172.25.0.11
+  
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
 
 networks:
   custom_net:

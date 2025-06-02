@@ -243,6 +243,14 @@ function abrirTela(event) {
             carregarSuporte();
             break;
 
+        case "chat":
+            document.getElementById('chat').classList.add('desativado');
+            conteudo.innerHTML = `
+                <div id="conteudoChat"></div>
+            `;
+            carregarChat();
+            break;
+
         case "login":
             document.getElementById('login').classList.add('desativado');
             window.location.href = "view/login.html";
@@ -986,6 +994,64 @@ function carregarSuporte() {
             }
         })
         .catch(error => console.error(error));
+}
+
+function carregarChat() {
+    document.getElementById("conteudoChat").innerHTML = `
+        <div class="divChat">
+            <h2>Chat</h2>
+            <form class="formChat" id="formChat">
+                <label for="textoChat">Mensagem:</label>
+                <input class="inputChat" id="textoChat" placeholder="Mensagem" required>
+                <button class="botaoChat" id="botaoEnviarChat" type="submit">Enviar</button>
+            </form>
+            <div id="conteudo_chat"></div>
+        </div>
+    `;
+
+    const form = document.getElementById('formChat');
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const input = document.getElementById('textoChat');
+        const mensagem = input.value.trim();
+
+        if (mensagem === '') return;
+
+        const chat = document.getElementById('conteudo_chat');
+        const msgUsuario = document.createElement('div');
+        msgUsuario.classList.add('mensagem-usuario');
+        msgUsuario.innerText = 'Você: ' + mensagem;
+        chat.appendChild(msgUsuario);
+
+        input.value = '';
+
+        var dados = {
+            mensagem: mensagem
+        }
+        var res = await criptografar(dados);
+        try {
+            const resposta = await fetch("/gateway.php/api/chat?action=mensagem_ollama", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ cript: res })
+            });
+
+            console.log('Resposta:', resposta);
+            const dados = await resposta.json();
+
+            const msgIA = document.createElement('div');
+            msgIA.classList.add('mensagem-ia');
+            msgIA.innerText = 'IA: ' + dados.resposta;
+            chat.appendChild(msgIA);
+
+            chat.scrollTop = chat.scrollHeight;
+
+        } catch (erro) {
+            console.error('Erro ao enviar mensagem:', erro);
+        }
+    });
 }
 
 
