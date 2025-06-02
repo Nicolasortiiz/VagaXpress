@@ -4,9 +4,7 @@ require_once __DIR__ . "/../model/Suporte.php";
 require_once __DIR__ . "/../utils/auth.php";
 
 header('Content-Type: application/json');
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+
 date_default_timezone_set('America/Sao_Paulo');
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -14,9 +12,12 @@ class SuporteController
 {
     private $SuporteDAO;
     private $Auth;
+    private $chaveAPI;
 
     public function __construct()
     {
+        $env = parse_ini_file(__DIR__ . '/../.env');
+        $this->chaveAPI = $env['CHAVE_API_GOOGLE'];
         $this->SuporteDAO = new SuporteDAO();
         $this->Auth = new Auth();
     }
@@ -63,7 +64,7 @@ class SuporteController
         $mail->Host = 'smtp.gmail.com';
         $mail->Port = 465;
         $mail->Username = 'projectsmirai0@gmail.com';
-        $mail->Password = 'gyzc stjy qumj kgza';
+        $mail->Password = $this->chaveAPI;
         $mail->setFrom('projectsmirai0@gmail.com', 'VagaXpress');
         $mail->addAddress($email, "Usuário");
         $mail->Subject = "Confirmação de conta";

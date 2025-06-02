@@ -16,7 +16,7 @@ class RegistroDAO
         $query = 'SELECT placa, dataEntrada, dataSaida, horaEntrada, horaSaida 
                   FROM Registro 
                   WHERE placa = ? 
-                  AND statusPagamento = 0 
+                  AND statusPagamento = FALSE
                   AND dataSaida IS NOT NULL 
                   AND horaSaida IS NOT NULL';
     
@@ -34,11 +34,11 @@ class RegistroDAO
     
             while ($row = $result->fetch_assoc()) {
                 $devedoras[] = [
-                    'placa' => $row['placa'],
-                    'dataEntrada' => $row['dataEntrada'],
-                    'dataSaida' => $row['dataSaida'],
-                    'horaEntrada' => $row['horaEntrada'],
-                    'horaSaida' => $row['horaSaida']
+                    'placa' => htmlspecialchars($row['placa']),
+                    'dataEntrada' => htmlspecialchars($row['dataEntrada']),
+                    'dataSaida' => htmlspecialchars($row['dataSaida']),
+                    'horaEntrada' => htmlspecialchars($row['horaEntrada']),
+                    'horaSaida' => htmlspecialchars($row['horaSaida'])
                 ];
             }
     

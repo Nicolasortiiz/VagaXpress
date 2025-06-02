@@ -7,6 +7,8 @@ function addPadding($data) {
 }
 
 function encrypt($data) {    
+
+    $env = parse_ini_file(__DIR__ . '/../.env');
     $key = openssl_random_pseudo_bytes(16);
     $iv = openssl_random_pseudo_bytes(16);
     
@@ -15,20 +17,22 @@ function encrypt($data) {
     $dataGPG = [
         "k" => base64_encode($key),
         "iv" => base64_encode($iv),
-        "resultado" => base64_encode($encrypted_data)
     ];
-    
+    $gpgEmail = $env['EMAIL_GPG'];
     $gnupg = new gnupg();
     $gnupg->seterrormode(gnupg::ERROR_EXCEPTION);
-    $gnupg->addencryptkey("nicolas.ortiz@pucpr.edu.br");
+    $gnupg->addencryptkey("$gpgEmail");
     
     $encryptedGPG = $gnupg->encrypt(json_encode($dataGPG));
     
     if (empty($encryptedGPG)) {
         throw new Exception("Falha na criptografia GPG");
     }
-    
-    return ['cript' => $encryptedGPG];
+    $encryptedData = [
+        "key" => $encryptedGPG,
+        "data" => base64_encode($encrypted_data)
+    ];
+    return ['cript' => $encryptedData];
 }
 
 function enviaDados($url,$data){

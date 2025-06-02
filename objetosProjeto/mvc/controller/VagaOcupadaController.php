@@ -4,9 +4,7 @@ require_once __DIR__ . "/../model/VagaOcupada.php";
 require_once __DIR__ . "/../controller/EstacionamentoController.php";
 
 header('Content-Type: application/json');
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+
 date_default_timezone_set('America/Sao_Paulo');
 
 class VagaOcupadaController
@@ -31,7 +29,7 @@ class VagaOcupadaController
         if($vagasLivres < 0){
             $vagasLivres = 0;
         }
-        echo json_encode(["error" => 0,"vagasLivres" => $vagasLivres]);
+        echo json_encode(["error" => 0,"vagasLivres" => htmlspecialchars($vagasLivres)]);
         exit;
     }
 

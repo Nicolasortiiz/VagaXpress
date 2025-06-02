@@ -3,9 +3,7 @@ require_once __DIR__ . "/../dao/EstacionamentoDAO.php";
 require_once __DIR__ . "/../model/Estacionamento.php";
 
 header('Content-Type: application/json');
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+
 date_default_timezone_set('America/Sao_Paulo');
 
 

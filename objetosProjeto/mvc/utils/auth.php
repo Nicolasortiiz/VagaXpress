@@ -1,11 +1,6 @@
 <?php
 require_once __DIR__ . "/../vendor/autoload.php";
 
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
-
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 
 class Auth
@@ -82,7 +77,6 @@ class Auth
 
     public function login($email, $password)
     {
-        error_log($this->clientID);
         try {
             
             $result = $this->client->initiateAuth([

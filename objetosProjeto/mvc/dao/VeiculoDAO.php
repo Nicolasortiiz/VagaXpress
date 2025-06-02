@@ -63,7 +63,7 @@ class VeiculoDAO {
         $stmt->close();
         $placas = [];
         while ($row = $result->fetch_assoc()) {
-            $placas[] = $row['placa'];
+            $placas[] = htmlspecialchars($row['placa']);
         }
         return $placas;
     }

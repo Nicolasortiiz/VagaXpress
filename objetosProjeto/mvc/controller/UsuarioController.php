@@ -9,9 +9,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use OTPHP\TOTP;
 
 header('Content-Type: application/json');
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+
 date_default_timezone_set('America/Sao_Paulo');
 
 
@@ -21,12 +19,19 @@ class UsuarioController
     private $UsuarioDAO;
     private $VeiculoController;
     private $Auth;
+    private $apiToken;
+    private $gpgEmail;
+    private $chaveAPI;
 
     public function __construct()
     {
+        $env = parse_ini_file(__DIR__ . '/../.env');
+        $this->chaveAPI = $env['CHAVE_API_GOOGLE'];
         $this->UsuarioDAO = new UsuarioDAO();
         $this->VeiculoController = new VeiculoController();
         $this->Auth = new Auth();
+        $this->apiToken = $env['BOT_API'];
+        $this->gpgEmail = $env['EMAIL_GPG'];
 
     }
 
@@ -62,7 +67,7 @@ class UsuarioController
         $mail->Host = 'smtp.gmail.com';
         $mail->Port = 465;
         $mail->Username = 'projectsmirai0@gmail.com';
-        $mail->Password = 'gyzc stjy qumj kgza';
+        $mail->Password = $this->chaveAPI;
         $mail->setFrom('projectsmirai0@gmail.com', 'VagaXpress');
         $mail->addAddress($email, $nome);
         $mail->Subject = "Confirmação de conta";
@@ -109,7 +114,7 @@ class UsuarioController
 
     public function validarOTP($email, $senha, $token, $hora)
     {
-        error_log("EMAILLLLLLLLLLLLLLLLLLLLLLLLLLLLLL " . $email);
+
         $login = $this->Auth->login($email, $senha);
 
         if (!$login) {
@@ -184,7 +189,8 @@ class UsuarioController
 
     public function validarLoginAutenticacao()
     {
-        $pubkey = shell_exec("gpg --armor --export nicolas.ortiz@pucpr.edu.br");
+        $gpgEmail = $this->gpgEmail;
+        $pubkey = shell_exec("gpg --armor --export $gpgEmail");
         if ($this->Auth->verificarLogin()) {
             if ($this->Auth->obterGruposDoToken() == "Admin") {
                 echo json_encode(["login" => 2, "msg" => "Administrador já está logado!"]);
@@ -194,7 +200,7 @@ class UsuarioController
                 exit;
             }
         } else {
-            echo json_encode(["login" => 0, "pubkey" => $pubkey]);
+            echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
         }
     }
 
@@ -210,7 +216,7 @@ class UsuarioController
         }
         $grupo = $this->verificarGrupo();
         if($grupo){
-            echo json_encode(["login" => $grupo,"pubkey" => htmlspecialchars($pubkey)]);
+            echo json_encode(["login" => htmlspecialchars($grupo),"pubkey" => htmlspecialchars($pubkey)]);
             exit;
         }else{
             echo json_encode(["login" => 0, "pubkey" => htmlspecialchars($pubkey)]);
@@ -251,7 +257,7 @@ class UsuarioController
         }
 
         if ($this->UsuarioDAO->adicionarSaldo($usuario)) {
-            echo json_encode(["error" => false, "msg" => number_format($valor, 2, ',', '.')]);
+            echo json_encode(["error" => false, "msg" => htmlspecialchars(number_format($valor, 2, ',', '.'))]);
         } else {
             echo json_encode(["error" => true, "msg" => "Erro ao adicionar saldo, tente novamente!"]);
         }
@@ -286,7 +292,7 @@ class UsuarioController
         }
 
         $saldo = $this->UsuarioDAO->retornarSaldo($usuario);
-        $resposta["saldo"] = $saldo;
+        $resposta["saldo"] = htmlspecialchars($saldo);
 
         echo json_encode($resposta);
     }
@@ -312,12 +318,12 @@ class UsuarioController
         $usuario = new Usuario();
         $usuario->setIdUsuario($id);
         $saldo = floatval($this->UsuarioDAO->retornarSaldo($usuario));
-        if ($valor <= 0 || $saldo <= 0) {
+        if ($valor <= 0) {
             echo json_encode(["error" => true, "msg" => "Erro ao realizar pagamento, tente novamente!"]);
             exit;
         }
 
-        if ($valor > $saldo) {
+        if ($valor > $saldo || $saldo <= 0) {
             echo json_encode(["error" => true, "msg" => "Saldo insuficiente!"]);
             exit;
         }
@@ -326,6 +332,7 @@ class UsuarioController
         exit;
     }
 
+    
     public function realizarPagamento($valor, $id)
     {
         $usuario = new Usuario();
@@ -351,6 +358,7 @@ class UsuarioController
         }
     }
 
+    // Função para verificar se o usuário está logado no suporte
     public function validarLoginSuporte()
     {
         if (!$this->Auth->verificarLogin()) {
@@ -360,6 +368,64 @@ class UsuarioController
         echo json_encode(["error" => false, "login" => 1]);
     }
 
+    // Função para remover envio de notificações via Telegram
+    public function removerChat()
+    {
+        if (!$this->Auth->verificarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        }
+        $usuario = new Usuario();
+        $usuario->setIdUsuario($_SESSION["usuario_id"]);
+        $msg = $this->UsuarioDAO->removerChat($usuario);
+        echo json_encode(["error" => false, "msg" => htmlspecialchars($msg)]);
+
+    }
+
+    // Função para adicionar envio de notificações via Telegram
+    public function adicionarChat($chatId)
+    {
+        if (!$this->Auth->verificarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        }
+        $usuario = new Usuario();
+        $usuario->setChatId($chatId);
+        $usuario->setIdUsuario($_SESSION["usuario_id"]);
+        $msg = $this->UsuarioDAO->adicionarChat($usuario);
+        echo json_encode(["error" => false, "msg" => htmlspecialchars($msg)]);
+        
+    }
+
+    // Função para envio de notificações via Telegram
+    function enviarNotificacaoTelegram($mensagem) {
+        if (!$this->Auth->verificarLogin()) {
+            return false;
+        }
+        $apiToken = $this->apiToken;
+
+        $usuario = new Usuario();
+        $usuario->setIdUsuario($_SESSION["usuario_id"]);
+        $chatId = $this->UsuarioDAO->retornarChatId($usuario);
+        if($chatId == null || $chatId == '') {
+            return false;
+        }
+
+        $url = "https://api.telegram.org/bot$apiToken/sendMessage";
+
+        $dados = [
+            'chat_id' => $chatId,
+            'text' => $mensagem
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $dados);
+        $resposta = curl_exec($ch);
+        curl_close($ch);
+
+        return $resposta;
+    }
 
 }
 

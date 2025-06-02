@@ -23,10 +23,10 @@ class VagaAgendadaDAO
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
                 $agendamentos[] = [
-                    'id' => $row['idVagaAgendada'],
-                    'placa' => $row['placa'],
-                    'data' => $row['dataEntrada'],
-                    'hora' => $row['horaEntrada']
+                    'id' => htmlspecialchars($row['idVagaAgendada']),
+                    'placa' => htmlspecialchars($row['placa']),
+                    'data' => htmlspecialchars($row['dataEntrada']),
+                    'hora' => htmlspecialchars($row['horaEntrada'])
                 ];
             }
             $stmt->close();

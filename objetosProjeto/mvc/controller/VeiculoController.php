@@ -4,9 +4,7 @@ require_once __DIR__ . "/../model/Veiculo.php";
 require_once __DIR__ . "/../utils/auth.php";
 
 header('Content-Type: application/json');
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+
 date_default_timezone_set('America/Sao_Paulo');
 
 class VeiculoController
@@ -45,7 +43,7 @@ class VeiculoController
     }
 
     public function retornarPlacas($id = null){
-        if (!$this->Auth->verificarLogin()) {
+        if (!$this->Auth->verificarLogin() && $id == null) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -70,6 +68,7 @@ class VeiculoController
         $veiculo->setPlaca($placa);
         $veiculo->setIdUsuario($id);
         $this->VeiculoDAO->deletarPlaca($veiculo);
+        $placa = htmlspecialchars($placa);
         echo json_encode(['error' => false, 'msg' => "Placa $placa deletada com sucesso!"]);
         exit;
 

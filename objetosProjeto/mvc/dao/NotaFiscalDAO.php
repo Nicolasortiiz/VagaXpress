@@ -22,9 +22,9 @@ class NotaFiscalDAO
         $notasFiscais = [];
         while ($row = $result->fetch_assoc()) {
             $notasFiscais[] = [
-                'id' => $row['idNotaFiscal'],
-                'data' => $row['dataEmissao'],
-                'valor' => $row['valor']
+                'id' => htmlspecialchars($row['idNotaFiscal']),
+                'data' => htmlspecialchars($row['dataEmissao']),
+                'valor' => htmlspecialchars($row['valor'])
             ];
         }
         return $notasFiscais;
@@ -43,11 +43,11 @@ class NotaFiscalDAO
         $stmt->close();
     
         $notaFiscal = [
-            'dataEmissao' => $row['dataEmissao'],
-            'cpf' => $row['cpf'],
-            'nome' => $row['nome'],
-            'valor' => $row['valor'],
-            'descricao' => $row['descricao']
+            'dataEmissao' => htmlspecialchars($row['dataEmissao']),
+            'cpf' => htmlspecialchars($row['cpf']),
+            'nome' => htmlspecialchars($row['nome']),
+            'valor' => htmlspecialchars($row['valor']),
+            'descricao' => htmlspecialchars($row['descricao'])
         ];
     
         return $notaFiscal;
