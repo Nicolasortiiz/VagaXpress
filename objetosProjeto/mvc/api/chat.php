@@ -9,10 +9,12 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// $dataCrypt = file_get_contents('php://input');
-// $data = json_decode($dataCrypt, true);
-
-$data = $_POST;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $dataCrypt = file_get_contents('php://input');
+    $data = decrypt($dataCrypt);
+}
+error_log("Dados recebidos: " . print_r($data, true));
+//$data = $_POST;
 
 if (!$data) {
     http_response_code(400);
@@ -24,13 +26,13 @@ $action = $_GET['action'] ?? '';
 
 $controller = new ChatOllamaController();
 
-if (!isset($data['cript']['data']) || empty($data['cript']['data'])) {
+if (!isset($data['mensagem']) || empty($data['mensagem'])) {
     http_response_code(400);
     echo json_encode(['erro' => 'Campo "mensagem" é obrigatório e não pode ser vazio!']);
     exit;
 }
 
-$mensagem = $data['cript']['data'];
+$mensagem = $data['mensagem'];
 
 switch ($action) {
     case 'mensagem_ollama':
