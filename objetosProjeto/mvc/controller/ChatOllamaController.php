@@ -22,7 +22,7 @@ class ChatOllamaController
 
     public function chamarIA($mensagem)
     {
-        $ollama_url = 'http://localhost:11434/api/generate';
+        $ollama_url = 'http://host.docker.internal:11434/api/generate';
 
         $payload = [
             'model' => 'gemma3:1b',
@@ -41,7 +41,7 @@ class ChatOllamaController
 
         $context  = stream_context_create($options);
 
-        $resultado = @file_get_contents($ollama_url, false, $context);
+        $resultado = file_get_contents($ollama_url, false, $context);
 
         header('Content-Type: application/json');
 

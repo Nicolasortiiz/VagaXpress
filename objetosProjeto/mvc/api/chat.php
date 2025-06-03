@@ -24,13 +24,13 @@ $action = $_GET['action'] ?? '';
 
 $controller = new ChatOllamaController();
 
-if (!isset($data['mensagem']) || empty($data['mensagem'])) {
+if (!isset($data['cript']['data']) || empty($data['cript']['data'])) {
     http_response_code(400);
     echo json_encode(['erro' => 'Campo "mensagem" é obrigatório e não pode ser vazio!']);
     exit;
 }
 
-$mensagem = $data['mensagem'];
+$mensagem = $data['cript']['data'];
 
 switch ($action) {
     case 'mensagem_ollama':
