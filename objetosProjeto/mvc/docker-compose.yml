@@ -34,6 +34,13 @@ services:
     ports:
       - "11434:11434"
     restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - custom_net
+
+volumes:
+  ollama_data:
 
 networks:
   custom_net:
@@ -41,4 +48,3 @@ networks:
     ipam:
       config:
         - subnet: 172.25.0.0/24
-

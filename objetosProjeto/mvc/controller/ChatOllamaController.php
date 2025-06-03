@@ -25,7 +25,7 @@ class ChatOllamaController
         $ollama_url = 'http://localhost:11434/api/generate';
 
         $payload = [
-            'model' => 'phi4:14b',
+            'model' => 'gemma3:1b',
             'prompt' => $mensagem,
             'stream' => false
         ];

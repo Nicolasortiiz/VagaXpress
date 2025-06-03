@@ -1001,8 +1001,8 @@ function carregarChat() {
         <div class="divChat">
             <h2>Chat</h2>
             <form class="formChat" id="formChat">
-                <label for="textoChat">Mensagem:</label>
-                <input class="inputChat" id="textoChat" placeholder="Mensagem" required>
+                <label for="mensagem">Mensagem:</label>
+                <input class="inputChat" id="mensagem" placeholder="Mensagem" required>
                 <button class="botaoChat" id="botaoEnviarChat" type="submit">Enviar</button>
             </form>
             <div id="conteudo_chat"></div>
@@ -1012,23 +1012,23 @@ function carregarChat() {
     const form = document.getElementById('formChat');
     form.addEventListener('submit', async function(event) {
         event.preventDefault();
-        const input = document.getElementById('textoChat');
+        const input = document.getElementById('mensagem');
         const mensagem = input.value.trim();
 
         if (mensagem === '') return;
 
         const chat = document.getElementById('conteudo_chat');
+
         const msgUsuario = document.createElement('div');
         msgUsuario.classList.add('mensagem-usuario');
-        msgUsuario.innerText = 'Você: ' + mensagem;
+        msgUsuario.textContent = 'Você: ' + mensagem;
         chat.appendChild(msgUsuario);
 
         input.value = '';
 
-        var dados = {
-            mensagem: mensagem
-        }
-        var res = await criptografar(dados);
+        const dados = { mensagem: mensagem };
+        const res = await criptografar(dados);
+
         try {
             const resposta = await fetch("/gateway.php/api/chat?action=mensagem_ollama", {
                 method: 'POST',
@@ -1038,12 +1038,11 @@ function carregarChat() {
                 body: JSON.stringify({ cript: res })
             });
 
-            console.log('Resposta:', resposta);
             const dados = await resposta.json();
 
             const msgIA = document.createElement('div');
             msgIA.classList.add('mensagem-ia');
-            msgIA.innerText = 'IA: ' + dados.resposta;
+            msgIA.textContent = 'IA: ' + dados.resposta;
             chat.appendChild(msgIA);
 
             chat.scrollTop = chat.scrollHeight;
@@ -1053,7 +1052,6 @@ function carregarChat() {
         }
     });
 }
-
 
 async function validarEmailSuporte() {
     var dados = { email: document.getElementById('email').value };
