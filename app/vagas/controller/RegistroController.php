@@ -1,0 +1,160 @@
+<?php
+require_once __DIR__ . "/../dao/RegistroDAO.php";
+require_once __DIR__ . "/../model/Registro.php";
+require_once __DIR__ . "/../controller/EstacionamentoController.php";
+require_once __DIR__ . "/../utils/crypt.php";
+
+header('Content-Type: application/json');
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+date_default_timezone_set('America/Sao_Paulo');
+
+
+class RegistroController
+{
+    private $RegistroDAO;
+    private $EstacionamentoController;
+
+    public function __construct()
+    {
+        $this->RegistroDAO = new RegistroDAO();
+        $this->EstacionamentoController = new EstacionamentoController();
+    }
+
+    public function validarLogin()
+    {
+        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
+            $ultima_atividade = $_SESSION["ultima_atividade"];
+            if (time() - $ultima_atividade > 3600) {
+                session_unset();
+                session_destroy();
+                return false;
+            }
+            $_SESSION["ultima_atividade"] = time();
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+
+    public function procurarPlacasDevedoras($placas)
+    {
+        $devedoras = $this->RegistroDAO->procurarPlacasDevedoras($placas);
+        if (empty($devedoras)) {
+            return ['error' => false];
+        }
+
+        $valorHora = $this->EstacionamentoController->retornarValorHora();
+        $total = 0.0;
+
+        foreach ($devedoras as &$devedora) {
+            $entradaStr = $devedora['dataEntrada'] . ' ' . $devedora['horaEntrada'];
+            $saidaStr = $devedora['dataSaida'] . ' ' . $devedora['horaSaida'];
+
+            $entrada = new DateTime($entradaStr);
+            $saida = new DateTime($saidaStr);
+
+            $intervalo = $saida->diff($entrada);
+            $diferencaHoras = ($intervalo->days * 24) + $intervalo->h + ($intervalo->i > 0 ? 1 : 0);
+
+            $valorEstacionamento = $diferencaHoras * $valorHora;
+            $devedora['valor'] = number_format($valorEstacionamento, 2, '.', '');
+
+            $total += $valorEstacionamento;
+        }
+        
+        return [
+            'error' => false,
+            'total' => number_format($total, 2, '.', ''),
+            'devedoras' => $devedoras
+        ];
+    }
+
+    public function validarExcluir($placa)
+    {
+        if ($this->RegistroDAO->validarPlaca($placa)) {
+            echo json_encode(['error' => false]);
+            exit;
+        }
+        echo json_encode(['error' => true, 'msg' => 'Pague o estacionamento para excluir a placa!']);
+        exit;
+    }
+
+    public function pagarVagas($nome, $cpf)
+    {
+        if (!$this->validarLogin()) {
+            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
+            exit;
+        }
+        $cpf = preg_replace('/\D/', '', $cpf);
+
+        $url = "http://localhost:8001/veiculo.php?action=retornar_placas";
+        $dados = [
+            "id" => $_SESSION["usuario_id"]
+        ];
+        $resposta = enviaDados($url, $dados);
+        $resposta = json_decode($resposta);
+        if (!empty($resposta->placas)) {
+            $placas = $resposta->placas;
+            $devedoras = $this->procurarPlacasDevedoras($placas);
+
+            if (!isset($devedoras['devedoras']) || empty($devedoras['devedoras'])) {
+                echo json_encode(["error" => true, "msg" => "Nenhuma placa devedora encontrada, erro no pagamento!"]);
+                exit;
+            }
+
+            $url = "http://localhost:8001/usuario.php?action=realizar_pagamento";
+            $dados = [
+                "valor" => $devedoras['total'],
+                "id" => $_SESSION["usuario_id"]
+            ];
+            $resposta = enviaDados($url, $dados);
+            $resposta = json_decode($resposta);
+
+            if ($resposta->error == true) {
+                echo json_encode($resposta);
+                exit;
+            }
+
+            $url = "http://localhost:8001/notaFiscal.php?action=gerar_nota_fiscal";
+
+            $placas = array_map(function($registro) {
+                return $registro['placa'];
+            }, $devedoras['devedoras']);
+            
+            $dados = [
+                "valor" => $devedoras['total'],
+                "id" => $_SESSION["usuario_id"],
+                "nome" => $nome,
+                "cpf" => $cpf,
+                "descricao" => "Pagamento placas devedoras: " . implode(", ", $placas)
+            ];
+            $resposta = enviaDados($url, $dados);
+            $resposta = json_decode($resposta);
+   
+            if ($resposta->error === true) {
+                echo json_encode($resposta);
+                exit;
+            }
+
+            if($this->RegistroDAO->atualizarStatusPagamento($placas)){
+                echo json_encode(["error" => false, "msg" => "Pagamento realizado com sucesso!"]);
+                exit;
+            }else{
+                echo json_encode(["error" => true, "msg" => "Erro ao realizar pagamento, contate o suporte!"]);
+                exit;
+            }
+
+
+        } else {
+            echo json_encode(["error" => true, "msg" => "Error ao retornar placas!"]);
+            exit;
+        }
+    }
+
+
+}
+
+?>

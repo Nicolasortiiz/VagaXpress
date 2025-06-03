@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+
+<head>
+    <title>Autenticação</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/autenticacao_styles.css">
+    <script src="js/crypto-js.min.js"></script>
+    <script src="js/autenticacao_script.js"></script>
+    <script src="js/openpgp.min.js"></script>
+</head>
+
+<body>
+    <div class="input_box">
+        
+        <input class="inputEmail" type="text" placeholder="E-mail" id="email">
+        <br>
+        <input class="inputSenha" type="password" placeholder="Senha" id="senha">
+        <br>
+        <button onclick="enviarLogin()" id="botaoLogin">Entrar</button>
+        <a href='cadastro.html'>Cadastrar nova conta</a>
+        <br>
+        
+        <a href="recuperacao.html">Recuperar senha</a>
+
+    </div>
+    <div class="divSMS">
+        <a>Insira o código autenticador </a>
+        <a>(caso necessário recupere a senha para gerar um novo)</a>
+        <br>
+        <input class="inputSMS" type="text" placeholder="Código" id="inputSMS">
+        <br>
+        <button onclick="validarLogin()" id="botaoSMS">Entrar</button>
+
+    </div>
+</body>
+
+</html>
