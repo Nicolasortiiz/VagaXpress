@@ -25,8 +25,21 @@ class ChatOllamaController
         $ollama_url = 'http://host.docker.internal:11434/api/generate';
 
         // Alterar dados para que fique tudo certo!
-        $memoria = 'Você é um assistente de estacionamento. Sempre responda com base nas seguintes informações: O número de vagas é 78, e o valor hora na vaga é 10 reais.';
-        $mensagem = $mensagem . $memoria;
+        $memoria = 'Contexto: 
+        - O número de vagas é 108.
+        - O valor por hora na vaga é 10 reais.
+        - O estacionamento funciona das 7h às 22h, todos os dias da semana.
+        - O estacionamento funciona das 12h às 18h nos fins de semana.
+        - Aceitamos pagamentos em dinheiro, cartão de crédito, débito ou pix.
+        - O estacionamento é coberto e possui câmeras de segurança em todos os setores.
+        - Para emergências, o cliente pode ligar no número (41) 99999-9999.
+        - O limite de altura para veículos é de 2,10 metros.
+        - Não é permitido deixar o veículo pernoitar.
+        - A entrada do estacionamento fica na Rua Desembargador do Prado, número 1983, centro da cidade.
+
+        Instruções: Use o contexto acima apenas para responder às perguntas do usuário. Não ofereça informações adicionais que não foram solicitadas. Responda de forma objetiva e clara.';
+
+        $mensagem = $memoria . "\n\n". $mensagem;
 
         $payload = [
             'model' => 'gemma3:1b',
