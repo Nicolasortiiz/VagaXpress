@@ -19,11 +19,3 @@ spec:
           image: localhost/redis:latest
           ports:
             - containerPort: 6379
-          args: ["--requirepass", "$(REDIS_PASSWORD)"]
-          # Adicionar secret para a senha do Redis
-          env:
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: redis-secret
-                  key: redis-password

@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gestao-veiculos-service
+spec:
+  ports:
+    - port: 8880
+      targetPort: 8880
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    app: gestao-veiculos
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notificacoes-service
+spec:
+  ports:
+    - port: 8881
+      targetPort: 8881
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    app: notificacoes
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pagamento-service
+spec:
+  ports:
+    - port: 8882
+      targetPort: 8882
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    app: pagamento
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vagas-service
+spec:
+  ports:
+    - port: 8883
+      targetPort: 8883
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    app: vagas

@@ -1,7 +1,7 @@
 let chavePublica;
 
 window.onload = function () {
-    fetch("/api/usuario.php?action=verificar_login_autenticacao")
+    fetch("/gateway.php/api/usuario?action=verificar_login_autenticacao")
         .then(response => response.json())
         .then(data => {
             if (data.login == 0) {
@@ -10,10 +10,10 @@ window.onload = function () {
                 } else {
                     window.alert("Ocorreu um erro, reinicie a página!")
                 }
-            }else if(data.login == 1){
+            } else if (data.login == 1) {
                 window.alert(data.msg);
                 window.location.href = "../index.html";
-            }else if(data.login == 2){
+            } else if (data.login == 2) {
                 window.alert(data.msg);
                 window.location.href = "administracao.html";
             }
@@ -53,7 +53,7 @@ async function criptografar(dados) {
 
 function enviarLogin() {
     document.getElementById("botaoLogin").disabled = true;
-    let email = /^[A-z0-9\.]+@[a-z]+\.com[a-z\.]{0,3}$/;
+    let email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     let senha = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{8,}$/;
 
     var verificadorEmail = email.test(document.getElementById('email').value);
@@ -62,8 +62,9 @@ function enviarLogin() {
     if (document.getElementById("email").value != "" &&
         document.getElementById("senha").value != "") {
 
-        if ((verificadorEmail && verificadorSenha) || document.getElementById("email").value == "teste") {
-            enviarDados();
+        if ((verificadorEmail && verificadorSenha)) {
+            document.querySelector(".input_box").style.display = 'none';
+            document.querySelector(".divSMS").style.display = 'flex';
         } else if (document.getElementById("email").value == "admin") { //Fazer autenticação de admin de verdade eventualmente
             window.location.href = "administracao.html";
         } else {
@@ -72,59 +73,27 @@ function enviarLogin() {
     } else {
         alert("Preencha todos os campos.");
     }
-
-    document.getElementById('senha').value = '';
     document.getElementById("botaoLogin").disabled = false;
 
-}
-
-async function enviarDados() {
-    var dados = {
-        email: document.getElementById('email').value,
-        senha: CryptoJS.SHA256(document.getElementById('senha').value).toString()
-    };
-
-    var res = await criptografar(dados);
-
-    fetch("/api/usuario.php?action=validar_conta", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            cript: res
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            // Tirar usuário teste
-            if (dados.email == "teste") {
-                validarLogin();
-            } else {
-                if (data.error) {
-                    alert(data.msg);
-                } else {
-                    document.querySelector(".input_box").style.display = 'none';
-                    document.querySelector(".divSMS").style.display = 'flex';
-                }
-            }
-        })
-        .catch(error => console.error(error));
-        
-    document.getElementById('senha').value = '';
-    document.getElementById("botaoLogin").disabled = false;
 }
 
 async function validarLogin() {
+    let token = /^[0-9]{6,}$/;
+    var verificadorToken = token.test(document.getElementById('inputSMS').value);
+    if(!verificadorToken){
+        alert("Token inválido!");
+        return;
+    }
     document.getElementById("botaoSMS").disabled = true;
     var dados = {
         data: new Date().toISOString(),
+        senha: CryptoJS.SHA256(document.getElementById('senha').value).toString(),
         email: document.getElementById('email').value,
         token: document.getElementById('inputSMS').value
     };
 
     var res = await criptografar(dados);
-    fetch("/api/usuario.php?action=validar_otp", {
+    fetch("/gateway.php/api/usuario?action=validar_otp", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -135,14 +104,23 @@ async function validarLogin() {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.error) {
+            if (data.credError) {
+                document.getElementById('senha').value = '';
+                document.getElementById("botaoLogin").disabled = false;
+                document.querySelector(".input_box").style.display = 'flex';
+                document.querySelector(".divSMS").style.display = 'none';
                 alert(data.msg);
             } else {
-                document.querySelectorAll('input').forEach(input => {
-                    input.value = ''; 
-                });
-                location.href = "../index.html";
+                if (data.error) {
+                    alert(data.msg);
+                } else {
+                    document.querySelectorAll('input').forEach(input => {
+                        input.value = '';
+                    });
+                    location.href = "../index.html";
+                }
             }
+
         })
         .catch(error => console.error(error));
 

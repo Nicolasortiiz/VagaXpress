@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-estacionamento-service
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    app: db-estacionamento
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-notificacao-service
+spec:
+  ports:
+    - port: 3307
+      targetPort: 3307
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    app: db-notificacao
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-pagamento-service
+spec:
+  ports:
+    - port: 3308
+      targetPort: 3308
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    app: db-pagamento
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-usuario-service
+spec:
+  ports:
+    - port: 3309
+      targetPort: 3309
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    app: db-usuario

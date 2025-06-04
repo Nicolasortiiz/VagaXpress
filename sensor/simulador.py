@@ -2,15 +2,17 @@ from flask_restful import Resource
 from flask import jsonify
 import random
 import mysql.connector
+import os
 from datetime import datetime, timedelta, time
 
 
 def get_connection():
     return mysql.connector.connect(
-        host='172.25.0.11',
-        user='root',
-        password='root',
-        database='EstacionamentoDB',
+        host=os.getenc('DB_HOST'),
+        port=3306,
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASS'),
+        database=os.getenv('DB_NAME'),
         charset='utf8mb4',
         collation='utf8mb4_general_ci'
     )

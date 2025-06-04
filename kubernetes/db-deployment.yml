@@ -1,0 +1,125 @@
+# Usar secrets para credenciais
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-estacionamento-deployment
+  labels:
+    app: db-estacionamento
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-estacionamento
+  template:
+    metadata:
+      labels:
+        app: db-estacionamento
+    spec:
+      containers:
+        - name: db-estacionamento
+          image: imagem-db-estacionamento:latest
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              value: "root.pass.estacionamento.MariaDB"
+            - name: MARIADB_DATABASE
+              value: "EstacionamentoDB"
+            - name: MARIADB_USER
+              value: "estacionamento_dbuser"
+            - name: MARIADB_PASSWORD
+              value: "estacionamento.pass.MariaDB"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-notificacao-deployment
+  labels:
+    app: db-notificacao
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-notificacao
+  template:
+    metadata:
+      labels:
+        app: db-notificacao
+    spec:
+      containers:
+        - name: db-notificacao
+          image: imagem-db-notificacao:latest
+          ports:
+            - containerPort: 3307
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              value: "root.pass.notificacao.MariaDB"
+            - name: MARIADB_DATABASE
+              value: "NotificacaoDB"
+            - name: MARIADB_USER
+              value: "notificacao_dbuser"
+            - name: MARIADB_PASSWORD
+              value: "notificacao.pass.MariaDB"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-pagamento-deployment
+  labels:
+    app: db-pagamento
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-pagamento
+  template:
+    metadata:
+      labels:
+        app: db-pagamento
+    spec:
+      containers:
+        - name: db-pagamento
+          image: imagem-db-pagamento:latest
+          ports:
+            - containerPort: 3308
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              value: "root.pass.pagamento.MariaDB"
+            - name: MARIADB_DATABASE
+              value: "PagamentoDB"
+            - name: MARIADB_USER
+              value: "pagamento_dbuser"
+            - name: MARIADB_PASSWORD
+              value: "pagamento.pass.MariaDB"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-usuario-deployment
+  labels:
+    app: db-usuario
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-usuario
+  template:
+    metadata:
+      labels:
+        app: db-usuario
+    spec:
+      containers:
+        - name: db-usuario
+          image: imagem-db-usuario:latest
+          ports:
+            - containerPort: 3309
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              value: "root.pass.usuario.MariaDB"
+            - name: MARIADB_DATABASE
+              value: "UsuarioDB"
+            - name: MARIADB_USER
+              value: "usuario_dbuser"
+            - name: MARIADB_PASSWORD
+              value: "usuario.pass.MariaDB"

@@ -18,14 +18,14 @@ $app->any('/api/{servico}', function (Request $request, Response $response, arra
     $method = $request->getMethod();
 
     $urls = [
-        'usuario' => 'http://localhost:8001/api',
-        'veiculo' => 'http://localhost:8001/api',
-        'mensagem' => 'http://localhost:8002/api',
-        'suporte' => 'http://localhost:8002/api',
-        'notaFiscal' => 'http://localhost:8003/api',
-        'registro' => 'http://localhost:8004/api',
-        'vagaAgendada' => 'http://localhost:8004/api',
-        'vagaOcupada' => 'http://localhost:8004/api',
+        'usuario' => 'http://gestao-veiculos-service:8880/api',
+        'veiculo' => 'http://gestao-veiculos-service:8880/api',
+        'mensagem' => 'http://notificacoes-service:8881/api',
+        'suporte' => 'http://notificacoes-service:8881/api',
+        'notaFiscal' => 'http://pagamento-service:8882/api',
+        'registro' => 'http://vagas-service:8883/api',
+        'vagaAgendada' => 'http://vagas-service:8883/api',
+        'vagaOcupada' => 'http://vagas-service:8883/api',
     ];
 
     $url = $urls[$servico] ?? null;

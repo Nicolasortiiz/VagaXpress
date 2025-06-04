@@ -19,5 +19,14 @@ spec:
           image: imagem-sensor:latest
           ports:
             - containerPort: 5000  
+          env:
+            - name: DB_HOST
+              value: "db-estacionamento-service"
+            - name: DB_NAME
+              value: "EstacionamentoDB"
+            - name: DB_USER
+              value: "estacionamento_dbuser"
+            - name: DB_PASS
+              value: "estacionamento.pass.MariaDB"
 
 #implementar ingress
