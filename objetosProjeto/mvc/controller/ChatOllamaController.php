@@ -39,7 +39,7 @@ class ChatOllamaController
 
         Instruções: Use o contexto acima apenas para responder às perguntas do usuário. Não ofereça informações adicionais que não foram solicitadas. Responda de forma objetiva e clara.';
 
-        $mensagem = $memoria . "\n\n". $mensagem;
+        $mensagem = $memoria . "\nA mensagem do usuário inicia aqui:\n". $mensagem;
 
         $payload = [
             'model' => 'gemma3:1b',
