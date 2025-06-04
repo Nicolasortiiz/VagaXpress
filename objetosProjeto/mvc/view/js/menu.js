@@ -1000,11 +1000,13 @@ function carregarChat() {
     document.getElementById("conteudoChat").innerHTML = `
         <div class="divChat">
             <h2>Chat</h2>
+            <hr>
+            <h4> Tenha em mente que suas mensagens não são criptografadas.</h4><br>
             <form class="formChat" id="formChat">
-                <label for="mensagem">Mensagem:</label>
                 <input class="inputChat" id="mensagem" placeholder="Mensagem" required>
                 <button class="botaoChat" id="botaoEnviarChat" type="submit">Enviar</button>
             </form>
+            <br>
             <div id="conteudo_chat"></div>
         </div>
     `;

@@ -24,6 +24,10 @@ class ChatOllamaController
     {
         $ollama_url = 'http://host.docker.internal:11434/api/generate';
 
+        // Alterar dados para que fique tudo certo!
+        $memoria = 'Você é um assistente de estacionamento. Sempre responda com base nas seguintes informações: O número de vagas é 78, e o valor hora na vaga é 10 reais.';
+        $mensagem = $mensagem . $memoria;
+
         $payload = [
             'model' => 'gemma3:1b',
             'prompt' => $mensagem,
