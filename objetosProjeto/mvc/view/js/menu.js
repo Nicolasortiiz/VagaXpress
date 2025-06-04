@@ -243,6 +243,14 @@ function abrirTela(event) {
             carregarSuporte();
             break;
 
+        case "chat":
+            document.getElementById('chat').classList.add('desativado');
+            conteudo.innerHTML = `
+                <div id="conteudoChat"></div>
+            `;
+            carregarChat();
+            break;
+
         case "login":
             document.getElementById('login').classList.add('desativado');
             window.location.href = "view/login.html";
@@ -988,6 +996,64 @@ function carregarSuporte() {
         .catch(error => console.error(error));
 }
 
+function carregarChat() {
+    document.getElementById("conteudoChat").innerHTML = `
+        <div class="divChat">
+            <h2>Chat</h2>
+            <hr>
+            <h4> Tenha em mente que suas mensagens não são criptografadas.</h4><br>
+            <form class="formChat" id="formChat">
+                <input class="inputChat" id="mensagem" placeholder="Mensagem" required>
+                <button class="botaoChat" id="botaoEnviarChat" type="submit">Enviar</button>
+            </form>
+            <br>
+            <div id="conteudo_chat"></div>
+        </div>
+    `;
+
+    const form = document.getElementById('formChat');
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const input = document.getElementById('mensagem');
+        const mensagem = input.value.trim();
+
+        if (mensagem === '') return;
+
+        const chat = document.getElementById('conteudo_chat');
+
+        const msgUsuario = document.createElement('div');
+        msgUsuario.classList.add('mensagem-usuario');
+        msgUsuario.textContent = 'Você: ' + mensagem;
+        chat.appendChild(msgUsuario);
+
+        input.value = '';
+
+        const dados = { mensagem: mensagem };
+        const res = await criptografar(dados);
+
+        try {
+            const resposta = await fetch("/gateway.php/api/chat?action=mensagem_ollama", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ cript: res })
+            });
+
+            const dados = await resposta.json();
+
+            const msgIA = document.createElement('div');
+            msgIA.classList.add('mensagem-ia');
+            msgIA.textContent = 'IA: ' + dados.resposta;
+            chat.appendChild(msgIA);
+
+            chat.scrollTop = chat.scrollHeight;
+
+        } catch (erro) {
+            console.error('Erro ao enviar mensagem:', erro);
+        }
+    });
+}
 
 async function validarEmailSuporte() {
     var dados = { email: document.getElementById('email').value };
