@@ -10,12 +10,12 @@ window.onload = function () {
                 } else {
                     window.alert("Ocorreu um erro, reinicie a página!")
                 }
-            }else if(data.login == 1){
+            } else if (data.login == 1) {
                 window.alert(data.msg);
                 window.location.href = "../index.html";
-            }else if(data.login == 2){
+            } else if (data.login == 2) {
                 window.alert(data.msg);
-                //enviar para página adm
+                window.location.href = "administracao.html";
             }
         })
         .catch(error => console.error(error));
@@ -85,19 +85,23 @@ function verificaSenha() {
 
             } else {
                 alert("As duas senhas não são iguais.");
-                document.getElementById("botaoSenha").disabled = false;
             }
         } else {
-            alert("Senha inválida!");
-            document.getElementById("botaoSenha").disabled = false;
+            alert("Insira uma senha com uma letras maiúsculas e minúsculas, um número e um caractere especial (tamanho minimo 8).");
         }
     } else {
         alert("Preencha todos os campos.");
-        document.getElementById("botaoSenha").disabled = false;
     }
+    document.getElementById("botaoSenha").disabled = false;
 }
 async function verificaEmail() {
-
+    document.getElementById("botaoEmail").disabled = true;
+    let email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    var verificadorEmail = email.test(document.getElementById('email').value);
+    if (!verificadorEmail) {
+        alert("Token inválido!");
+        return;
+    }
     var dados = {
         email: document.getElementById('email').value
     };
@@ -129,6 +133,12 @@ async function verificaEmail() {
 async function verificaToken() {
     document.getElementById("botaoToken").disabled = true;
     if (document.getElementById('token').value != "") {
+        let token = /^[0-9]{6,}$/;
+        var verificadorToken = token.test(document.getElementById('token').value);
+        if (!verificadorToken) {
+            alert("Token inválido!");
+            return;
+        }
         var dados = {
             token: document.getElementById('token').value,
             senha: CryptoJS.SHA256(document.getElementById("senha").value).toString(),
@@ -151,7 +161,7 @@ async function verificaToken() {
 
                 if (data.error) {
                     alert(data.msg);
-                }else{
+                } else {
                     window.location.href = "login.html";
                 }
             })

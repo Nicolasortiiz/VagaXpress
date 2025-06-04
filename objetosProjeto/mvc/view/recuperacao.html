@@ -14,16 +14,16 @@
 
 <body>
     <div class="divEmail">
-        <input class="input" type="text" placeholder="E-mail" id="email">
+        <input class="input" type="text" placeholder="E-mail" id="email" maxlength="70">
         <br>
         <button onclick="enviaEmail()" id="botaoEmail">Enviar email de confirmação</button>
     </div>
 
     <div class="divSenha">
 
-        <input class="inputSenha" type="password" placeholder="Nova senha" id="senha">
+        <input class="inputSenha" type="password" placeholder="Nova senha" id="senha" maxlength="50">
         <br>
-        <input class="inputConfirmarSenha" type="password" placeholder="Confirmar nova senha" id="confirmar_senha">
+        <input class="inputConfirmarSenha" type="password" placeholder="Confirmar nova senha" id="confirmar_senha" maxlength="50">
         <br>
         <button onclick="verificaSenha()" id="botaoSenha">Criar nova senha</button>
 
@@ -32,7 +32,7 @@
     <div class="divToken">
         <a>Um token foi enviado para o seu email</a>
         <br>
-        <input class="input" type="text" placeholder="Token" id="token">
+        <input class="input" type="text" placeholder="Token" id="token" maxlength="6">
         <br>
         <button onclick="verificaToken()" id="botaoToken">Enviar</button>
 

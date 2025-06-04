@@ -1,42 +1,28 @@
 <?php
 require_once __DIR__ . "/../dao/NotaFiscalDAO.php";
 require_once __DIR__ . "/../model/NotaFiscal.php";
+require_once __DIR__ . "/../utils/auth.php";
 
 header('Content-Type: application/json');
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+
 date_default_timezone_set('America/Sao_Paulo');
 
 
 class NotaFiscalController
 {
     private $NotaFiscalDAO;
+    private $Auth;
 
     public function __construct()
     {
         $this->NotaFiscalDAO = new NotaFiscalDAO();
+        $this->Auth = new Auth();
     }
 
-    public function validarLogin()
-    {
-        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
-            $ultima_atividade = $_SESSION["ultima_atividade"];
-            if (time() - $ultima_atividade > 3600) {
-                session_unset();
-                session_destroy();
-                return false;
-            }
-            $_SESSION["ultima_atividade"] = time();
-            return true;
-
-        } else {
-            return false;
-        }
-    }
+    
 
     public function retornarInfosNotasFiscaisUsuario(){
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }

@@ -2,12 +2,11 @@
 require_once __DIR__ . "/../dao/RegistroDAO.php";
 require_once __DIR__ . "/../model/Registro.php";
 require_once __DIR__ . "/../controller/EstacionamentoController.php";
+require_once __DIR__ . "/../utils/auth.php";
 require_once __DIR__ . "/../utils/crypt.php";
 
 header('Content-Type: application/json');
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+
 date_default_timezone_set('America/Sao_Paulo');
 
 
@@ -15,28 +14,13 @@ class RegistroController
 {
     private $RegistroDAO;
     private $EstacionamentoController;
+    private $Auth;
 
     public function __construct()
     {
         $this->RegistroDAO = new RegistroDAO();
         $this->EstacionamentoController = new EstacionamentoController();
-    }
-
-    public function validarLogin()
-    {
-        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
-            $ultima_atividade = $_SESSION["ultima_atividade"];
-            if (time() - $ultima_atividade > 3600) {
-                session_unset();
-                session_destroy();
-                return false;
-            }
-            $_SESSION["ultima_atividade"] = time();
-            return true;
-
-        } else {
-            return false;
-        }
+        $this->Auth = new Auth();
     }
 
     public function procurarPlacasDevedoras($placas)
@@ -67,7 +51,7 @@ class RegistroController
         
         return [
             'error' => false,
-            'total' => number_format($total, 2, '.', ''),
+            'total' => htmlspecialchars(number_format($total, 2, '.', '')),
             'devedoras' => $devedoras
         ];
     }
@@ -84,7 +68,7 @@ class RegistroController
 
     public function pagarVagas($nome, $cpf)
     {
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -125,11 +109,11 @@ class RegistroController
             }, $devedoras['devedoras']);
             
             $dados = [
-                "valor" => $devedoras['total'],
-                "id" => $_SESSION["usuario_id"],
-                "nome" => $nome,
-                "cpf" => $cpf,
-                "descricao" => "Pagamento placas devedoras: " . implode(", ", $placas)
+                "valor" => htmlspecialchars($devedoras['total']),
+                "id" => htmlspecialchars($_SESSION["usuario_id"]),
+                "nome" => htmlspecialchars($nome),
+                "cpf" => htmlspecialchars($cpf),
+                "descricao" => htmlspecialchars("Pagamento placas devedoras: " . implode(", ", $placas))
             ];
             $resposta = enviaDados($url, $dados);
             $resposta = json_decode($resposta);

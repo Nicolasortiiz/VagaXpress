@@ -1,3 +1,4 @@
+// Carregamento da chave pública e verificação de login
 let chavePublica;
 window.onload = function () {
     document.getElementById('tela_inicial').click();
@@ -17,7 +18,7 @@ window.onload = function () {
                 document.getElementById("login").style.disabled = true;
                 document.getElementById("login").style.display = "none";
             } else if (data.login == 2) {
-                //encaminhar para página do adm
+                window.location.href = "view/administracao.html";
             }
             if (data.pubkey) {
                 chavePublica = data.pubkey;
@@ -27,9 +28,11 @@ window.onload = function () {
             document.querySelector('body').style.display = 'flex';
         })
         .catch(error => console.error(error));
+    // Carrega o número de vagas disponíveis
     carregarVagas();
 }
 
+// Função de criptografia de mensagens
 async function criptografar(dados) {
     var k = CryptoJS.lib.WordArray.random(16);
     var iv = CryptoJS.lib.WordArray.random(16);
@@ -51,15 +54,18 @@ async function criptografar(dados) {
         message: message,
         encryptionKeys: publicKey
     });
-    
+
     const encryptedData = {
         key: encryptedKey,
         data: resultado
     };
     return encryptedData;
 }
-
+let espera = false;
+// Função para abrir telas da aplicação
 function abrirTela(event) {
+    if (espera) return;
+
     const elementoClicado = event.target.id;
     const conteudo = document.getElementById("conteudo");
     document.querySelectorAll('[id]').forEach(i => {
@@ -95,6 +101,11 @@ function abrirTela(event) {
             </body>
             </html>
             `;
+            espera = true;
+            setTimeout(() => {
+                espera = false;
+
+            }, 1000);
             break;
 
         case "agendamento":
@@ -106,54 +117,57 @@ function abrirTela(event) {
                     <select id="carros">
                         <option value="">Carregando...</option>
                     </select>
-                    <input id="data_agendamento" type="date" required>
-                    <input id="hora_agendamento" type="time" required>
+                    <input id="data_agendamento" type="date" min="<?= date('Y-m-d') ?>" required>
+                    <input id="hora_agendamento" type="time" min="<?= date('H:i') ?>" required>
                     <button id="botaoAgendar" type="submit">Agendar</button>
                     
-                </form>
-                <div id='divTelaPagamento'></div>
-                <p class="totalDivida">Total Dívida: R$ <span id="dividaTotal"></span></p>
-                <button id="pagarDivida" onclick="abrirTelaPagamento()">Pagar Divida</button>
-                <div class="tabelas-usuario">
-                <div class="tabela-container">
-                    <h2>Vagas Agendadas</h2>
-                    <table id="tabelaAgendadas">
-                        <thead>
-                            <tr>
-                                <th>Placa</th>
-                                <th>Data</th>
-                                <th>Hora</th> 
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+                    </form>
+                    <div id='divTelaPagamento'></div>
+                    <p class="totalDivida">Total Dívida: R$ <span id="dividaTotal"></span></p>
+                    <button id="pagarDivida" onclick="abrirTelaPagamento()">Pagar Divida</button>
+                    <div class="tabelas-usuario">
+                    <div class="tabela-container">
+                        <h2>Vagas Agendadas</h2>
+                        <table id="tabelaAgendadas">
+                            <thead>
+                                <tr>
+                                    <th>Placa</th>
+                                    <th>Data</th>
+                                    <th>Hora</th> 
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
 
-                <div class="tabela-container">
-                    <h2>Registro de Cobranças</h2>
-                    <table id="tabelaRegistros">
-                        <thead>
-                            <tr>
-                                <th>Placa</th>
-                                <th>DataEntrada</th>
-                                <th>HoraEntrada</th>
-                                <th>DataSaida</th>
-                                <th>HoraSaida</th>
-                                <th>Valor (R$)</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <div class="tabela-container">
+                        <h2>Registro de Cobranças</h2>
+                        <table id="tabelaRegistros">
+                            <thead>
+                                <tr>
+                                    <th>Placa</th>
+                                    <th>DataEntrada</th>
+                                    <th>HoraEntrada</th>
+                                    <th>DataSaida</th>
+                                    <th>HoraSaida</th>
+                                    <th>Valor (R$)</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
             `;
-
+            espera = true;
             carregarPlacasPerfil();
-
             carregarDadosPagamento();
 
+            setTimeout(() => {
+                espera = false;
+
+            }, 1000);
 
             break;
 
@@ -174,17 +188,17 @@ function abrirTela(event) {
                 <div>
                     <p>Cadastrar Veículo</p>
                     <form onsubmit="event.preventDefault(); gravarPlaca();">
-                        <input id="placa" placeholder="Placa" required> <br>
+                        <input id="placa" placeholder="Placa" maxlength=7 required> <br>
                         <button class="botaoPlaca" type="submit">Cadastrar</button>
                     </form>
                 </div>
                 <div>
                     <p>Cadastrar Telegram</p>
-                    <form onsubmit="event.preventDefault(); cadastraChatId();">
-                        <input id="chatId" placeholder="Chave API"> <br>
-                        <button id='botaoAdicionarTelegram' class="botaoPlaca" type="submit">Adicionar</button>
-                        
-                    </form>
+                    <p>Para adicionar o Telegram Bot para notificações clique em "Adicionar". </p>
+                    <p>Será enviado um email com o link do chat para você. </p>
+                    <p>Envie o seu email cadastrado no chat do bot para ser adicionado e clique em "Buscar"!</p>
+                    <button id='botaoEnviarEmail' class="botaoPlaca" onclick=enviarEmailTelegram()>Adicionar</button>
+                    <button id='botaoBuscarChatId' class="botaoPlaca" onclick=buscarChatId()>Buscar</button>
                     <button id='botaoRemoverTelegram' class="botaoPlaca" style="background-color: red;" onclick="removerChatId()">Remover</button>
                 </div>
             </div>
@@ -223,16 +237,24 @@ function abrirTela(event) {
             </div>
         </div>
         `;
+            espera = true;
             carregarInfosPerfil();
 
+            setTimeout(() => {
+                espera = false;
+            }), 1000;
             break;
 
         case "notificacao":
             document.getElementById('notificacao').classList.add('desativado');
             conteudo.innerHTML = `
                 <h2>Notificações</h2>
-            ;`
+            `;
+            espera = true;
             carregarNotificacoes();
+            setTimeout(() => {
+                espera = false;
+            }, 2000);
             break;
 
         case "suporte":
@@ -240,38 +262,49 @@ function abrirTela(event) {
             conteudo.innerHTML = `
                 <div id="conteudoSuporte"></div>
             `;
+            espera = true;
             carregarSuporte();
+            setTimeout(() => {
+                espera = false;
+            }, 1000);
+
             break;
 
         case "login":
-            document.getElementById('login').classList.add('desativado');
             window.location.href = "view/login.html";
             break;
 
         case "logout":
-            document.getElementById('logout').classList.add('desativado');
+            espera = true;
             realizarLogout();
-            break;
+            setTimeout(() => {
+                espera = false;
+            }, 1000);
 
+            break;
 
         default:
             conteudo.innerHTML = "<h2>Bem-vindo ao VagaXpress</h2>";
     }
 }
 
+// Função para realizar logout
 async function realizarLogout() {
     fetch("/gateway.php/api/usuario?action=logout")
         .then(response => response.json())
         .then(data => {
             if (data.logout) {
                 location.reload();
+            } else {
+                window.alert(data.msg);
             }
 
         })
         .catch(error => console.error(error));
 }
 
-function carregarVagas(){
+// Carrega número de vagas disponíveis
+function carregarVagas() {
     fetch("/gateway.php/api/vagaOcupada?action=retornar_vagas")
         .then(response => response.json())
         .then(data => {
@@ -284,30 +317,6 @@ function carregarVagas(){
         .catch(error => console.error(error));
 }
 
-async function gravarPlaca() {
-
-    var dados = { placa: document.getElementById("placa").value };
-
-    const res = await criptografar(dados);
-
-    fetch("/gateway.php/api/veiculo?action=cadastrar_placa", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            cript: res
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.msg);
-            carregaVeiculo();
-        })
-        .catch(error => {
-
-            alert("Erro ao cadastrar veículo. Verifique a conexão.");
-        });
-}
-
 /* Scripts Página Notificação */
 
 function carregarNotificacoes() {
@@ -315,37 +324,60 @@ function carregarNotificacoes() {
         .then(response => response.json())
         .then(data => {
             const conteudo = document.getElementById("conteudo");
-            let tabela = `
-                <h2>Notificações</h2>
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Mensagem</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
+            conteudo.innerHTML = "";
+
+            const titulo = document.createElement("h2");
+            titulo.textContent = "Notificações";
+
+            const tabela = document.createElement("table");
+            tabela.setAttribute("border", "1");
+
+            const thead = document.createElement("thead");
+            const tr = document.createElement("tr");
+
+            const thId = document.createElement("th");
+            thId.textContent = "ID";
+
+            const thMensagem = document.createElement("th");
+            thMensagem.textContent = "Mensagem";
+
+            tr.appendChild(thId);
+            tr.appendChild(thMensagem);
+            thead.appendChild(tr);
+            tabela.appendChild(thead);
+
+            const tbody = document.createElement("tbody");
 
             data.forEach(notificacao => {
-                tabela += `
-                    <tr>
-                        <td>${notificacao.idMensagem}</td>
-                        <td>${notificacao.mensagem}</td>
-                    </tr>`;
+                const trData = document.createElement("tr");
+
+                const tdId = document.createElement("td");
+                tdId.textContent = notificacao.idMensagem;
+
+                const tdMensagem = document.createElement("td");
+                tdMensagem.textContent = notificacao.mensagem;
+
+                trData.appendChild(tdId);
+                trData.appendChild(tdMensagem);
+                tbody.appendChild(trData);
             });
 
-            tabela += `</tbody></table>`;
-            conteudo.innerHTML = tabela;
+            tabela.appendChild(tbody);
+            conteudo.appendChild(tabela);
+            conteudo.prepend(titulo);
         })
         .catch(error => {
             console.error("Erro ao carregar notificações:", error);
-            document.getElementById("conteudo").innerHTML = "<p>Erro ao carregar notificações.</p>";
+            const conteudo = document.getElementById("conteudo");
+            conteudo.textContent = "Erro ao carregar notificações.";
         });
 }
 
 
 /* Scripts Página Usuário */
 let valorSaldo = '';
+
+// Função para abrir tela de pagamento de saldo
 function botaoSaldo(event) {
     const elementoClicado = event.target.id;
     const conteudo = document.getElementById("conteudo_saldo");
@@ -379,6 +411,38 @@ function botaoSaldo(event) {
     }
 }
 
+// Função de cadastro de placas
+async function gravarPlaca() {
+    let placa = /^[A-Za-z0-9]+$/;
+    var verificadorPlaca = placa.test(document.getElementById("placa").value);
+    if (!verificadorPlaca) {
+        alert("Placa inválida! Use apenas letras e números.");
+        return;
+    }
+
+    var dados = { placa: document.getElementById("placa").value };
+
+    const res = await criptografar(dados);
+
+    fetch("/gateway.php/api/veiculo?action=cadastrar_placa", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            cript: res
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.msg);
+            carregaVeiculo();
+        })
+        .catch(error => {
+
+            alert("Erro ao cadastrar veículo. Verifique a conexão.");
+        });
+}
+
+// Função para formatar o saldo enquato é digitado
 function formatarSaldo(input) {
     let valor = input.value.replace(/\D/g, "");
     if (valor.length > 10) {
@@ -386,14 +450,14 @@ function formatarSaldo(input) {
     }
     valor = (parseFloat(valor) / 100).toFixed(2);
 
-    if (valor > 99999999.99) {
-        valor = 99999999.99;
+    if (valor > 9999.99) {
+        valor = 9999.99;
     }
 
     input.value = "R$ " + valor.replace(".", ",");
 }
 
-
+// Função para adicionar saldo a conta do usuário
 async function adicionarSaldo() {
     document.getElementById('botaoAdicionarSaldo').disabled = true;
     var dados = { saldo: valorSaldo };
@@ -461,11 +525,24 @@ async function carregaNF() {
             if (Array.isArray(data.notas)) {
                 data.notas.forEach(nf => {
                     const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                    <td>${nf.data}</td>
-                    <td>R$ ${parseFloat(nf.valor).toFixed(2).replace(".", ",")}</td>
-                    <td><button onclick='mostrarDetalhesNota(${JSON.stringify(nf.id)})'>Detalhes</button></td>
-                `;
+
+                    const tdData = document.createElement("td");
+                    tdData.textContent = nf.data;
+
+                    const tdValor = document.createElement("td");
+                    tdValor.textContent = `R$ ${parseFloat(nf.valor).toFixed(2).replace(".", ",")}`;
+
+                    const tdDetalhes = document.createElement("td");
+                    const botao = document.createElement("button");
+                    botao.textContent = "Detalhes";
+                    botao.addEventListener("click", () => mostrarDetalhesNota(nf.id));
+
+                    tdDetalhes.appendChild(botao);
+
+                    tr.appendChild(tdData);
+                    tr.appendChild(tdValor);
+                    tr.appendChild(tdDetalhes);
+
                     tbody_notas.appendChild(tr);
                 });
             } else {
@@ -489,14 +566,29 @@ async function carregaVeiculo() {
             if (Array.isArray(data.placas) && data.placas.length > 0) {
                 data.placas.forEach(placa => {
                     const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                    <td>${placa}</td>
-                    <td><button id="botaoDeletarPlaca" onclick="deletarVeiculo('${placa}')">Deletar</button></td>
-                `;
+
+                    const tdPlaca = document.createElement("td");
+                    tdPlaca.textContent = placa;
+
+                    const tdBotao = document.createElement("td");
+                    const botao = document.createElement("button");
+                    botao.textContent = "Deletar";
+                    botao.addEventListener("click", () => deletarVeiculo(placa));
+
+                    tdBotao.appendChild(botao);
+
+                    tr.appendChild(tdPlaca);
+                    tr.appendChild(tdBotao);
+
                     tbody_veiculos.appendChild(tr);
                 });
             } else {
-                console.log("Nenhum veículo cadastrado");
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+                td.colSpan = 2;
+                td.textContent = "Nenhum veículo cadastrado.";
+                tr.appendChild(td);
+                tbody_veiculos.appendChild(tr);
             }
         })
         .catch(error => console.error(error));
@@ -553,26 +645,47 @@ async function mostrarDetalhesNota(idNota) {
     })
         .then(response => response.json())
         .then(data => {
-            if (!data.nota) {
-                alert("Nota fiscal não encontrada.");
+            if (data.nota == null) {
                 return;
             }
 
             const nota = data.nota;
 
-            const conteudo = `
-            <span class="detalhesNF" onclick="fecharModalNota()">&times;</span>
-            <h2>Detalhes da Nota Fiscal</h2>
-            <div class="detalhes-nota">
-                <p><strong>Data de Emissão:</strong> ${nota.dataEmissao}</p>
-                <p><strong>CPF:</strong> ${nota.cpf}</p>
-                <p><strong>Nome:</strong> ${nota.nome}</p>
-                <p><strong>Valor:</strong> R$ ${parseFloat(nota.valor).toFixed(2).replace(".", ",")}</p>
-                <p><strong>Descrição:</strong> ${nota.descricao}</p>
-            </div>
-        `;
+            const container = document.getElementById("conteudoNotaFiscal");
+            container.innerHTML = "";
 
-            document.getElementById("conteudoNotaFiscal").innerHTML = conteudo;
+            const span = document.createElement("span");
+            span.className = "detalhesNF";
+            span.textContent = "×";
+            span.addEventListener("click", fecharModalNota());
+
+            const h2 = document.createElement("h2");
+            h2.textContent = "Detalhes da Nota Fiscal";
+
+            const div = document.createElement("div");
+            div.className = "detalhes-nota";
+
+            const campos = [
+                { label: "Data de Emissão", value: nota.dataEmissao },
+                { label: "CPF", value: nota.cpf },
+                { label: "Nome", value: nota.nome },
+                { label: "Valor", value: `R$ ${parseFloat(nota.valor).toFixed(2).replace(".", ",")}` },
+                { label: "Descrição", value: nota.descricao }
+            ];
+
+            campos.forEach(campo => {
+                const p = document.createElement("p");
+                const strong = document.createElement("strong");
+                strong.textContent = campo.label + ": ";
+                p.appendChild(strong);
+                p.appendChild(document.createTextNode(campo.value));
+                div.appendChild(p);
+            })
+
+            container.appendChild(span);
+            container.appendChild(h2);
+            container.appendChild(div);
+
             document.getElementById("modalDetalhesNF").classList.remove("hidden");
         })
         .catch(error => {
@@ -585,15 +698,11 @@ function fecharModalNota() {
 }
 
 
-async function cadastraChatId() {
-    if(document.getElementById('chatId').value == '') {
-        window.alert("Por favor, preencha o campo com a chave API do Telegram.");
-        return;
-    }
+async function enviarEmailTelegram() {
     document.getElementById('botaoAdicionarTelegram').classList.add('desativado');
     document.getElementById('botaoAdicionarTelegram').disabled = true;
     document.getElementById('botaoAdicionarTelegram').textContent = 'Adicionando...';
-    
+
     var dados = { chatId: document.getElementById('chatId').value };
 
     const res = await criptografar(dados);
@@ -612,9 +721,13 @@ async function cadastraChatId() {
         .catch(error => {
             console.error("Erro ao buscar detalhes da nota fiscal:", error);
         });
-    document.getElementById('botaoAdicionarTelegram').classList.remove('desativado');
-    document.getElementById('botaoAdicionarTelegram').disabled = false;
-    document.getElementById('botaoAdicionarTelegram').textContent = 'Adicionar';
+
+    setTimeout(() => {
+        document.getElementById('botaoAdicionarTelegram').classList.remove('desativado');
+        document.getElementById('botaoAdicionarTelegram').disabled = false;
+        document.getElementById('botaoAdicionarTelegram').textContent = 'Adicionar';
+    }, 1000);
+   
 
 }
 
@@ -631,15 +744,33 @@ function removerChatId() {
         .catch(error => {
             console.error("Erro ao buscar detalhes da nota fiscal:", error);
         });
-    document.getElementById('botaoRemoverTelegram').classList.remove('desativado');
-    document.getElementById('botaoRemoverTelegram').disabled = false;
-    document.getElementById('botaoRemoverTelegram').textContent = 'Remover';
+    setTimeout(() => {
+        document.getElementById('botaoRemoverTelegram').classList.remove('desativado');
+        document.getElementById('botaoRemoverTelegram').disabled = false;
+        document.getElementById('botaoRemoverTelegram').textContent = 'Remover';
+    }, 1000);
+    
+}
+
+function buscarChatId() {
+
 }
 
 /* Página Agendamento/Pagamento */
 
 function validarAgendamento() {
-    document.getElementById('formAgendamento').classList.add('desativado');
+    const dataInput = document.getElementById("data_agendamento").value;
+    const horaInput = document.getElementById("hora_agendamento").value;
+    const agendamento = new Date(`${dataInput}T${horaInput}`);
+    const agora = new Date();
+    if (agendamento < agora) {
+        window.alert("A data e hora do agendamento não podem ser no passado.");
+        return;
+    }
+
+    document.getElementById('pagarDivida').disabled = true;
+    document.getElementById('pagarDivida').classList.add('desativado');
+    document.getElementById('botaoAgendar').classList.add('desativado');
     document.getElementById('botaoAgendar').disabled = true;
     document.getElementById('divTelaPagamento').innerHTML = `
         <div id="divPagamento" class="divPagamento">
@@ -659,9 +790,12 @@ function validarAgendamento() {
 
 }
 function cancelarPagamento() {
-    document.getElementById('formAgendamento').classList.remove('desativado');
-    document.getElementById('divPagamento').remove();
+    document.getElementById('botaoAgendar').classList.remove('desativado');
     document.getElementById('botaoAgendar').disabled = false;
+    document.getElementById('divPagamento').remove();
+    document.getElementById('pagarDivida').disabled = false;
+    document.getElementById('pagarDivida').classList.remove('desativado');
+    
 }
 
 
@@ -685,7 +819,7 @@ function carregarPlacasPerfil() {
             }
         })
         .catch(error => console.error(error));
-        
+
 }
 
 function formatarCpf(input) {
@@ -711,6 +845,30 @@ async function confirmarPagamento() {
     document.getElementById('botaoPagamento').disabled = true;
     document.getElementById('botaoPagamento').textContent = 'Validando...';
 
+    let placa = /^[A-Za-z0-9]+$/;
+    let nome = /^[\p{L} ]{3,}$/u;
+    let cpf = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+    var verificadorPlaca = placa.test(document.getElementById("carros").value);
+    var verificadorNome = nome.test(document.getElementById("nome_pagador").value);
+    var verificadorCpf = cpf.test(document.getElementById("cpf_pagador").value);
+    if (!verificadorNome) {
+        alert("Nome inválido! Use apenas letras e espaços, com no mínimo 3 caracteres.");
+        document.getElementById('botaoPagamento').disabled = false;
+        document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+        return;
+    }
+    if (!verificadorPlaca) {
+        alert("Placa inválida! Use apenas letras e números.");
+        document.getElementById('botaoPagamento').disabled = false;
+        document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+        return;
+    }
+    if (!verificadorCpf) {
+        alert("CPF inválido! Use o formato 000.000.000-00.");
+        document.getElementById('botaoPagamento').disabled = false;
+        document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+        return;
+    }
 
     var dados = {
         placa: document.getElementById('carros').value,
@@ -785,67 +943,98 @@ function carregarDadosPagamento() {
             const tabelaAgendadas = document.getElementById('tabelaAgendadas').querySelector('tbody');
             const tabelaRegistros = document.getElementById('tabelaRegistros').querySelector('tbody');
             const labelCarros = document.getElementById('LabelCarros');
+            const botaoAgendar = document.getElementById('botaoAgendar');
+            const pagarDivida = document.getElementById('pagarDivida');
+            const dividaTotal = document.getElementById('dividaTotal');
 
             tabelaAgendadas.innerHTML = "";
             tabelaRegistros.innerHTML = "";
             labelCarros.innerHTML = "";
 
             if (data.error) {
-                labelCarros.innerHTML = `<p>${data.msg}</p>`;
-                document.getElementById('botaoAgendar').disabled = true;
-                document.getElementById('botaoAgendar').classList.add('desativado');
-                document.getElementById('pagarDivida').disabled = true;
-                document.getElementById('pagarDivida').classList.add('desativado');
+                const p = document.createElement("p");
+                p.textContent = data.msg;
+                labelCarros.appendChild(p);
+
+                botaoAgendar.disabled = true;
+                botaoAgendar.classList.add('desativado');
+
+                pagarDivida.disabled = true;
+                pagarDivida.classList.add('desativado');
             }
 
-            if (!data.agendamentos || data.agendamentos.length === 0) {
-                tabelaAgendadas.innerHTML = `
-                <tr>
-                    <td colspan="3">Nenhuma vaga agendada.</td>
-                </tr>
-            `;
-            } else {
+            if (Array.isArray(data.agendamentos) && data.agendamentos.length > 0) {
                 data.agendamentos.forEach(ag => {
-                    tabelaAgendadas.innerHTML += `
-                    <tr>
-                        <td>${ag.placa}</td>
-                        <td>${ag.data}</td>
-                        <td>${ag.hora}</td>
-                        <td><button onclick='cancelarAgendamento(${JSON.stringify(ag.id)})'>Cancelar</button></td>
-                    </tr>
-                `;
+                    const tr = document.createElement("tr");
+
+                    const tdPlaca = document.createElement("td");
+                    tdPlaca.textContent = ag.placa;
+
+                    const tdData = document.createElement("td");
+                    tdData.textContent = ag.data;
+
+                    const tdHora = document.createElement("td");
+                    tdHora.textContent = ag.hora;
+
+                    const tdBtn = document.createElement("td");
+                    const btn = document.createElement("button");
+                    btn.textContent = "Cancelar";
+                    btn.onclick = () => cancelarAgendamento(ag.id);
+                    tdBtn.appendChild(btn);
+
+                    tr.appendChild(tdPlaca);
+                    tr.appendChild(tdData);
+                    tr.appendChild(tdHora);
+                    tr.appendChild(tdBtn);
+
+                    tabelaAgendadas.appendChild(tr);
                 });
+            } else {
+                const tr = document.createElement("tr");
+
+                const td = document.createElement("td");
+                td.colSpan = 4;
+                td.textContent = "Nenhuma vaga agendada.";
+
+                tr.appendChild(td);
+                tabelaAgendadas.appendChild(tr);
             }
 
 
-            if (!data.devedoras || data.devedoras.length === 0) {
-                tabelaRegistros.innerHTML = `
-                <tr>
-                    <td colspan="4">Nenhuma dívida encontrada.</td>
-                </tr>
-            `;
-            } else {
+            if (Array.isArray(data.devedoras) && data.devedoras.length > 0) {
                 data.devedoras.forEach(dev => {
-                    tabelaRegistros.innerHTML += `
-                    <tr>
-                        <td>${dev.placa}</td>
-                        <td>${dev.dataEntrada}</td>
-                        <td>${dev.horaEntrada}</td>
-                        <td>${dev.dataSaida}</td>
-                        <td>${dev.horaSaida}</td>
-                        <td>R$ ${parseFloat(dev.valor).toFixed(2)}</td>
-                    </tr>
-                `;
+                    const tr = document.createElement("tr");
+
+                    const campos = [
+                        dev.placa,
+                        dev.dataEntrada,
+                        dev.horaEntrada,
+                        dev.dataSaida,
+                        dev.horaSaida,
+                        `R$ ${parseFloat(dev.valor).toFixed(2).replace(".", ",")}`
+                    ];
+
+                    campos.forEach(valor => {
+                        const td = document.createElement("td");
+                        td.textContent = valor;
+                        tr.appendChild(td);
+                    });
+
+                    tabelaRegistros.appendChild(tr);
                 });
-
-
-
-            }
-            if (data.total != null) {
-                document.getElementById('dividaTotal').textContent = parseFloat(data.total).toFixed(2).replace(".", ",");
             } else {
-                document.getElementById('dividaTotal').textContent = "0,00";
+                const tr = document.createElement("tr");
+
+                const td = document.createElement("td");
+                td.colSpan = 6;
+                td.textContent = "Nenhuma dívida encontrada.";
+                
+                tr.appendChild(td);
+                tabelaRegistros.appendChild(tr);
             }
+
+            const total = parseFloat(data.total || 0).toFixed(2).replace(".", ",");
+            dividaTotal.textContent = total;
 
         })
         .catch(error => {
@@ -882,7 +1071,10 @@ async function cancelarAgendamento($id) {
 }
 
 function abrirTelaPagamento() {
+    document.getElementById('botaoAgendar').disabled = true;
+    document.getElementById('botaoAgendar').classList.add('desativado');
     document.getElementById('pagarDivida').disabled = true;
+    document.getElementById('pagarDivida').classList.add('desativado');
     document.getElementById('divTelaPagamento').innerHTML = `
         <div id="divPagamento" class="divPagamento">
             <h2>Informações de Pagamento</h2>
@@ -932,6 +1124,11 @@ async function pagarDivida() {
 
     document.getElementById('botaoPagamento').disabled = false;
     document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+    document.getElementById('pagarDivida').disabled = false;
+    document.getElementById('divPagamento').remove();
+    document.getElementById('botaoAgendar').disabled = false;
+    document.getElementById('botaoAgendar').classList.remove('desativado');
+    document.getElementById('pagarDivida').classList.remove('desativado');
 }
 
 /* Scripts Página Suporte */
@@ -956,7 +1153,7 @@ function carregarSuporte() {
                         </select>
 
                         <label for="textoSuporte">Mensagem:</label>
-                        <input class="inputSuporte" id="textoSuporte" placeholder="Mensagem" required>
+                        <input class="inputSuporte" id="textoSuporte" placeholder="Mensagem" maxlength=500 required>
 
                         <button class="botaoSuporte" id="botaoEnviarSuporte" type="submit">Enviar</button>
                     </form>
@@ -977,7 +1174,7 @@ function carregarSuporte() {
                         </select>
 
                         <label for="textoSuporte">Mensagem:</label>
-                        <input class="inputSuporte" id="textoSuporte" placeholder="Mensagem" required>
+                        <input class="inputSuporte" id="textoSuporte" placeholder="Mensagem" maxlength=500 required>
 
                         <button class="botaoSuporte" id="botaoEnviarSuporte" type="submit">Enviar</button>
                     </form>
@@ -990,6 +1187,14 @@ function carregarSuporte() {
 
 
 async function validarEmailSuporte() {
+    document.getElementById('botaoEnviarSuporte').disabled = true;
+    document.getElementById('botaoEnviarSuporte').textContent = 'Validando...';
+    let email = /^[A-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+    var verificadorEmail = email.test(document.getElementById("email").value);
+    if (!verificadorEmail) {
+        alert("Email inválido! Por favor, insira um email válido.");
+        return;
+    }
     var dados = { email: document.getElementById('email').value };
 
     const res = await criptografar(dados);
@@ -1007,13 +1212,15 @@ async function validarEmailSuporte() {
         .then(data => {
             if (data.error) {
                 window.alert(data.msg);
+                document.getElementById('botaoEnviarSuporte').disabled = false;
+                document.getElementById('botaoEnviarSuporte').textContent = 'Enviar';
             } else {
                 document.getElementById("conteudo_suporte").innerHTML = `
                 <form onsubmit="event.preventDefault(); enviarSuporteDeslogado();">
                     <h2>Um token foi enviado para o email: ${document.getElementById('email').value}</h2>
                     <label for="token">Token:</label>
                     <input id="token" placeholder="token" required>
-                    <button id="botaoEnviarSuporte" type="submit">Enviar</button>
+                    <button id="botaoEnviarToken" type="submit">Enviar</button>
                 </form>
                 `
             }
@@ -1021,14 +1228,30 @@ async function validarEmailSuporte() {
         .catch(error => console.error(error));
 }
 
+function sanitizarTexto(texto) {
+    return str
+        .replace(/&/g, " ")
+        .replace(/</g, " ")
+        .replace(/>/g, " ")
+        .replace(/"/g, " ")
+        .replace(/'/g, " ");
+}
+
 async function enviarSuporteDeslogado() {
-    document.getElementById('botaoEnviarSuporte').disabled = true;
-    document.getElementById('botaoEnviarSuporte').textContent = 'Validando...';
+    document.getElementById('botaoEnviarToken').disabled = true;
+    document.getElementById('botaoEnviarToken').textContent = 'Validando...';
+    let token = /^[0-9]{6,}$/;
+    var verificadorToken = token.test(document.getElementById('token').value);
+
+    if (!verificadorToken) {
+        alert("Token inválido!");
+        return;
+    }
     var dados = {
         token: document.getElementById('token').value,
         email: document.getElementById('email').value,
         tipo: document.getElementById('tipoMensagem').value,
-        texto: document.getElementById('textoSuporte').value
+        texto: sanitizarTexto(document.getElementById('textoSuporte').value.trim())
     };
 
     const res = await criptografar(dados);
@@ -1058,16 +1281,17 @@ async function enviarSuporteDeslogado() {
 
 
 
-    document.getElementById('botaoEnviarSuporte').disabled = false;
-    document.getElementById('botaoEnviarSuporte').textContent = 'Enviar';
+    document.getElementById('botaoEnviarToken').disabled = false;
+    document.getElementById('botaoEnviarToken').textContent = 'Enviar';
 }
 
 async function enviarSuporteLogado() {
     document.getElementById('botaoEnviarSuporte').disabled = true;
     document.getElementById('botaoEnviarSuporte').textContent = 'Validando...';
+
     var dados = {
         tipo: document.getElementById('tipoMensagem').value,
-        texto: document.getElementById('textoSuporte').value
+        texto: sanitizarTexto(document.getElementById('textoSuporte').value.trim())
     };
 
     const res = await criptografar(dados);
@@ -1085,7 +1309,7 @@ async function enviarSuporteLogado() {
         .then(data => {
             if (data.error) {
                 window.alert(data.msg);
-            }else{
+            } else {
                 document.alert("Mensagem enviada com sucesso!");
                 document.getElementById("conteudo_suporte").innerHTML = ``
                 document.getElementById('textoSuporte').value = '';

@@ -10,12 +10,12 @@ window.onload = function () {
                 } else {
                     window.alert("Ocorreu um erro, reinicie a página!")
                 }
-            }else if(data.login == 1){
+            } else if (data.login == 1) {
                 window.alert(data.msg);
                 window.location.href = "../index.html";
-            }else if(data.login == 2){
+            } else if (data.login == 2) {
                 window.alert(data.msg);
-                //enviar para página adm
+                window.location.href = "administracao.html";
             }
         })
         .catch(error => console.error(error));
@@ -62,11 +62,13 @@ async function cadastrar(event) {
 
         if (document.getElementById("senha").value == document.getElementById("confirmar_senha").value) {
 
-            let email = /^[A-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+            let email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             let senha = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{8,}$/;
+            let nome = /^[\p{L}]{3,}$/u;
 
             var verificadorEmail = email.test(document.getElementById('email').value);
             var verificadorSenha = senha.test(document.getElementById('senha').value);
+            var verificadorNome = nome.test(document.getElementById('username').value);
 
             if (verificadorEmail && verificadorSenha) {
 
@@ -97,9 +99,12 @@ async function cadastrar(event) {
                         }
                     })
                     .catch(error => console.error(error));
-            }
-            else {
-                alert("Os dados registrados não estão de acordo com a expressão regular.")
+            } else if (!verificadorEmail) {
+                alert("Insira um email valido.");
+            } else if (!verificadorSenha) {
+                alert("Insira uma senha com uma letras maiúsculas e minúsculas, um número e um caractere especial (tamanho minimo 8).");
+            } else if (!verificadorNome) {
+                alert("Nome de usuário apenas pode conter letras (tamnho minimo 3).");
             }
         }
         else {
@@ -114,6 +119,12 @@ async function cadastrar(event) {
 
 async function verificaToken() {
     document.getElementById("botaoToken").disabled = true;
+    let token = /^[0-9]{6,}$/;
+    var verificadorToken = token.test(document.getElementById('token').value);
+    if (!verificadorToken) {
+        alert("Token inválido!");
+        return;
+    }
     var dados = {
         token: document.getElementById('token').value,
         email: document.getElementById('email').value,

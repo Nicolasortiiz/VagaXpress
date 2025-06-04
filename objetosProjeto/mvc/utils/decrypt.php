@@ -27,7 +27,8 @@ function removePadding($data) {
 
 function decrypt($data){   
 
-    $senhaGPG = "senha@gpg";
+    $env = parse_ini_file(__DIR__ . '/../.env');
+    $senhaGPG = $env['SENHA_GPG'];
     $tempDir = sys_get_temp_dir();
     
     if (empty($data)) {

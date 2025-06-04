@@ -15,9 +15,9 @@
 <body>
     <div class="input_box">
         
-        <input class="inputEmail" type="text" placeholder="E-mail" id="email">
+        <input class="inputEmail" type="text" placeholder="E-mail" id="email" maxlength="70">
         <br>
-        <input class="inputSenha" type="password" placeholder="Senha" id="senha">
+        <input class="inputSenha" type="password" placeholder="Senha" id="senha" maxlength="50">
         <br>
         <button onclick="enviarLogin()" id="botaoLogin">Entrar</button>
         <a href='cadastro.html'>Cadastrar nova conta</a>
@@ -30,7 +30,7 @@
         <a>Insira o código autenticador </a>
         <a>(caso necessário recupere a senha para gerar um novo)</a>
         <br>
-        <input class="inputSMS" type="text" placeholder="Código" id="inputSMS">
+        <input class="inputSMS" type="text" placeholder="Código" id="inputSMS" maxlength="6">
         <br>
         <button onclick="validarLogin()" id="botaoSMS">Entrar</button>
 

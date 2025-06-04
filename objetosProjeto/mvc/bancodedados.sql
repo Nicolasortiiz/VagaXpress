@@ -8,7 +8,6 @@ CREATE TABLE Usuario (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     saldo DECIMAL(10,2),
-    senha VARCHAR(255) NOT NULL,
     segredo VARCHAR(255),
     chatId VARCHAR(255) UNIQUE
 );
@@ -72,6 +71,8 @@ CREATE TABLE Suporte (
     tipo VARCHAR(50) NOT NULL
 );
 
-INSERT INTO Usuario (nome, email, senha) VALUES ('Admin', 'admin@vagaxpress.com', 'admin.senha123');
-INSERT INTO Usuario (nome, email, senha) VALUES ('teste', 'teste@mail.com', 'teste');
+INSERT INTO Usuario (nome, email) VALUES ('Admin', 'admin@vagaxpress.com');
+INSERT INTO Usuario (nome, email) VALUES ('teste', 'teste@mail.com');
+INSERT INTO Usuario (nome, email, segredo) VALUES ('teste', 'nicolasortiz2003@gmail.com', '7KI7FG56KT46JH5V62R24ZVYTEGTKJHWAQHYE5YWU623G6OECIAHS6BWG4DUV6FNPAYJBBX7SYZYFDOVFMAPXAPMJLS4PLBTHAS2QTQ');
 INSERT INTO Estacionamento (totalVagas, valorHora) VALUES (100, 5.00);
+ 

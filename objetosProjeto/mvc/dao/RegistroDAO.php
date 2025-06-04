@@ -34,11 +34,11 @@ class RegistroDAO
     
             while ($row = $result->fetch_assoc()) {
                 $devedoras[] = [
-                    'placa' => $row['placa'],
-                    'dataEntrada' => $row['dataEntrada'],
-                    'dataSaida' => $row['dataSaida'],
-                    'horaEntrada' => $row['horaEntrada'],
-                    'horaSaida' => $row['horaSaida']
+                    'placa' => htmlspecialchars($row['placa']),
+                    'dataEntrada' => htmlspecialchars($row['dataEntrada']),
+                    'dataSaida' => htmlspecialchars($row['dataSaida']),
+                    'horaEntrada' => htmlspecialchars($row['horaEntrada']),
+                    'horaSaida' => htmlspecialchars($row['horaSaida'])
                 ];
             }
     
