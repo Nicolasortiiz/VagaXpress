@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-pagamento-deployment
+  labels:
+    app: db-pagamento
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-pagamento
+  template:
+    metadata:
+      labels:
+        app: db-pagamento
+    spec:
+      containers:
+        - name: db-pagamento
+          image: imagem-db-pagamento:latest
+          ports:
+            - containerPort: 3308

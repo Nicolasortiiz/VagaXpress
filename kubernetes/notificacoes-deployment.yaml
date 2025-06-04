@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notificacoes-deployment
+  labels:
+    app: notificacoes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notificacoes
+  template:
+    metadata:
+      labels:
+        app: notificacoes
+    spec:
+      containers:
+        - name: notificacoes
+          image: imagem-notificacoes:latest
+          ports:
+            - containerPort: 8881  

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensor-deployment
+  labels:
+    app: sensor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sensor
+  template:
+    metadata:
+      labels:
+        app: sensor
+    spec:
+      containers:
+        - name: sensor
+          image: imagem-sensor:latest
+          ports:
+            - containerPort: 5000  
+
+#implementar ingress

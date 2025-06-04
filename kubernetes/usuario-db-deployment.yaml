@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-usuario-deployment
+  labels:
+    app: db-usuario
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-usuario
+  template:
+    metadata:
+      labels:
+        app: db-usuario
+    spec:
+      containers:
+        - name: db-usuario
+          image: imagem-db-usuario:latest
+          ports: 3309

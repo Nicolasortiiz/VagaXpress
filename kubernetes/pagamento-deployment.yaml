@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pagamento-deployment
+  labels:
+    app: pagamento
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pagamento
+  template:
+    metadata:
+      labels:
+        app: pagamento
+    spec:
+      containers:
+        - name: pagamento
+          image: imagem-pagamento:latest
+          ports:
+            - containerPort: 8882  

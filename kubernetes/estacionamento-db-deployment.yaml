@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-estacionamento-deployment
+  labels:
+    app: db-estacionamento
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-estacionamento
+  template:
+    metadata:
+      labels:
+        app: db-estacionamento
+    spec:
+      containers:
+        - name: db-estacionamento
+          image: imagem-db-estacionamento:latest
+          ports:
+            - containerPort: 3306  

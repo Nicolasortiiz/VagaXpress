@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-notificacao-deployment
+  labels:
+    app: db-notificacao
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-notificacao
+  template:
+    metadata:
+      labels:
+        app: db-notificacao
+    spec:
+      containers:
+        - name: db-notificacao
+          image: imagem-db-notificacao:latest
+          ports:
+            - containerPort: 3307  
