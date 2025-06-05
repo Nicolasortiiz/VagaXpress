@@ -74,7 +74,7 @@ class RegistroController
         }
         $cpf = preg_replace('/\D/', '', $cpf);
 
-        $url = "http://localhost:8001/veiculo.php?action=retornar_placas";
+        $url = "http://gestao-veiculos-service:8880/veiculo.php?action=retornar_placas";
         $dados = [
             "id" => $_SESSION["usuario_id"]
         ];
@@ -89,7 +89,7 @@ class RegistroController
                 exit;
             }
 
-            $url = "http://localhost:8001/usuario.php?action=realizar_pagamento";
+            $url = "http://gestao-veiculos-service:8880/usuario.php?action=realizar_pagamento";
             $dados = [
                 "valor" => $devedoras['total'],
                 "id" => $_SESSION["usuario_id"]
@@ -102,7 +102,7 @@ class RegistroController
                 exit;
             }
 
-            $url = "http://localhost:8001/notaFiscal.php?action=gerar_nota_fiscal";
+            $url = "http://pagamento-service:8882/notaFiscal.php?action=gerar_nota_fiscal";
 
             $placas = array_map(function($registro) {
                 return $registro['placa'];

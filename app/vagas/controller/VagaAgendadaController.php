@@ -3,12 +3,11 @@ require_once __DIR__ . "/../dao/VagaAgendadaDAO.php";
 require_once __DIR__ . "/../model/VagaAgendada.php";
 require_once __DIR__ . "/../utils/crypt.php";
 require_once __DIR__ . "/../controller/EstacionamentoController.php";
+require_once __DIR__ . "/../utils/auth.php";
 require_once __DIR__ . "/../controller/RegistroController.php";
 
 header('Content-Type: application/json');
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+
 date_default_timezone_set('America/Sao_Paulo');
 
 
@@ -16,30 +15,17 @@ class VagaAgendadaController
 {
     private $VagaAgendadaDAO;
     private $EstacionamentoController;
+    private $Auth;
     private $RegistroController;
 
     public function __construct()
     {
         $this->VagaAgendadaDAO = new VagaAgendadaDAO();
         $this->EstacionamentoController = new EstacionamentoController();
+        $this->Auth = new Auth();
         $this->RegistroController = new RegistroController();
     }
-    public function validarLogin()
-    {
-        if (isset($_SESSION["email"]) && isset($_SESSION["ultima_atividade"]) && isset($_SESSION["usuario_id"])) {
-            $ultima_atividade = $_SESSION["ultima_atividade"];
-            if (time() - $ultima_atividade > 3600) {
-                session_unset();
-                session_destroy();
-                return false;
-            }
-            $_SESSION["ultima_atividade"] = time();
-            return true;
-
-        } else {
-            return false;
-        }
-    }
+    
     public function retornarInfosAgendamento($placas)
     {
 
@@ -52,7 +38,7 @@ class VagaAgendadaController
 
     public function cancelarAgendamento($idAgendamento)
     {
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -83,18 +69,18 @@ class VagaAgendadaController
 
     public function cancelarTodosAgendamentos($placa)
     {
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
-        $url = "http://localhost:8001/registro.php?action=validar_remocao";
+        $url = "http://vagas-service:8883/registro.php?action=validar_remocao";
         $dados = [
-            'placa' => $placa
+            'placa' => htmlspecialchars($placa)
         ];
         $resposta = enviaDados($url, $dados);
         $status = json_decode($resposta);
         if ($status->error === true) {
-            echo json_encode($resposta);
+            echo json_encode(htmlspecialchars($resposta));
             exit;
         }
 
@@ -121,20 +107,26 @@ class VagaAgendadaController
             $this->VagaAgendadaDAO->removerTodosAgendamentos($agendamento);
         }
 
-        $url = "http://localhost:8001/veiculo.php?action=deletar_placa";
+        $url = "http://gestao-veiculos-service:8880/veiculo.php?action=deletar_placa";
         $dados = [
-            'placa' => $placa,
-            'id' => $_SESSION['usuario_id']
+            'placa' => htmlspecialchars($placa),
+            'id' => htmlspecialchars($_SESSION['usuario_id'])
         ];
         $resposta = enviaDados($url, $dados);
-        
-        echo $resposta;
+        $json = json_decode($resposta);
+        if(isset($json['msg'])){
+            $json['msg'] = htmlspecialchars($json['msg'], ENT_QUOTES, 'UTF-8');
+        echo json_encode($json); 
+        }else{
+            echo json_encode(["error" => true, "msg" => "Erro ao deletar placa!"]);
+            exit;
+        }
         exit;
     }
 
     public function procurarAgendamento($placa, $dataEntrada, $horaEntrada)
     {
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
@@ -154,50 +146,56 @@ class VagaAgendadaController
             exit;
         }
         $valor = $this->EstacionamentoController->retornarValorHora();
-        $url = "http://localhost:8001/usuario.php?action=validar_pagamento_agendamento";
+        $url = "http://gestao-veiculos-service:8880/usuario.php?action=validar_pagamento_agendamento";
         $dados = [
-            'placa' => $placa,
-            'id' => $_SESSION['usuario_id'],
-            'valor' => $valor
+            'placa' => htmlspecialchars($placa),
+            'id' => htmlspecialchars($_SESSION['usuario_id']),
+            'valor' => htmlspecialchars($valor)
         ];
         $resposta = enviaDados($url, $dados);
-        error_log($resposta);
-        echo $resposta;
+        $json = json_decode($resposta);
+        if (isset($json['msg'])) {
+            $json['msg'] = htmlspecialchars($json['msg'], ENT_QUOTES, 'UTF-8');
+            echo json_encode($json); 
+        }else{
+            echo json_encode(["error" => true, "msg" => "Erro ao validar pagamento!"]);
+            exit;
+        }
         exit;
     }
     public function criarAgendamento($placa, $dataEntrada, $horaEntrada, $nome, $cpf)
     {
 
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
 
         $valor = $this->EstacionamentoController->retornarValorHora();
-        $url = "http://localhost:8001/usuario.php?action=realizar_pagamento";
+        $url = "http://gestao-veiculos-service:8880/usuario.php?action=realizar_pagamento";
         $dados = [
-            "valor" => $valor,
-            "id" => $_SESSION['usuario_id']
+            "valor" => htmlspecialchars($valor),
+            "id" => htmlspecialchars($_SESSION['usuario_id'])
         ];
         $resposta = enviaDados($url, $dados);
         $statusPagamento = json_decode($resposta);
         if ($statusPagamento->error === true) {
-            echo json_encode($resposta);
+            echo json_encode(htmlspecialchars($resposta));
             exit;
         }
         $cpf = preg_replace('/\D/', '', $cpf);
-        $url = "http://localhost:8001/notaFiscal.php?action=gerar_nota_fiscal";
+        $url = "http://pagamento-service:8882/notaFiscal.php?action=gerar_nota_fiscal";
         $dados = [
-            "valor" => $valor,
-            "id" => $_SESSION["usuario_id"],
-            "nome" => $nome,
-            "cpf" => $cpf,
-            "descricao" => "Pagamento agendamento de vaga $placa, $dataEntrada $horaEntrada"
+            "valor" => htmlspecialchars($valor),
+            "id" => htmlspecialchars($_SESSION["usuario_id"]),
+            "nome" => htmlspecialchars($nome),
+            "cpf" => htmlspecialchars($cpf),
+            "descricao" => htmlspecialchars("Pagamento agendamento de vaga $placa, $dataEntrada $horaEntrada")
         ];
         $resposta = enviaDados($url, $dados);
         $statusNF = json_decode($resposta);
         if ($statusNF->error === true) {
-            echo json_encode($resposta);
+            echo json_encode(htmlspecialchars($resposta));
             exit;
         }
 
@@ -210,16 +208,16 @@ class VagaAgendadaController
     }
 
     public function retornarDadosPaginaPagamento() {
-        if (!$this->validarLogin()) {
+        if (!$this->Auth->verificarLogin()) {
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
-    
-        $url = "http://localhost:8001/veiculo.php?action=retornar_placas";
+        
+        $url = "http://gestao-veiculos-service:8880/veiculo.php?action=retornar_placas";
         $dados = ["id" => $_SESSION["usuario_id"]];
         $resposta = enviaDados($url, $dados);  
         $resposta = json_decode($resposta);
-    
+        error_log(print_r($resposta, true));
         if (!empty($resposta->placas)) {
             $placas = $resposta->placas;
 
@@ -237,7 +235,7 @@ class VagaAgendadaController
             echo json_encode([
                 "error" => false,
                 "devedoras" => $devedoras,
-                "total" => $total,
+                "total" => htmlspecialchars($total),
                 "agendamentos" => $agendamentos
             ]);
         } else {

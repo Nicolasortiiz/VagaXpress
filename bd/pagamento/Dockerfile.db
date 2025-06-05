@@ -1,4 +1,4 @@
-FROM localhost/mariadb:latest
+FROM mariadb:latest
 
 # Retirar credenciais
 ENV MARIADB_ROOT_PASSWORD=root.pass.pagamento.MariaDB

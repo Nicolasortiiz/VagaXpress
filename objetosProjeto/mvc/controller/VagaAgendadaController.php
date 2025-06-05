@@ -73,7 +73,7 @@ class VagaAgendadaController
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
-        $url = "http://localhost:8001/registro.php?action=validar_remocao";
+        $url = "http://vagas-service:8883/registro.php?action=validar_remocao";
         $dados = [
             'placa' => htmlspecialchars($placa)
         ];
@@ -107,7 +107,7 @@ class VagaAgendadaController
             $this->VagaAgendadaDAO->removerTodosAgendamentos($agendamento);
         }
 
-        $url = "http://localhost:8001/veiculo.php?action=deletar_placa";
+        $url = "http://gestao-veiculos-service:8880/veiculo.php?action=deletar_placa";
         $dados = [
             'placa' => htmlspecialchars($placa),
             'id' => htmlspecialchars($_SESSION['usuario_id'])
@@ -146,7 +146,7 @@ class VagaAgendadaController
             exit;
         }
         $valor = $this->EstacionamentoController->retornarValorHora();
-        $url = "http://localhost:8001/usuario.php?action=validar_pagamento_agendamento";
+        $url = "http://gestao-veiculos-service:8880/usuario.php?action=validar_pagamento_agendamento";
         $dados = [
             'placa' => htmlspecialchars($placa),
             'id' => htmlspecialchars($_SESSION['usuario_id']),
@@ -172,7 +172,7 @@ class VagaAgendadaController
         }
 
         $valor = $this->EstacionamentoController->retornarValorHora();
-        $url = "http://localhost:8001/usuario.php?action=realizar_pagamento";
+        $url = "http://gestao-veiculos-service:8880/usuario.php?action=realizar_pagamento";
         $dados = [
             "valor" => htmlspecialchars($valor),
             "id" => htmlspecialchars($_SESSION['usuario_id'])
@@ -184,7 +184,7 @@ class VagaAgendadaController
             exit;
         }
         $cpf = preg_replace('/\D/', '', $cpf);
-        $url = "http://localhost:8001/notaFiscal.php?action=gerar_nota_fiscal";
+        $url = "http://pagamento-service:8882/notaFiscal.php?action=gerar_nota_fiscal";
         $dados = [
             "valor" => htmlspecialchars($valor),
             "id" => htmlspecialchars($_SESSION["usuario_id"]),
@@ -213,7 +213,7 @@ class VagaAgendadaController
             exit;
         }
         
-        $url = "http://localhost:8001/veiculo.php?action=retornar_placas";
+        $url = "http://gestao-veiculos-service:8880/veiculo.php?action=retornar_placas";
         $dados = ["id" => $_SESSION["usuario_id"]];
         $resposta = enviaDados($url, $dados);  
         $resposta = json_decode($resposta);
