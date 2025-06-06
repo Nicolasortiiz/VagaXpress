@@ -24,9 +24,10 @@ pipeline {
                             def dockerfile = dockerfiles_app[i]
                             sh "docker build -t ${dockerfile.nome} -f '${dockerfile.arq}/Dockerfile' ${dockerfile.arq}"
                             sh "docker save -o ${dockerfile.nome}.tar ${dockerfile.nome}"
-                            sh "sudo microk8s ctr images import ${dockerfile.nome}.tar"
-                            sh "rm ${dockerfile.nome}.tar" 
-                            sh "docker rmi -f ${dockerfile.nome}"
+                            sh "docker tag ${dockerfile.nome} localhost/${dockerfile.nome}"
+                            sh "docker push localhost/${dockerfile.nome}"
+                            sh "docker rmi -f localhost/${dockerfile.nome}"
+                            sh "docker pull localhost/${dockerfile.nome}"
                         }
                     }
                 }
@@ -43,19 +44,20 @@ pipeline {
                             def dockerfile = dockerfiles_bd[i]
                             sh "docker build -t ${dockerfile.nome} -f '${dockerfile.arq}/Dockerfile.db' ${dockerfile.arq}"
                             sh "docker save -o ${dockerfile.nome}.tar ${dockerfile.nome}"
-                            sh "sudo microk8s ctr images import ${dockerfile.nome}.tar"
-                            sh "rm ${dockerfile.nome}.tar" 
-                            sh "docker rmi -f ${dockerfile.nome}"
+                            sh "docker tag ${dockerfile.nome} localhost/${dockerfile.nome}"
+                            sh "docker push localhost/${dockerfile.nome}"
+                            sh "docker rmi -f localhost/${dockerfile.nome}"
+                            sh "docker pull localhost/${dockerfile.nome}"
                         }
                     }
                 }
                 dir('sensor') {
                     script {
                         sh 'docker build -t imagem-sensor -f Dockerfile .'
-                        sh "docker save -o imagem-sensor.tar imagem-sensor"
-                        sh "sudo microk8s ctr images import imagem-sensor.tar"
-                        sh "rm imagem-sensor.tar" 
-                        sh "docker rmi -f ${dockerfile.nome}"
+                        sh "docker tag imagem-sensor localhost/imagem-sensor"
+                        sh "docker push localhost/imagem-sensor"
+                        sh "docker rmi -f localhost/imagem-sensor"
+                        sh "docker pull localhost/imagem-sensor"
                     }
                 }
             }

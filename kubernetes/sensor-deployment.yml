@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: sensor
-          image: imagem-sensor
+          image: localhost/imagem-sensor
           imagePullPolicy: Never
           ports:
             - containerPort: 5000  
