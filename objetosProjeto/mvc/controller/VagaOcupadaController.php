@@ -22,9 +22,17 @@ class VagaOcupadaController
 
     public function retornarQtdVagasLivres(){
         $totalVagas = $this->EstacionamentoController->retornarTotalVagas();
-        $vagasOcupadas = intval($this->VagaOcupadaDAO->retornaNumeroVagasOcupadas());
-        $vagasLivres = max(0, $totalVagas - $vagasOcupadas);;
-        echo json_encode(["vagasLivres" => $vagasLivres]);
+        $vagasOcupadas = $this->VagaOcupadaDAO->retornarTotalVagasOcupadas();
+        if($totalVagas == null){
+            echo json_encode(["error" => 1, "msg" => "Erro ao buscar dados do estacionamento."]);
+            exit;
+        }
+        $vagasLivres = $totalVagas - $vagasOcupadas;
+        if($vagasLivres < 0){
+            $vagasLivres = 0;
+        }
+        echo json_encode(["error" => 0,"vagasLivres" => $vagasLivres]);
+        exit;
     }
 
    

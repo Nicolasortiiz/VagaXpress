@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .desativado {
@@ -392,4 +393,35 @@ p {
     margin: 30px auto;
     border-radios: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0);
+}
+
+/*
+Estilos chat
+*/
+
+.inputChat {
+    width: 84%;
+    height: 50px;
+}
+
+.botaoChat{
+    width: 15%;
+    height: 50px;
+    background-color: rgb(47, 44, 66);
+    color: white;
+    border-radius: 5px;
+}
+
+.mensagem-usuario {
+    background-color: #d1e7dd;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.mensagem-ia {
+    background-color: #f8d7da;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 5px;
 }

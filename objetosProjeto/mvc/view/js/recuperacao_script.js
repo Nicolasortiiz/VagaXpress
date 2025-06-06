@@ -30,21 +30,26 @@ async function criptografar(dados) {
         padding: CryptoJS.pad.Pkcs7
     }).toString();
 
-    var data = {
+    var key = {
         k: k.toString(CryptoJS.enc.Base64),
         iv: iv.toString(CryptoJS.enc.Base64),
-        resultado: resultado
     };
-    var dataString = JSON.stringify(data);
+    var keyString = JSON.stringify(key);
 
     const publicKey = await openpgp.readKey({ armoredKey: chavePublica });
-    const message = await openpgp.createMessage({ text: dataString });
-    const res = await openpgp.encrypt({
+    const message = await openpgp.createMessage({ text: keyString });
+    const encryptedKey = await openpgp.encrypt({
         message: message,
         encryptionKeys: publicKey
     });
-    return res;
-};
+    
+    const encryptedData = {
+        key: encryptedKey,
+        data: resultado
+    };
+    return encryptedData;
+}
+
 
 function enviaEmail() {
     document.getElementById("botaoEmail").disabled = true;
@@ -61,11 +66,11 @@ function enviaEmail() {
         alert("Preencha todos os campos.");
     }
     document.getElementById("botaoEmail").disabled = false;
-};
+}
 
 function verificaSenha() {
     document.getElementById("botaoSenha").disabled = true;
-    let senha = /^.{7,20}$/;
+    let senha = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{8,}$/;
 
     var verificadorSenha = senha.test(document.getElementById('senha').value);
     if (document.getElementById('senha').value != "" &&

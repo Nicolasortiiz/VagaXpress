@@ -16,7 +16,7 @@ class RegistroDAO
         $query = 'SELECT placa, dataEntrada, dataSaida, horaEntrada, horaSaida 
                   FROM Registro 
                   WHERE placa = ? 
-                  AND statusPagamento = 0 
+                  AND statusPagamento = FALSE
                   AND dataSaida IS NOT NULL 
                   AND horaSaida IS NOT NULL';
     
@@ -77,7 +77,7 @@ class RegistroDAO
         }
         return true;
     }
-    
+
 
 }
 

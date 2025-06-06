@@ -26,9 +26,8 @@ class EstacionamentoController
 
     public function retornarTotalVagas(): int
     {
-        return intval($this->retornarTotalVagas());
+        return intval($this->EstacionamentoDAO->retornarTotalVagas());
     }
-
 
 }
 
