@@ -12,7 +12,7 @@ RUN composer require \
     slim/slim \
     guzzlehttp/guzzle
 
-COPY gateway.php /var/www/html/
+COPY . /var/www/html/
 
 RUN a2enmod rewrite
 
