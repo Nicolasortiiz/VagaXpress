@@ -16,6 +16,7 @@ spec:
     spec:
       containers:
         - name: front
-          image: imagem-front:latest
+          image: imagem-front
+          imagePullPolicy: Never
           ports:
-            - containerPort: 80  
+            - containerPort: 80

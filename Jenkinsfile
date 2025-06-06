@@ -12,38 +12,50 @@ pipeline {
                 dir('app') {
                     script {
                         def dockerfiles_app = [
-                            [nome: 'imagem-front', arq: 'front/Dockerfile'],
-                            [nome: 'imagem-gateway', arq: 'gateway/Dockerfile'],
-                            [nome: 'imagem-gestao-veiculos', arq: 'gestao_veiculos/Dockerfile'],
-                            [nome: 'imagem-notificacoes', arq: 'notificacoes/Dockerfile'],
-                            [nome: 'imagem-pagamento', arq: 'pagamento/Dockerfile'],
-                            [nome: 'imagem-vagas', arq: 'vagas/Dockerfile'],
+                            [nome: 'imagem-front', arq: 'front'],
+                            [nome: 'imagem-gateway', arq: 'gateway'],
+                            [nome: 'imagem-gestao-veiculos', arq: 'gestao_veiculos'],
+                            [nome: 'imagem-notificacoes', arq: 'notificacoes'],
+                            [nome: 'imagem-pagamento', arq: 'pagamento'],
+                            [nome: 'imagem-vagas', arq: 'vagas'],
                         ]
 
                         for (int i = 0; i < dockerfiles_app.size(); i++) {
                             def dockerfile = dockerfiles_app[i]
-                            sh "docker build -t ${dockerfile.nome} -f ${dockerfile.arq} ."
+                            sh "docker build -t ${dockerfile.nome} -f '${dockerfile.arq}/Dockerfile' ${dockerfile.arq}"
+                            sh "docker save -o ${dockerfile.nome}.tar ${dockerfile.nome}"
+                            sh "sudo microk8s ctr images import ${dockerfile.nome}.tar"
+                            sh "rm ${dockerfile.nome}.tar" 
+                            sh "docker rmi -f ${dockerfile.nome}"
                         }
                     }
                 }
                 dir('bd') {
                     script {
                         def dockerfiles_bd = [
-                            [nome: 'imagem-db-estacionamento', arq: 'estacionamento/Dockerfile.db'],
-                            [nome: 'imagem-db-notificacao', arq: 'notificacao/Dockerfile.db'],
-                            [nome: 'imagem-db-pagamento', arq: 'pagamento/Dockerfile.db'],
-                            [nome: 'imagem-db-usuario', arq: 'usuario/Dockerfile.db'],
+                            [nome: 'imagem-db-estacionamento', arq: 'estacionamento'],
+                            [nome: 'imagem-db-notificacao', arq: 'notificacao'],
+                            [nome: 'imagem-db-pagamento', arq: 'pagamento'],
+                            [nome: 'imagem-db-usuario', arq: 'usuario'],
                         ]
 
                         for (int i = 0; i < dockerfiles_bd.size(); i++) {
                             def dockerfile = dockerfiles_bd[i]
-                            sh "docker build -t ${dockerfile.nome} -f ${dockerfile.arq} ."
+                            sh "docker build -t ${dockerfile.nome} -f '${dockerfile.arq}/Dockerfile.db' ${dockerfile.arq}"
+                            sh "docker save -o ${dockerfile.nome}.tar ${dockerfile.nome}"
+                            sh "sudo microk8s ctr images import ${dockerfile.nome}.tar"
+                            sh "rm ${dockerfile.nome}.tar" 
+                            sh "docker rmi -f ${dockerfile.nome}"
                         }
                     }
                 }
                 dir('sensor') {
                     script {
                         sh 'docker build -t imagem-sensor -f Dockerfile .'
+                        sh "docker save -o imagem-sensor.tar imagem-sensor"
+                        sh "sudo microk8s ctr images import imagem-sensor.tar"
+                        sh "rm imagem-sensor.tar" 
+                        sh "docker rmi -f ${dockerfile.nome}"
                     }
                 }
             }
@@ -52,23 +64,24 @@ pipeline {
             steps {
                 dir('kubernetes') {
                     script {
-                        sh 'kubectl apply -f db-deployment.yml'
-                        sh 'kubectl apply -f db-service.yml'
+                        sh 'microk8s kubectl apply -f db-deployment.yml'
+                        sh 'microk8s kubectl apply -f db-service.yml'
 
-                        sh 'kubectl apply -f redis-deployment.yml'
-                        sh 'kubectl apply -f redis-service.yml'
+                        sh 'microk8s kubectl apply -f redis-deployment.yml'
+                        sh 'microk8s kubectl apply -f redis-service.yml'
 
-                        sh 'kubectl apply -f servicos-deployment.yml'
-                        sh 'kubectl apply -f servicos-services.yml'
+                        sh 'microk8s kubectl apply -f servicos-deployment.yml'
+                        sh 'microk8s kubectl apply -f servicos-services.yml'
 
-                        sh 'kubectl apply -f gateway-deployment.yml'
-                        sh 'kubectl apply -f gateway-service.yml'
+                        sh 'microk8s kubectl apply -f gateway-deployment.yml'
+                        sh 'microk8s kubectl apply -f gateway-service.yml'
 
-                        sh 'kubectl apply -f sensor-deployment.yml'
-                        sh 'kubectl apply -f sensor-service.yml'
+                        sh 'microk8s kubectl apply -f sensor-deployment.yml'
+                        sh 'microk8s kubectl apply -f sensor-service.yml'
 
-                        sh 'kubectl apply -f front-deployment.yml'
-                        sh 'kubectl apply -f front-service.yml'
+                        sh 'microk8s kubectl apply -f front-deployment.yml'
+                        sh 'microk8s kubectl apply -f front-service.yml'
+                        sh 'microk8s kubectl apply -f front-ingress.yml'
                     }
                 }
             }

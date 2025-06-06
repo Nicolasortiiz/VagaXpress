@@ -6,7 +6,7 @@ ENV MARIADB_DATABASE=NotificacaoDB
 ENV MARIADB_USER=notificacao_dbuser
 ENV MARIADB_PASSWORD=notificacao.pass.MariaDB
 
-COPY NotificacaoDB.sql /docker-entrypoint-initdb.d/
+COPY . /docker-entrypoint-initdb.d/
 
 RUN chmod 644 /docker-entrypoint-initdb.d/*.sql && \
     chown mysql:mysql /docker-entrypoint-initdb.d/*.sql

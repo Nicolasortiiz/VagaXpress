@@ -6,7 +6,7 @@ ENV MARIADB_DATABASE=PagamentoDB
 ENV MARIADB_USER=pagamento_dbuser
 ENV MARIADB_PASSWORD=pagamento.pass.MariaDB
 
-COPY PagamentoDB.sql /docker-entrypoint-initdb.d/
+COPY . /docker-entrypoint-initdb.d/
 
 RUN chmod 644 /docker-entrypoint-initdb.d/*.sql && \
     chown mysql:mysql /docker-entrypoint-initdb.d/*.sql

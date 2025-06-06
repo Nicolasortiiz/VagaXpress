@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
         - name: db-estacionamento
-          image: imagem-db-estacionamento:latest
+          image: imagem-db-estacionamento
+          imagePullPolicy: Never
           ports:
             - containerPort: 3306
           env:
@@ -49,7 +50,8 @@ spec:
     spec:
       containers:
         - name: db-notificacao
-          image: imagem-db-notificacao:latest
+          image: imagem-db-notificacao
+          imagePullPolicy: Never
           ports:
             - containerPort: 3307
           env:
@@ -80,7 +82,8 @@ spec:
     spec:
       containers:
         - name: db-pagamento
-          image: imagem-db-pagamento:latest
+          image: imagem-db-pagamento
+          imagePullPolicy: Never
           ports:
             - containerPort: 3308
           env:
@@ -111,7 +114,8 @@ spec:
     spec:
       containers:
         - name: db-usuario
-          image: imagem-db-usuario:latest
+          image: imagem-db-usuario
+          imagePullPolicy: Never
           ports:
             - containerPort: 3309
           env:

@@ -1,26 +1,12 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: v1
+kind: Service
 metadata:
-  name: app-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: front-service
 spec:
-  rules:
-    - host: vagaxpress.com
-      http:
-        paths:
-          - path: /gateway.php(/|$)(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: gateway-service
-                port:
-                  number: 80
+  selector:
+    app: front
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
 
-          - path: /?(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: front-service
-                port:
-                  number: 80

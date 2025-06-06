@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
         - name: gestao-veiculos
-          image: imagem-gestao-veiculos:latest
+          image: imagem-gestao-veiculos
+          imagePullPolicy: Never
           ports:
             - containerPort: 8880
           env:
@@ -62,7 +63,8 @@ spec:
     spec:
       containers:
         - name: notificacoes
-          image: imagem-notificacoes:latest
+          image: imagem-notificacoes
+          imagePullPolicy: Never
           ports:
             - containerPort: 8881
           env:
@@ -107,7 +109,8 @@ spec:
     spec:
       containers:
         - name: pagamento
-          image: imagem-pagamento:latest
+          image: imagem-pagamento
+          imagePullPolicy: Never
           ports:
             - containerPort: 8882  
           env:
@@ -152,7 +155,8 @@ spec:
     spec:
       containers:
         - name: vagas
-          image: imagem-vagas:latest
+          image: imagem-vagas
+          imagePullPolicy: Never
           ports:
             - containerPort: 8883  
           env:

@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
         - name: sensor
-          image: imagem-sensor:latest
+          image: imagem-sensor
+          imagePullPolicy: Never
           ports:
             - containerPort: 5000  
           env:

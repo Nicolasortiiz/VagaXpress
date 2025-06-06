@@ -6,7 +6,7 @@ ENV MARIADB_DATABASE=EstacionamentoDB
 ENV MARIADB_USER=estacionamento_dbuser
 ENV MARIADB_PASSWORD=estacionamento.pass.MariaDB
 
-COPY EstacionamentoDB.sql /docker-entrypoint-initdb.d/
+COPY . /docker-entrypoint-initdb.d/
 
 RUN chmod 644 /docker-entrypoint-initdb.d/*.sql && \
     chown mysql:mysql /docker-entrypoint-initdb.d/*.sql
