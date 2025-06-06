@@ -18,7 +18,7 @@ spec:
       containers:
         - name: db-estacionamento
           image: localhost/imagem-db-estacionamento
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 3306
           env:
@@ -51,7 +51,7 @@ spec:
       containers:
         - name: db-notificacao
           image: localhost/imagem-db-notificacao
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 3307
           env:
@@ -83,7 +83,7 @@ spec:
       containers:
         - name: db-pagamento
           image: localhost/imagem-db-pagamento
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 3308
           env:
@@ -115,7 +115,7 @@ spec:
       containers:
         - name: db-usuario
           image: localhost/imagem-db-usuario
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 3309
           env:

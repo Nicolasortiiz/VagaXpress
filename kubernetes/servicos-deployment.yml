@@ -18,7 +18,7 @@ spec:
       containers:
         - name: gestao-veiculos
           image: localhost/imagem-gestao-veiculos
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 8880
           env:
@@ -64,7 +64,7 @@ spec:
       containers:
         - name: notificacoes
           image: localhost/imagem-notificacoes
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 8881
           env:
@@ -110,7 +110,7 @@ spec:
       containers:
         - name: pagamento
           image: localhost/imagem-pagamento
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 8882  
           env:
@@ -156,7 +156,7 @@ spec:
       containers:
         - name: vagas
           image: localhost/imagem-vagas
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 8883  
           env:

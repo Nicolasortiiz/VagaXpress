@@ -17,6 +17,6 @@ spec:
       containers:
         - name: gateway
           image: localhost/imagem-gateway
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000

@@ -23,7 +23,6 @@ pipeline {
                         for (int i = 0; i < dockerfiles_app.size(); i++) {
                             def dockerfile = dockerfiles_app[i]
                             sh "docker build -t ${dockerfile.nome} -f '${dockerfile.arq}/Dockerfile' ${dockerfile.arq}"
-                            sh "docker save -o ${dockerfile.nome}.tar ${dockerfile.nome}"
                             sh "docker tag ${dockerfile.nome} localhost/${dockerfile.nome}"
                             sh "docker push localhost/${dockerfile.nome}"
                             sh "docker rmi -f localhost/${dockerfile.nome}"
@@ -43,7 +42,6 @@ pipeline {
                         for (int i = 0; i < dockerfiles_bd.size(); i++) {
                             def dockerfile = dockerfiles_bd[i]
                             sh "docker build -t ${dockerfile.nome} -f '${dockerfile.arq}/Dockerfile.db' ${dockerfile.arq}"
-                            sh "docker save -o ${dockerfile.nome}.tar ${dockerfile.nome}"
                             sh "docker tag ${dockerfile.nome} localhost/${dockerfile.nome}"
                             sh "docker push localhost/${dockerfile.nome}"
                             sh "docker rmi -f localhost/${dockerfile.nome}"

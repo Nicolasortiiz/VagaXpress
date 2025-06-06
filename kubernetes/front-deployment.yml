@@ -17,6 +17,6 @@ spec:
       containers:
         - name: front
           image: localhost/imagem-front
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
