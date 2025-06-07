@@ -10,6 +10,5 @@ CREATE TABLE NotaFiscal (
     cpf VARCHAR(11) NOT NULL,
     nome VARCHAR(100) NOT NULL,
     valor DECIMAL(10,2) NOT NULL,
-    descricao VARCHAR(255) NOT NULL,
-    FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+    descricao VARCHAR(255) NOT NULL
 );
