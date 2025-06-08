@@ -95,8 +95,12 @@ function abrirTela(event) {
 
         case "alterar_valor":
             conteudo.innerHTML = `
-                <h2>Alterar valores de vagas e outras cobranças</h2>
-        `
+                <h2>Alterar valores de vagas</h2>
+                <form onsubmit="event.preventDefault(); alterar_valor();">
+                    <input id="valor" placeholder="Insira o novo valor" required>
+                    <button type="submit">Enviar</button>
+                </from>
+        `;
             break;
 
         case "banir_placa":
@@ -170,6 +174,30 @@ function carregarNotificacoes() {
             console.error("Erro ao carregar notificações:", error);
             document.getElementById("conteudo").innerHTML = "<p>Erro ao carregar notificações.</p>";
         });
+}
+
+async function alterar_valor() {
+    try {
+        var valor_novo = { valor_novo: document.getElementById("valor").value };
+        const res = await criptografar(valor_novo);
+
+        const resposta = await fetch("/api/estacionamento.php?action=altera_valor_vaga", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ cript: res })
+            
+        });
+        const textoBruto = await resposta.text();
+    console.log("Resposta bruta:", textoBruto);
+
+    const data = JSON.parse(textoBruto);
+
+    } catch (error) {
+        console.error("Erro ao enviar alterar valor do estacionamento:", error);
+        alert("Erro ao alterar valor do estacionamento: " + error.message);
+    }
 }
 
 async function enviar_notificacao() {
