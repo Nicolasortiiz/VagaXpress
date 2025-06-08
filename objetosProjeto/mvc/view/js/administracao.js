@@ -190,10 +190,10 @@ async function alterar_valor() {
             
         });
         const textoBruto = await resposta.text();
-    console.log("Resposta bruta:", textoBruto);
+        console.log("Resposta bruta:", textoBruto);
+        alert('Valor/hora da vaga alterado com sucesso');
 
-    const data = JSON.parse(textoBruto);
-
+        const data = JSON.parse(textoBruto);
     } catch (error) {
         console.error("Erro ao enviar alterar valor do estacionamento:", error);
         alert("Erro ao alterar valor do estacionamento: " + error.message);
