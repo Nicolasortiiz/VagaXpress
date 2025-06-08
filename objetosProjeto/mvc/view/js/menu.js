@@ -27,7 +27,7 @@ window.onload = function () {
             document.querySelector('body').style.display = 'flex';
         })
         .catch(error => console.error(error));
-    carregarVagas();
+
 }
 
 async function criptografar(dados) {
@@ -39,24 +39,20 @@ async function criptografar(dados) {
         padding: CryptoJS.pad.Pkcs7
     }).toString();
 
-    var key = {
+    var data = {
         k: k.toString(CryptoJS.enc.Base64),
         iv: iv.toString(CryptoJS.enc.Base64),
+        resultado: resultado
     };
-    var keyString = JSON.stringify(key);
+    var dataString = JSON.stringify(data);
 
     const publicKey = await openpgp.readKey({ armoredKey: chavePublica });
-    const message = await openpgp.createMessage({ text: keyString });
-    const encryptedKey = await openpgp.encrypt({
+    const message = await openpgp.createMessage({ text: dataString });
+    const res = await openpgp.encrypt({
         message: message,
         encryptionKeys: publicKey
     });
-    
-    const encryptedData = {
-        key: encryptedKey,
-        data: resultado
-    };
-    return encryptedData;
+    return res;
 }
 
 function abrirTela(event) {
@@ -74,8 +70,6 @@ function abrirTela(event) {
                 <br>
                 <h1 class="info-container">Seja bem vindo!</h1>
                 <br>
-                <p>Vagas Disponíveis: <span id="vagasTotal"></span></p>
-                <br>
                 <div>
                     <h2>Como funciona o nosso estacionamento?</h2><br>
                     <p>
@@ -87,7 +81,7 @@ function abrirTela(event) {
                 </div>
                 <br>
                 <img 
-                    src="view/imgs/imagem_promocional.png" 
+                    src="view/imgs/imagem_promocional2.png" 
                     alt="Imagem de divulgação do estacionamento" 
                     class="imagem-divulgacao"
                 />
@@ -178,15 +172,6 @@ function abrirTela(event) {
                         <button class="botaoPlaca" type="submit">Cadastrar</button>
                     </form>
                 </div>
-                <div>
-                    <p>Cadastrar Telegram</p>
-                    <form onsubmit="event.preventDefault(); cadastraChatId();">
-                        <input id="chatId" placeholder="Chave API"> <br>
-                        <button id='botaoAdicionarTelegram' class="botaoPlaca" type="submit">Adicionar</button>
-                        
-                    </form>
-                    <button id='botaoRemoverTelegram' class="botaoPlaca" style="background-color: red;" onclick="removerChatId()">Remover</button>
-                </div>
             </div>
 
             <div class="tabelas-usuario">
@@ -243,14 +228,6 @@ function abrirTela(event) {
             carregarSuporte();
             break;
 
-        case "chat":
-            document.getElementById('chat').classList.add('desativado');
-            conteudo.innerHTML = `
-                <div id="conteudoChat"></div>
-            `;
-            carregarChat();
-            break;
-
         case "login":
             document.getElementById('login').classList.add('desativado');
             window.location.href = "view/login.html";
@@ -275,19 +252,6 @@ async function realizarLogout() {
                 location.reload();
             }
 
-        })
-        .catch(error => console.error(error));
-}
-
-function carregarVagas(){
-    fetch("/gateway.php/api/vagaOcupada?action=retornar_vagas")
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                window.alert(data.msg);
-            } else {
-                document.getElementById('vagasTotal').textContent = parseFloat(data.vagasLivres);
-            }
         })
         .catch(error => console.error(error));
 }
@@ -593,56 +557,7 @@ function fecharModalNota() {
 }
 
 
-async function cadastraChatId() {
-    if(document.getElementById('chatId').value == '') {
-        window.alert("Por favor, preencha o campo com a chave API do Telegram.");
-        return;
-    }
-    document.getElementById('botaoAdicionarTelegram').classList.add('desativado');
-    document.getElementById('botaoAdicionarTelegram').disabled = true;
-    document.getElementById('botaoAdicionarTelegram').textContent = 'Adicionando...';
-    
-    var dados = { chatId: document.getElementById('chatId').value };
 
-    const res = await criptografar(dados);
-
-    fetch("/gateway.php/api/usuario?action=adicionar_chat", {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ cript: res })
-    })
-        .then(response => response.json())
-        .then(data => {
-            window.alert(data.msg);
-        })
-        .catch(error => {
-            console.error("Erro ao buscar detalhes da nota fiscal:", error);
-        });
-    document.getElementById('botaoAdicionarTelegram').classList.remove('desativado');
-    document.getElementById('botaoAdicionarTelegram').disabled = false;
-    document.getElementById('botaoAdicionarTelegram').textContent = 'Adicionar';
-
-}
-
-function removerChatId() {
-    document.getElementById('botaoRemoverTelegram').classList.add('desativado');
-    document.getElementById('botaoRemoverTelegram').disabled = true;
-    document.getElementById('botaoRemoverTelegram').textContent = 'Removendo...';
-
-    fetch("/gateway.php/api/usuario?action=remover_chat")
-        .then(response => response.json())
-        .then(data => {
-            window.alert(data.msg);
-        })
-        .catch(error => {
-            console.error("Erro ao buscar detalhes da nota fiscal:", error);
-        });
-    document.getElementById('botaoRemoverTelegram').classList.remove('desativado');
-    document.getElementById('botaoRemoverTelegram').disabled = false;
-    document.getElementById('botaoRemoverTelegram').textContent = 'Remover';
-}
 
 /* Página Agendamento/Pagamento */
 
@@ -850,7 +765,7 @@ function carregarDadosPagamento() {
 
             }
             if (data.total != null) {
-                document.getElementById('dividaTotal').textContent = parseFloat(data.total).toFixed(2).replace(".", ",");
+                document.getElementById('dividaTotal').textContent = parseFloat(data.saldo).toFixed(2).replace(".", ",");
             } else {
                 document.getElementById('dividaTotal').textContent = "0,00";
             }
@@ -985,7 +900,7 @@ function carregarSuporte() {
                         </select>
 
                         <label for="textoSuporte">Mensagem:</label>
-                        <input class="inputSuporte" id="textoSuporte" placeholder="Mensagem" required>
+                        <input class="inputSuporte" id="textoSuporte" placeholder="Digite sua mensagem aqui..." rows="5" required></textarea>
 
                         <button class="botaoSuporte" id="botaoEnviarSuporte" type="submit">Enviar</button>
                     </form>
@@ -996,64 +911,6 @@ function carregarSuporte() {
         .catch(error => console.error(error));
 }
 
-function carregarChat() {
-    document.getElementById("conteudoChat").innerHTML = `
-        <div class="divChat">
-            <h2>Chat</h2>
-            <hr>
-            <h4> Tenha em mente que suas mensagens não são criptografadas.</h4><br>
-            <form class="formChat" id="formChat">
-                <input class="inputChat" id="mensagem" placeholder="Mensagem" required>
-                <button class="botaoChat" id="botaoEnviarChat" type="submit">Enviar</button>
-            </form>
-            <br>
-            <div id="conteudo_chat"></div>
-        </div>
-    `;
-
-    const form = document.getElementById('formChat');
-    form.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const input = document.getElementById('mensagem');
-        const mensagem = input.value.trim();
-
-        if (mensagem === '') return;
-
-        const chat = document.getElementById('conteudo_chat');
-
-        const msgUsuario = document.createElement('div');
-        msgUsuario.classList.add('mensagem-usuario');
-        msgUsuario.textContent = 'Você: ' + mensagem;
-        chat.appendChild(msgUsuario);
-
-        input.value = '';
-
-        const dados = { mensagem: mensagem };
-        const res = await criptografar(dados);
-
-        try {
-            const resposta = await fetch("/gateway.php/api/chat?action=mensagem_ollama", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ cript: res })
-            });
-
-            const dados = await resposta.json();
-
-            const msgIA = document.createElement('div');
-            msgIA.classList.add('mensagem-ia');
-            msgIA.textContent = 'IA: ' + dados.resposta;
-            chat.appendChild(msgIA);
-
-            chat.scrollTop = chat.scrollHeight;
-
-        } catch (erro) {
-            console.error('Erro ao enviar mensagem:', erro);
-        }
-    });
-}
 
 async function validarEmailSuporte() {
     var dados = { email: document.getElementById('email').value };

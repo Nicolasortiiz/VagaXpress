@@ -37,16 +37,12 @@ function decrypt($data){
     $data = json_decode($data, true);
     $data = $data['cript'];
 
-    if (!isset($data['key']) || !isset($data['data'])) {
-        throw new Exception("Dados criptografados inválidos");
-    }
-
     $arqTemp = tempnam($tempDir, 'pgp_');
     if ($arqTemp === false) {
         throw new Exception("Falha ao criar arquivo temporário");
     }
 
-    if (file_put_contents($arqTemp, $data['key']) === false) {
+    if (file_put_contents($arqTemp, $data) === false) {
         throw new Exception("Falha ao escrever arquivo temporário");
     }
 
@@ -65,14 +61,14 @@ function decrypt($data){
 
     $decryptedPub = json_decode($decryptedPub, true);
 
-    if (!isset($decryptedPub["k"], $decryptedPub["iv"])) {
+    if (!isset($decryptedPub["k"], $decryptedPub["iv"], $decryptedPub["resultado"])) {
         echo json_encode(["erro" => true]);
         exit;
     }
 
     $key = base64_decode($decryptedPub["k"]);
     $iv = base64_decode($decryptedPub["iv"]);
-    $encrypted_data = base64_decode($data["data"]);
+    $encrypted_data = base64_decode($decryptedPub["resultado"]);
 
     $decrypted = openssl_decrypt($encrypted_data, 'aes-128-cbc', $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
     

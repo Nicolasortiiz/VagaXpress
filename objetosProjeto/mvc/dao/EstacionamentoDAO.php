@@ -27,22 +27,6 @@ class EstacionamentoDAO {
         $row = $result->fetch_assoc();
         return $row['totalVagas'];
     }
-
-    public function alteraValorVaga($data){
-        $query = 'UPDATE Estacionamento SET valorHora = ?';
-        $stmt = $this->conn->prepare($query);
-
-        if (!$stmt) {
-            return 0;
-        }
-
-        $stmt->bind_param('d', $data['valor_novo']);
-
-        $success = $stmt->execute();
-        $stmt->close();
-
-        return $success ? 1 : 0;
-    }
 }
 
 ?>

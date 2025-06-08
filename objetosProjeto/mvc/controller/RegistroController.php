@@ -2,7 +2,6 @@
 require_once __DIR__ . "/../dao/RegistroDAO.php";
 require_once __DIR__ . "/../model/Registro.php";
 require_once __DIR__ . "/../controller/EstacionamentoController.php";
-require_once __DIR__ . "/../utils/crypt.php";
 
 header('Content-Type: application/json');
 if (session_status() == PHP_SESSION_NONE) {
@@ -42,34 +41,32 @@ class RegistroController
     public function procurarPlacasDevedoras($placas)
     {
         $devedoras = $this->RegistroDAO->procurarPlacasDevedoras($placas);
+
         if (empty($devedoras)) {
-            return ['error' => false];
+            return json_encode(['error' => false, 'msg' => 'Nenhuma placa devedora encontrada!']);
         }
 
         $valorHora = $this->EstacionamentoController->retornarValorHora();
         $total = 0.0;
 
         foreach ($devedoras as &$devedora) {
-            $entradaStr = $devedora['dataEntrada'] . ' ' . $devedora['horaEntrada'];
-            $saidaStr = $devedora['dataSaida'] . ' ' . $devedora['horaSaida'];
+            $entrada = strtotime($devedora['horaEntrada']);
+            $saida = strtotime($devedora['horaSaida']);
 
-            $entrada = new DateTime($entradaStr);
-            $saida = new DateTime($saidaStr);
-
-            $intervalo = $saida->diff($entrada);
-            $diferencaHoras = ($intervalo->days * 24) + $intervalo->h + ($intervalo->i > 0 ? 1 : 0);
+            $diferencaHoras = ($saida - $entrada) / 3600;
+            $diferencaHoras = ceil($diferencaHoras);
 
             $valorEstacionamento = $diferencaHoras * $valorHora;
             $devedora['valor'] = number_format($valorEstacionamento, 2, '.', '');
 
             $total += $valorEstacionamento;
         }
-        
-        return [
+
+        return json_encode([
             'error' => false,
             'total' => number_format($total, 2, '.', ''),
             'devedoras' => $devedoras
-        ];
+        ]);
     }
 
     public function validarExcluir($placa)
@@ -99,15 +96,19 @@ class RegistroController
         if (!empty($resposta->placas)) {
             $placas = $resposta->placas;
             $devedoras = $this->procurarPlacasDevedoras($placas);
+            $devedoras = json_decode($devedoras);
 
-            if (!isset($devedoras['devedoras']) || empty($devedoras['devedoras'])) {
-                echo json_encode(["error" => true, "msg" => "Nenhuma placa devedora encontrada, erro no pagamento!"]);
+            if ($devedoras->error == true) {
+                echo json_encode(["error" => true, "msg" => "Erro no pagamento, tente novamente mais tarde!"]);
+                exit;
+            } else if ($devedoras->total == 0.0) {
+                echo json_encode(["error" => true, "msg" => "Nenhuma placa devedora encontrada!"]);
                 exit;
             }
 
             $url = "http://localhost:8001/usuario.php?action=realizar_pagamento";
             $dados = [
-                "valor" => $devedoras['total'],
+                "valor" => $devedoras->total,
                 "id" => $_SESSION["usuario_id"]
             ];
             $resposta = enviaDados($url, $dados);
@@ -119,22 +120,17 @@ class RegistroController
             }
 
             $url = "http://localhost:8001/notaFiscal.php?action=gerar_nota_fiscal";
-
-            $placas = array_map(function($registro) {
-                return $registro['placa'];
-            }, $devedoras['devedoras']);
-            
             $dados = [
-                "valor" => $devedoras['total'],
+                "valor" => $devedoras->total,
                 "id" => $_SESSION["usuario_id"],
                 "nome" => $nome,
                 "cpf" => $cpf,
-                "descricao" => "Pagamento placas devedoras: " . implode(", ", $placas)
+                "descricao" => "Pagamento placas devedoras: $placas"
             ];
             $resposta = enviaDados($url, $dados);
             $resposta = json_decode($resposta);
-   
-            if ($resposta->error === true) {
+            $statusNF = json_decode($resposta);
+            if ($statusNF->error === true) {
                 echo json_encode($resposta);
                 exit;
             }
@@ -153,8 +149,6 @@ class RegistroController
             exit;
         }
     }
-
-
 }
 
 ?>

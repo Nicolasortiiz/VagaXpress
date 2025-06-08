@@ -5,7 +5,7 @@ class Estacionamento{
     private $totalVagas;
     private $valorHora;
 
-    public function __construct($idEstacionamento = null, $totalVagas = null, $valorHora = null) {
+    public function __construct($idEstacionamento, $totalVagas, $valorHora) {
         $this->idEstacionamento = $idEstacionamento;
         $this->totalVagas = $totalVagas;
         $this->valorHora = $valorHora;

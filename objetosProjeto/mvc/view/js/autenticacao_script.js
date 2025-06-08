@@ -30,31 +30,26 @@ async function criptografar(dados) {
         padding: CryptoJS.pad.Pkcs7
     }).toString();
 
-    var key = {
+    var data = {
         k: k.toString(CryptoJS.enc.Base64),
         iv: iv.toString(CryptoJS.enc.Base64),
+        resultado: resultado
     };
-    var keyString = JSON.stringify(key);
+    var dataString = JSON.stringify(data);
 
     const publicKey = await openpgp.readKey({ armoredKey: chavePublica });
-    const message = await openpgp.createMessage({ text: keyString });
-    const encryptedKey = await openpgp.encrypt({
+    const message = await openpgp.createMessage({ text: dataString });
+    const res = await openpgp.encrypt({
         message: message,
         encryptionKeys: publicKey
     });
-    
-    const encryptedData = {
-        key: encryptedKey,
-        data: resultado
-    };
-    return encryptedData;
+    return res;
 }
-
 
 function enviarLogin() {
     document.getElementById("botaoLogin").disabled = true;
     let email = /^[A-z0-9\.]+@[a-z]+\.com[a-z\.]{0,3}$/;
-    let senha = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{8,}$/;
+    let senha = /^.{7,20}$/;
 
     var verificadorEmail = email.test(document.getElementById('email').value);
     var verificadorSenha = senha.test(document.getElementById('senha').value);

@@ -9,8 +9,7 @@ CREATE TABLE Usuario (
     email VARCHAR(100) NOT NULL UNIQUE,
     saldo DECIMAL(10,2),
     senha VARCHAR(255) NOT NULL,
-    segredo VARCHAR(255),
-    chatId VARCHAR(255) UNIQUE
+    segredo VARCHAR(255)
 );
 
 CREATE TABLE Veiculo (
@@ -57,6 +56,7 @@ CREATE TABLE VagaAgendada (
 CREATE TABLE VagaOcupada (
     idVagas INT AUTO_INCREMENT PRIMARY KEY,
     idRegistro INT NOT NULL,
+    idVeiculoEstacionado INT NOT NULL,
     FOREIGN KEY (idRegistro) REFERENCES Registro(idRegistro) ON DELETE CASCADE
 );
 
@@ -69,6 +69,7 @@ CREATE TABLE Suporte (
     idSuporte INT AUTO_INCREMENT PRIMARY KEY,
     mensagem TEXT NOT NULL,
     email VARCHAR(100) NOT NULL,
+    assunto VARCHAR(100) NOT NULL,
     tipo VARCHAR(50) NOT NULL
 );
 

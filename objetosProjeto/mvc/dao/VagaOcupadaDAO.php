@@ -8,14 +8,14 @@ class VagaOcupadaDAO {
         $this->conn = Conexao::getInstancia()->getConexao();
     }
 
-    public function retornarTotalVagasOcupadas(): int {
-        $query = 'SELECT COUNT(*) as totalVagas FROM VagaOcupada;';
-        $stmt = $this->conn->prepare($query);
+    public function retornaNumeroVagasOcupadas(){
+        $querySelect = 'SELECT COUNT(idVagaOcupada) AS qtd FROM VagaOcupada';
+        $stmt = $this->conn->prepare($querySelect);
         $stmt->execute();
         $result = $stmt->get_result();
-        $stmt->close();
         $row = $result->fetch_assoc();
-        return intval($row['totalVagas']);
+        $stmt->close();
+        return $row['qtd'];
     }
     
     

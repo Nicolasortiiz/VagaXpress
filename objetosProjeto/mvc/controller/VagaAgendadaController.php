@@ -3,7 +3,6 @@ require_once __DIR__ . "/../dao/VagaAgendadaDAO.php";
 require_once __DIR__ . "/../model/VagaAgendada.php";
 require_once __DIR__ . "/../utils/crypt.php";
 require_once __DIR__ . "/../controller/EstacionamentoController.php";
-require_once __DIR__ . "/../controller/RegistroController.php";
 
 header('Content-Type: application/json');
 if (session_status() == PHP_SESSION_NONE) {
@@ -16,13 +15,11 @@ class VagaAgendadaController
 {
     private $VagaAgendadaDAO;
     private $EstacionamentoController;
-    private $RegistroController;
 
     public function __construct()
     {
         $this->VagaAgendadaDAO = new VagaAgendadaDAO();
         $this->EstacionamentoController = new EstacionamentoController();
-        $this->RegistroController = new RegistroController();
     }
     public function validarLogin()
     {
@@ -222,14 +219,21 @@ class VagaAgendadaController
     
         if (!empty($resposta->placas)) {
             $placas = $resposta->placas;
-
-            $placasDevedoras = $this->RegistroController->procurarPlacasDevedoras($placas);
+    
+            $url = "http://localhost:8001/registro.php?action=retornar_vagas_devedoras";
+            $dados = [
+                "id" => $_SESSION["usuario_id"],
+                "placas" => $placas
+            ];
+            $resposta = enviaDados($url, $dados);  
+            $resposta = json_decode($resposta);
+    
             $devedoras = [];
             $total = 0.0;
     
-            if (isset($placasDevedoras['devedoras'])) {
-                $devedoras = $placasDevedoras['devedoras'];
-                $total = $placasDevedoras['total'];
+            if (isset($resposta->devedoras)) {
+                $devedoras = $resposta->devedoras;
+                $total = $resposta->total;
             }
     
             $agendamentos = $this->retornarInfosAgendamento($placas);

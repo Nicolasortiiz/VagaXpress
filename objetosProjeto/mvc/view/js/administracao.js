@@ -38,26 +38,21 @@ async function criptografar(dados) {
         padding: CryptoJS.pad.Pkcs7
     }).toString();
 
-    var key = {
+    var data = {
         k: k.toString(CryptoJS.enc.Base64),
         iv: iv.toString(CryptoJS.enc.Base64),
+        resultado: resultado
     };
-    var keyString = JSON.stringify(key);
+    var dataString = JSON.stringify(data);
 
     const publicKey = await openpgp.readKey({ armoredKey: chavePublica });
-    const message = await openpgp.createMessage({ text: keyString });
-    const encryptedKey = await openpgp.encrypt({
+    const message = await openpgp.createMessage({ text: dataString });
+    const res = await openpgp.encrypt({
         message: message,
         encryptionKeys: publicKey
     });
-    
-    const encryptedData = {
-        key: encryptedKey,
-        data: resultado
-    };
-    return encryptedData;
+    return res;
 }
-
 
 function abrirTela(event) {
     const elementoClicado = event.target.id;
@@ -95,12 +90,8 @@ function abrirTela(event) {
 
         case "alterar_valor":
             conteudo.innerHTML = `
-                <h2>Alterar valores de vagas</h2>
-                <form onsubmit="event.preventDefault(); alterar_valor();">
-                    <input id="valor" placeholder="Insira o novo valor" required>
-                    <button type="submit">Enviar</button>
-                </from>
-        `;
+                <h2>Alterar valores de vagas e outras cobranças</h2>
+        `
             break;
 
         case "banir_placa":
@@ -174,30 +165,6 @@ function carregarNotificacoes() {
             console.error("Erro ao carregar notificações:", error);
             document.getElementById("conteudo").innerHTML = "<p>Erro ao carregar notificações.</p>";
         });
-}
-
-async function alterar_valor() {
-    try {
-        var valor_novo = { valor_novo: document.getElementById("valor").value };
-        const res = await criptografar(valor_novo);
-
-        const resposta = await fetch("/api/estacionamento.php?action=altera_valor_vaga", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ cript: res })
-            
-        });
-        const textoBruto = await resposta.text();
-        console.log("Resposta bruta:", textoBruto);
-        alert('Valor/hora da vaga alterado com sucesso');
-
-        const data = JSON.parse(textoBruto);
-    } catch (error) {
-        console.error("Erro ao enviar alterar valor do estacionamento:", error);
-        alert("Erro ao alterar valor do estacionamento: " + error.message);
-    }
 }
 
 async function enviar_notificacao() {

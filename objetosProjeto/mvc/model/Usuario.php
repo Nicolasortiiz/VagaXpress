@@ -5,15 +5,13 @@ class Usuario {
     private $email;
     private $saldo;
     private $segredo;
-    private $chatId;
 
-    public function __construct($idUsuario = null, $nome = '', $email = '', $saldo = 0.0, $segredo = '', $chatId = '') {
+    public function __construct($idUsuario = null, $nome = '', $email = '', $saldo = 0.0, $segredo = '') {
         $this->idUsuario = $idUsuario;
         $this->nome = $nome;
         $this->email = $email;
         $this->saldo = $saldo;
         $this->segredo = $segredo;
-        $this->chatId = $chatId;
     }
 
     public function getIdUsuario() {
@@ -54,14 +52,6 @@ class Usuario {
 
     public function setSegredo($segredo) {
         $this->segredo = $segredo;
-    }
-
-    public function getChatId() {
-        return $this->chatId;
-    }
-    
-    public function setChatId($chatId) {
-        $this->chatId = $chatId;
     }
 }
 ?>

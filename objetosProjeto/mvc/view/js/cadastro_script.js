@@ -30,26 +30,21 @@ async function criptografar(dados) {
         padding: CryptoJS.pad.Pkcs7
     }).toString();
 
-    var key = {
+    var data = {
         k: k.toString(CryptoJS.enc.Base64),
         iv: iv.toString(CryptoJS.enc.Base64),
+        resultado: resultado
     };
-    var keyString = JSON.stringify(key);
+    var dataString = JSON.stringify(data);
 
     const publicKey = await openpgp.readKey({ armoredKey: chavePublica });
-    const message = await openpgp.createMessage({ text: keyString });
-    const encryptedKey = await openpgp.encrypt({
+    const message = await openpgp.createMessage({ text: dataString });
+    const res = await openpgp.encrypt({
         message: message,
         encryptionKeys: publicKey
     });
-    
-    const encryptedData = {
-        key: encryptedKey,
-        data: resultado
-    };
-    return encryptedData;
+    return res;
 }
-
 
 async function cadastrar(event) {
     event.preventDefault();
@@ -63,7 +58,7 @@ async function cadastrar(event) {
         if (document.getElementById("senha").value == document.getElementById("confirmar_senha").value) {
 
             let email = /^[A-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
-            let senha = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{8,}$/;
+            let senha = /^.{7,20}$/;
 
             var verificadorEmail = email.test(document.getElementById('email').value);
             var verificadorSenha = senha.test(document.getElementById('senha').value);

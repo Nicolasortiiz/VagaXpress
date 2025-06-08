@@ -23,7 +23,6 @@ $saldo = $data['saldo'] ?? 0.0;
 $placa = $data['placa'] ?? '';
 $id = $data['id'] ?? '';
 $valor = $data['valor'] ?? 0.0;
-$chatId = $data['chatId'] ?? '';
 
 switch ($action) {
     case 'encontrar_email':
@@ -67,12 +66,6 @@ switch ($action) {
         break;
     case 'verificar_login_suporte':
         $controller->validarLoginSuporte();
-        break;
-    case 'remover_chat':
-        $controller->removerChat();
-        break;
-    case 'adicionar_chat':
-        $controller->adicionarChat($chatId);
         break;
     default:
         http_response_code(400);
