@@ -64,12 +64,6 @@ function abrirTela(event) {
     const conteudo = document.getElementById("conteudo");
 
     switch (elementoClicado) {
-        case "tela_inicial":
-            conteudo.innerHTML = `
-                <h2>Página Inicial da Administração</h2>
-                <p>Bem-vindo à página de administração do VagaXpress! Escolha uma opção no menu lateral.</p>
-            `;
-            break;
 
         case "excluir_usuario":
             conteudo.innerHTML = `
@@ -113,8 +107,8 @@ function abrirTela(event) {
             conteudo.innerHTML = `
                 <h2>Enviar notificações para todos os usuários</h2>
                 <form onsubmit="event.preventDefault(); enviar_notificacao();">
-                    <input id="notificacao" placeholder="Insira sua notificação aqui" required>
-                    <button type="submit">Enviar</button>
+                    <input id="notificacao" class="inputChat" placeholder="Insira sua notificação aqui" required>
+                    <button type="submit" class="botaoChat">Enviar</button>
                 </form>
             `;
             break;
@@ -123,9 +117,11 @@ function abrirTela(event) {
             realizarLogout();
             break;
 
-
         default:
-            conteudo.innerHTML = "<h2>Bem-vindo ao VagaXpress</h2>";
+            conteudo.innerHTML = `
+                <h2>Página Inicial da Administração</h2>
+                <p>Bem-vindo(a) à página de administração do VagaXpress! Escolha uma opção no menu lateral.</p>
+            `;
     }
 }
 
