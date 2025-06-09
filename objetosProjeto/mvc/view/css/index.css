@@ -369,7 +369,7 @@ body {
     color: #333;
 }
 h1.info-container{
-    font-sice: 2em;
+    font-size: 2em;
     text-align: center;
     background-color: #4e4caf;
     color: #fff;
@@ -384,14 +384,14 @@ h2 {
 p {
     line-height: 1.6;
     font-size: 1rem;
-    mergin-bottom: 15px;
+    margin-bottom: 15px;
 }
 .imagem-divulgacao {
     display: block;
     max-width: 100%;
     height: auto;
     margin: 30px auto;
-    border-radios: 10px;
+    border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0);
 }
 
@@ -424,4 +424,26 @@ Estilos chat
     padding: 8px;
     margin: 5px 0;
     border-radius: 5px;
+}
+
+/*
+Estilos menu de gerenciamento de vagas
+*/
+
+.gerenciar_vagas_text {
+    height: 40px;
+    width: 300px;
+    padding: 6px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.gerenciar_vagas_button {
+    height: 40px;
+    width: 60px;
+    padding: 6px;
+    margin: 5px 0;
+    border-radius: 5px;
+    background-color: rgb(47, 44, 66);
+    color: white;
 }
