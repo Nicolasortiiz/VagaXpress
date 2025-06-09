@@ -64,12 +64,6 @@ function abrirTela(event) {
     const conteudo = document.getElementById("conteudo");
 
     switch (elementoClicado) {
-        case "tela_inicial":
-            conteudo.innerHTML = `
-                <h2>Página Inicial da Administração</h2>
-                <p>Bem-vindo à página de administração do VagaXpress! Escolha uma opção no menu lateral.</p>
-            `;
-            break;
 
         case "excluir_usuario":
             conteudo.innerHTML = `
@@ -89,14 +83,18 @@ function abrirTela(event) {
 
         case "alterar_vagas":
             conteudo.innerHTML = `
-            <h2>Alteração de numero de vagas</h2>
+                <h2>Alterar número de vagas</h2>
+                <form onsubmit="event.preventDefault(); alterar_numero_vagas();">
+                    <input id="numero_novo" class="gerenciar_vagas_text" placeholder="Insira o novo número de vagas" required>
+                    <button type="submit" class="gerenciar_vagas_button">Enviar</button>
+                </from>
+                <br><br>
+                <h2>Alterar valores de vagas</h2>
+                <form onsubmit="event.preventDefault(); alterar_valor();">
+                    <input id="valor" class="gerenciar_vagas_text" placeholder="Insira o novo valor" required>
+                    <button type="submit" class="gerenciar_vagas_button">Enviar</button>
+                </from>
         `;
-            break;
-
-        case "alterar_valor":
-            conteudo.innerHTML = `
-                <h2>Alterar valores de vagas e outras cobranças</h2>
-        `
             break;
 
         case "banir_placa":
@@ -109,8 +107,8 @@ function abrirTela(event) {
             conteudo.innerHTML = `
                 <h2>Enviar notificações para todos os usuários</h2>
                 <form onsubmit="event.preventDefault(); enviar_notificacao();">
-                    <input id="notificacao" placeholder="Insira sua notificação aqui" required>
-                    <button type="submit">Enviar</button>
+                    <input id="notificacao" class="inputChat" placeholder="Insira sua notificação aqui" required>
+                    <button type="submit" class="botaoChat">Enviar</button>
                 </form>
             `;
             break;
@@ -119,9 +117,11 @@ function abrirTela(event) {
             realizarLogout();
             break;
 
-
         default:
-            conteudo.innerHTML = "<h2>Bem-vindo ao VagaXpress</h2>";
+            conteudo.innerHTML = `
+                <h2>Página Inicial da Administração</h2>
+                <p>Bem-vindo(a) à página de administração do VagaXpress! Escolha uma opção no menu lateral.</p>
+            `;
     }
 }
 
@@ -170,6 +170,54 @@ function carregarNotificacoes() {
             console.error("Erro ao carregar notificações:", error);
             document.getElementById("conteudo").innerHTML = "<p>Erro ao carregar notificações.</p>";
         });
+}
+
+async function alterar_numero_vagas() {
+    try {
+        var numero_novo = { numero_novo: document.getElementById("numero_novo").value };
+        const res = await criptografar(numero_novo);
+
+        const resposta = await fetch("/api/estacionamento.php?action=altera_numero_vagas", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ cript: res })
+            
+        });
+        const textoBruto = await resposta.text();
+        console.log("Resposta bruta:", textoBruto);
+        alert('Número de vagas alterado com sucesso');
+
+        const data = JSON.parse(textoBruto);
+    } catch (error) {
+        console.error("Erro ao enviar alterar número de vagas do estacionamento:", error);
+        alert("Erro ao alterar número de vagas do estacionamento: " + error.message);
+    }
+}
+
+async function alterar_valor() {
+    try {
+        var valor_novo = { valor_novo: document.getElementById("valor").value };
+        const res = await criptografar(valor_novo);
+
+        const resposta = await fetch("/api/estacionamento.php?action=altera_valor_vaga", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ cript: res })
+            
+        });
+        const textoBruto = await resposta.text();
+        console.log("Resposta bruta:", textoBruto);
+        alert('Valor/hora da vaga alterado com sucesso');
+
+        const data = JSON.parse(textoBruto);
+    } catch (error) {
+        console.error("Erro ao enviar alterar valor do estacionamento:", error);
+        alert("Erro ao alterar valor do estacionamento: " + error.message);
+    }
 }
 
 async function enviar_notificacao() {

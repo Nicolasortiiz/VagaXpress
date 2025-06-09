@@ -82,9 +82,10 @@ $app->any('/api/{service}', function (Request $request, Response $response, arra
         return $response->withStatus(404);
     }
 
-
     $_GET = $request->getQueryParams();
     $_POST = $request->getParsedBody() ?? [];
+
+    file_put_contents('php://stderr', 'ParsedBody: ' . print_r($_POST, true));
 
     ob_start();
     include $targetFile;
@@ -93,6 +94,7 @@ $app->any('/api/{service}', function (Request $request, Response $response, arra
     $response->getBody()->write($output);
     return $response;
 });
+
 
 $app->run();
 
