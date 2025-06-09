@@ -1,4 +1,3 @@
-# Usar secrets para credenciais
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,20 +16,31 @@ spec:
     spec:
       containers:
         - name: db-estacionamento
-          image: localhost/imagem-db-estacionamento
+          image: localhost:4000/imagem-db-estacionamento
           imagePullPolicy: Always
           ports:
             - containerPort: 3306
           env:
             - name: MARIADB_ROOT_PASSWORD
-              value: "root.pass.estacionamento.MariaDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_ROOT_PASS_ESTACIONAMENTO
             - name: MARIADB_DATABASE
-              value: "EstacionamentoDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_NAME_ESTACIONAMENTO
             - name: MARIADB_USER
-              value: "estacionamento_dbuser"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_USER_ESTACIONAMENTO
             - name: MARIADB_PASSWORD
-              value: "estacionamento.pass.MariaDB"
-
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_PASS_ESTACIONAMENTO
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -50,19 +60,31 @@ spec:
     spec:
       containers:
         - name: db-notificacao
-          image: localhost/imagem-db-notificacao
+          image: localhost:4000/imagem-db-notificacao
           imagePullPolicy: Always
           ports:
-            - containerPort: 3307
+            - containerPort: 3306
           env:
             - name: MARIADB_ROOT_PASSWORD
-              value: "root.pass.notificacao.MariaDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_ROOT_PASS_NOTIFICACAO
             - name: MARIADB_DATABASE
-              value: "NotificacaoDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_NAME_NOTIFICACAO
             - name: MARIADB_USER
-              value: "notificacao_dbuser"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_USER_NOTIFICACAO
             - name: MARIADB_PASSWORD
-              value: "notificacao.pass.MariaDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_PASS_NOTIFICACAO
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -82,19 +104,31 @@ spec:
     spec:
       containers:
         - name: db-pagamento
-          image: localhost/imagem-db-pagamento
+          image: localhost:4000/imagem-db-pagamento
           imagePullPolicy: Always
           ports:
-            - containerPort: 3308
+            - containerPort: 3306
           env:
             - name: MARIADB_ROOT_PASSWORD
-              value: "root.pass.pagamento.MariaDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_ROOT_PASS_PAGAMENTO
             - name: MARIADB_DATABASE
-              value: "PagamentoDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_NAME_PAGAMENTO
             - name: MARIADB_USER
-              value: "pagamento_dbuser"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_USER_PAGAMENTO
             - name: MARIADB_PASSWORD
-              value: "pagamento.pass.MariaDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_PASS_PAGAMENTO
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -114,16 +148,28 @@ spec:
     spec:
       containers:
         - name: db-usuario
-          image: localhost/imagem-db-usuario
+          image: localhost:4000/imagem-db-usuario
           imagePullPolicy: Always
           ports:
-            - containerPort: 3309
+            - containerPort: 3306
           env:
             - name: MARIADB_ROOT_PASSWORD
-              value: "root.pass.usuario.MariaDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_ROOT_PASS_USUARIO
             - name: MARIADB_DATABASE
-              value: "UsuarioDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_NAME_USUARIO
             - name: MARIADB_USER
-              value: "usuario_dbuser"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_USER_USUARIO
             - name: MARIADB_PASSWORD
-              value: "usuario.pass.MariaDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_PASS_USUARIO

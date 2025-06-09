@@ -11,22 +11,16 @@ class Auth
     private $userpoolID;
     public function __construct()
     {
-        $env = parse_ini_file(__DIR__ . '/../.env');
-
-        if ($env === false) {
-            throw new Exception('Failed to parse .env file');
-        }
-
-        $this->clientSecret = $env['COGNITO_CLIENT_SECRET'];
-        $this->clientID = $env['COGNITO_CLIENT_ID'];
-        $this->userpoolID = $env['COGNITO_USER_POOL_ID'];
+        $this->clientSecret = getenv('COGNITO_CLIENT_SECRET');
+        $this->clientID = getenv('COGNITO_CLIENT_ID');
+        $this->userpoolID = getenv('COGNITO_USER_POOL_ID');
 
         $this->client = new CognitoIdentityProviderClient([
-            'region' => $env['COGNITO_REGION'],
+            'region' => getenv('COGNITO_REGION'),
             'version' => 'latest',
             'credentials' => [
-                'key' => $env['COGNITO_KEY'],
-                'secret' => $env['COGNITO_SECRET'],
+                'key' => getenv('COGNITO_KEY'),
+                'secret' => getenv('COGNITO_SECRET'),
             ],
 
         ]);

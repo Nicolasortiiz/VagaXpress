@@ -1,4 +1,3 @@
-# Usar secrets para credenciais e adicionar credenciais Cognito
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,35 +14,110 @@ spec:
       labels:
         app: gestao-veiculos
     spec:
+      volumes:
+        - name: gpg-volume
+          secret:
+            secretName: segredos
+            items:
+              - key: CHAVE_PRIVADA
+                path: private.key
+              - key: PUBLIC_KEY
+                path: public.key
+        - name: gnupg-home
+          emptyDir: {}
+      initContainers:
+        - name: gpg-importador
+          image: alpine:edge
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache gnupg;
+              mkdir -p /var/www/.gnupg;
+              chmod 700 /var/www/.gnupg;
+              gpg --batch --homedir /var/www/.gnupg --import /etc/gpg-keys/public.key;
+              gpg --batch --homedir /var/www/.gnupg --import /etc/gpg-keys/private.key;
+              chown -R 33:33 /var/www/.gnupg
+          volumeMounts:
+            - name: gpg-volume
+              mountPath: /etc/gpg-keys
+              readOnly: true
+            - name: gnupg-home
+              mountPath: /var/www/.gnupg
       containers:
         - name: gestao-veiculos
-          image: localhost/imagem-gestao-veiculos
+          volumeMounts:
+              - name: gnupg-home
+                mountPath: /var/www/.gnupg
+          image: localhost:4000/imagem-gestao-veiculos
           imagePullPolicy: Always
           ports:
-            - containerPort: 8880
+            - containerPort: 80
           env:
             - name: COGNITO_CLIENT_SECRET
-              value: "cognitoclientsecret"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_CLIENT_SECRET
             - name: COGNITO_CLIENT_ID
-              value: "cognitoclientid"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_CLIENT_ID
             - name: COGNITO_USER_POOL_ID
-              value: "cognitouserpoolid"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_USER_POOL_ID
             - name: COGNITO_KEY
-              value: "cognitokey"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_KEY
             - name: COGNITO_SECRET
-              value: "cognitosecret"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_SECRET
             - name: COGNITO_REGION
-              value: "cognitoregion"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_REGION
+            - name: GOOGLE_API
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: GOOGLE_API
             - name: BOT_API
-              value: "telegrambotapi"
-            - name: DB_HOST
-              value: "db-usuario-service"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: BOT_API
             - name: DB_NAME
-              value: "UsuarioDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_NAME_USUARIO
             - name: DB_USER
-              value: "usuario_dbuser"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_USER_USUARIO
             - name: DB_PASS
-              value: "usuario.pass.MariaDB"  
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_PASS_USUARIO
+            - name: EMAIL_GPG
+              valueFrom: 
+                secretKeyRef:
+                  name: segredos
+                  key: EMAIL_GPG
+            - name: SENHA_GPG
+              valueFrom: 
+                secretKeyRef:
+                  name: segredos
+                  key: SENHA_GPG
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -61,35 +135,110 @@ spec:
       labels:
         app: notificacoes
     spec:
+      volumes:
+        - name: gpg-volume
+          secret:
+            secretName: segredos
+            items:
+              - key: CHAVE_PRIVADA
+                path: private.key
+              - key: PUBLIC_KEY
+                path: public.key
+        - name: gnupg-home
+          emptyDir: {}
+      initContainers:
+        - name: gpg-importador
+          image: alpine:edge
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache gnupg;
+              mkdir -p /var/www/.gnupg;
+              chmod 700 /var/www/.gnupg;
+              gpg --batch --homedir /var/www/.gnupg --import /etc/gpg-keys/public.key;
+              gpg --batch --homedir /var/www/.gnupg --import /etc/gpg-keys/private.key;
+              chown -R 33:33 /var/www/.gnupg
+          volumeMounts:
+            - name: gpg-volume
+              mountPath: /etc/gpg-keys
+              readOnly: true
+            - name: gnupg-home
+              mountPath: /var/www/.gnupg
       containers:
         - name: notificacoes
-          image: localhost/imagem-notificacoes
+          volumeMounts:
+              - name: gnupg-home
+                mountPath: /var/www/.gnupg
+          image: localhost:4000/imagem-notificacoes
           imagePullPolicy: Always
           ports:
-            - containerPort: 8881
+            - containerPort: 80
           env:
             - name: COGNITO_CLIENT_SECRET
-              value: "cognitoclientsecret"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_CLIENT_SECRET
             - name: COGNITO_CLIENT_ID
-              value: "cognitoclientid"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_CLIENT_ID
             - name: COGNITO_USER_POOL_ID
-              value: "cognitouserpoolid"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_USER_POOL_ID
             - name: COGNITO_KEY
-              value: "cognitokey"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_KEY
             - name: COGNITO_SECRET
-              value: "cognitosecret"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_SECRET
             - name: COGNITO_REGION
-              value: "cognitoregion"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_REGION
+            - name: GOOGLE_API
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: GOOGLE_API
             - name: BOT_API
-              value: "telegrambotapi"
-            - name: DB_HOST
-              value: "db-notificacao-service"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: BOT_API
             - name: DB_NAME
-              value: "NotificacaoDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_NAME_NOTIFICACAO
             - name: DB_USER
-              value: "notificacao_dbuser"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_USER_NOTIFICACAO
             - name: DB_PASS
-              value: "notificacao.pass.MariaDB"  
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_PASS_NOTIFICACAO
+            - name: EMAIL_GPG
+              valueFrom: 
+                secretKeyRef:
+                  name: segredos
+                  key: EMAIL_GPG
+            - name: SENHA_GPG
+              valueFrom: 
+                secretKeyRef:
+                  name: segredos
+                  key: SENHA_GPG
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -107,35 +256,110 @@ spec:
       labels:
         app: pagamento
     spec:
+      volumes:
+        - name: gpg-volume
+          secret:
+            secretName: segredos
+            items:
+              - key: CHAVE_PRIVADA
+                path: private.key
+              - key: PUBLIC_KEY
+                path: public.key
+        - name: gnupg-home
+          emptyDir: {}
+      initContainers:
+        - name: gpg-importador
+          image: alpine:edge
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache gnupg;
+              mkdir -p /var/www/.gnupg;
+              chmod 700 /var/www/.gnupg;
+              gpg --batch --homedir /var/www/.gnupg --import /etc/gpg-keys/public.key;
+              gpg --batch --homedir /var/www/.gnupg --import /etc/gpg-keys/private.key;
+              chown -R 33:33 /var/www/.gnupg
+          volumeMounts:
+            - name: gpg-volume
+              mountPath: /etc/gpg-keys
+              readOnly: true
+            - name: gnupg-home
+              mountPath: /var/www/.gnupg
       containers:
         - name: pagamento
-          image: localhost/imagem-pagamento
+          volumeMounts:
+              - name: gnupg-home
+                mountPath: /var/www/.gnupg
+          image: localhost:4000/imagem-pagamento
           imagePullPolicy: Always
           ports:
-            - containerPort: 8882  
+            - containerPort: 80  
           env:
             - name: COGNITO_CLIENT_SECRET
-              value: "cognitoclientsecret"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_CLIENT_SECRET
             - name: COGNITO_CLIENT_ID
-              value: "cognitoclientid"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_CLIENT_ID
             - name: COGNITO_USER_POOL_ID
-              value: "cognitouserpoolid"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_USER_POOL_ID
             - name: COGNITO_KEY
-              value: "cognitokey"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_KEY
             - name: COGNITO_SECRET
-              value: "cognitosecret"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_SECRET
             - name: COGNITO_REGION
-              value: "cognitoregion"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_REGION
+            - name: GOOGLE_API
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: GOOGLE_API
             - name: BOT_API
-              value: "telegrambotapi"
-            - name: DB_HOST
-              value: "db-pagamento-service"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: BOT_API
             - name: DB_NAME
-              value: "PagamentoDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_NAME_PAGAMENTO
             - name: DB_USER
-              value: "pagamento_dbuser"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_USER_PAGAMENTO
             - name: DB_PASS
-              value: "pagamento.pass.MariaDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_PASS_PAGAMENTO
+            - name: EMAIL_GPG
+              valueFrom: 
+                secretKeyRef:
+                  name: segredos
+                  key: EMAIL_GPG
+            - name: SENHA_GPG
+              valueFrom: 
+                secretKeyRef:
+                  name: segredos
+                  key: SENHA_GPG
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -153,32 +377,107 @@ spec:
       labels:
         app: vagas
     spec:
+      volumes:
+        - name: gpg-volume
+          secret:
+            secretName: segredos
+            items:
+              - key: CHAVE_PRIVADA
+                path: private.key
+              - key: PUBLIC_KEY
+                path: public.key
+        - name: gnupg-home
+          emptyDir: {}
+      initContainers:
+        - name: gpg-importador
+          image: alpine:edge
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              apk add --no-cache gnupg;
+              mkdir -p /var/www/.gnupg;
+              chmod 700 /var/www/.gnupg;
+              gpg --batch --homedir /var/www/.gnupg --import /etc/gpg-keys/public.key;
+              gpg --batch --homedir /var/www/.gnupg --import /etc/gpg-keys/private.key;
+              chown -R 33:33 /var/www/.gnupg
+          volumeMounts:
+            - name: gpg-volume
+              mountPath: /etc/gpg-keys
+              readOnly: true
+            - name: gnupg-home
+              mountPath: /var/www/.gnupg
       containers:
         - name: vagas
-          image: localhost/imagem-vagas
+          volumeMounts:
+              - name: gnupg-home
+                mountPath: /var/www/.gnupg
+          image: localhost:4000/imagem-vagas
           imagePullPolicy: Always
           ports:
-            - containerPort: 8883  
+            - containerPort: 80  
           env:
             - name: COGNITO_CLIENT_SECRET
-              value: "cognitoclientsecret"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_CLIENT_SECRET
             - name: COGNITO_CLIENT_ID
-              value: "cognitoclientid"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_CLIENT_ID
             - name: COGNITO_USER_POOL_ID
-              value: "cognitouserpoolid"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_USER_POOL_ID
             - name: COGNITO_KEY
-              value: "cognitokey"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_KEY
             - name: COGNITO_SECRET
-              value: "cognitosecret"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_SECRET
             - name: COGNITO_REGION
-              value: "cognitoregion"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: COGNITO_REGION
+            - name: GOOGLE_API
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: GOOGLE_API
             - name: BOT_API
-              value: "telegrambotapi"
-            - name: DB_HOST
-              value: "db-estacionamento-service"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: BOT_API
             - name: DB_NAME
-              value: "EstacionamentoDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_NAME_ESTACIONAMENTO
             - name: DB_USER
-              value: "estacionamento_dbuser"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_USER_ESTACIONAMENTO
             - name: DB_PASS
-              value: "estacionamento.pass.MariaDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_PASS_ESTACIONAMENTO
+            - name: EMAIL_GPG
+              valueFrom: 
+                secretKeyRef:
+                  name: segredos
+                  key: EMAIL_GPG
+            - name: SENHA_GPG
+              valueFrom: 
+                secretKeyRef:
+                  name: segredos
+                  key: SENHA_GPG

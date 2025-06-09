@@ -14,6 +14,6 @@ RUN . venv/bin/activate
 RUN pip install -r requirements.txt
 
 
-EXPOSE 5001
+EXPOSE 5000
 
 CMD ["python", "main.py"]

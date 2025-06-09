@@ -1,11 +1,5 @@
 FROM mariadb:latest
 
-# Retirar credenciais
-ENV MARIADB_ROOT_PASSWORD=root.pass.usuario.MariaDB
-ENV MARIADB_DATABASE=UsuarioDB
-ENV MARIADB_USER=usuario_dbuser
-ENV MARIADB_PASSWORD=usuario.pass.MariaDB
-
 COPY . /docker-entrypoint-initdb.d/
 
 RUN chmod 644 /docker-entrypoint-initdb.d/*.sql && \

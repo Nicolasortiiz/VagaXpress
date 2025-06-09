@@ -16,18 +16,24 @@ spec:
     spec:
       containers:
         - name: sensor
-          image: localhost/imagem-sensor
+          image: localhost:4000/imagem-sensor
           imagePullPolicy: Always
           ports:
             - containerPort: 5000  
           env:
-            - name: DB_HOST
-              value: "db-estacionamento-service"
             - name: DB_NAME
-              value: "EstacionamentoDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_NAME_USUARIO
             - name: DB_USER
-              value: "estacionamento_dbuser"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_USER_USUARIO
             - name: DB_PASS
-              value: "estacionamento.pass.MariaDB"
+              valueFrom:
+                secretKeyRef:
+                  name: segredos
+                  key: DB_PASS_USUARIO
 
-#implementar ingress

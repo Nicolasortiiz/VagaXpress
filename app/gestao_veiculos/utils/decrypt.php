@@ -27,8 +27,8 @@ function removePadding($data) {
 
 function decrypt($data){   
 
-    $env = parse_ini_file(__DIR__ . '/../.env');
-    $senhaGPG = $env['SENHA_GPG'];
+
+    $senhaGPG = getenv('SENHA_GPG');
     $tempDir = sys_get_temp_dir();
     
     if (empty($data)) {
@@ -52,7 +52,7 @@ function decrypt($data){
     }
 
     $comando = sprintf(
-        'gpg --batch --quiet --yes --pinentry-mode loopback --passphrase %s --decrypt %s 2>&1',
+        'gpg --homedir /var/www/.gnupg --batch --quiet --yes --pinentry-mode loopback --passphrase %s --decrypt %s 2>&1',
         escapeshellarg($senhaGPG),escapeshellarg($arqTemp)
     );
     

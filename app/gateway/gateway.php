@@ -1,4 +1,8 @@
 <?php
+header("Access-Control-Allow-Origin: http://vagaxpress.com"); 
+header("Access-Control-Allow-Methods: GET, POST");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
 require __DIR__ . '/vendor/autoload.php';
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -52,13 +56,9 @@ $app->any('/api/{servico}', function (Request $request, Response $response, arra
     }
 
     try {
-        $respostaRemota = $client->request($method, "{$url}/{$servico}.php", [
-            'query' => $queryParams,
-            'form_params' => $bodyParams,
-            'http_errors' => false
-        ]);
+        $respostaRemota = $client->request($method, "{$url}/{$servico}.php", $opcoes);
 
-        $response->getBody()->write($respostaRemota->getBody());
+        $response->getBody()->write((string) $respostaRemota->getBody());
         return $response->withStatus($respostaRemota->getStatusCode())
             ->withHeader('Content-Type', $respostaRemota->getHeaderLine('Content-Type'));
     } catch (\Exception $e) {

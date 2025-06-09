@@ -23,10 +23,10 @@ pipeline {
                         for (int i = 0; i < dockerfiles_app.size(); i++) {
                             def dockerfile = dockerfiles_app[i]
                             sh "docker build -t ${dockerfile.nome} -f '${dockerfile.arq}/Dockerfile' ${dockerfile.arq}"
-                            sh "docker tag ${dockerfile.nome} localhost/${dockerfile.nome}"
-                            sh "docker push localhost/${dockerfile.nome}"
-                            sh "docker rmi -f localhost/${dockerfile.nome}"
-                            sh "docker pull localhost/${dockerfile.nome}"
+                            sh "docker tag ${dockerfile.nome} localhost:4000/${dockerfile.nome}"
+                            sh "docker push localhost:4000/${dockerfile.nome}"
+                            sh "docker rmi -f localhost:4000/${dockerfile.nome}"
+                            sh "docker pull localhost:4000/${dockerfile.nome}"
                         }
                     }
                 }
@@ -42,20 +42,20 @@ pipeline {
                         for (int i = 0; i < dockerfiles_bd.size(); i++) {
                             def dockerfile = dockerfiles_bd[i]
                             sh "docker build -t ${dockerfile.nome} -f '${dockerfile.arq}/Dockerfile.db' ${dockerfile.arq}"
-                            sh "docker tag ${dockerfile.nome} localhost/${dockerfile.nome}"
-                            sh "docker push localhost/${dockerfile.nome}"
-                            sh "docker rmi -f localhost/${dockerfile.nome}"
-                            sh "docker pull localhost/${dockerfile.nome}"
+                            sh "docker tag ${dockerfile.nome} localhost:4000/${dockerfile.nome}"
+                            sh "docker push localhost:4000/${dockerfile.nome}"
+                            sh "docker rmi -f localhost:4000/${dockerfile.nome}"
+                            sh "docker pull localhost:4000/${dockerfile.nome}"
                         }
                     }
                 }
                 dir('sensor') {
                     script {
                         sh 'docker build -t imagem-sensor -f Dockerfile .'
-                        sh "docker tag imagem-sensor localhost/imagem-sensor"
-                        sh "docker push localhost/imagem-sensor"
-                        sh "docker rmi -f localhost/imagem-sensor"
-                        sh "docker pull localhost/imagem-sensor"
+                        sh "docker tag imagem-sensor localhost:4000/imagem-sensor"
+                        sh "docker push localhost:4000/imagem-sensor"
+                        sh "docker rmi -f localhost:4000/imagem-sensor"
+                        sh "docker pull localhost:4000/imagem-sensor"
                     }
                 }
             }
@@ -64,6 +64,8 @@ pipeline {
             steps {
                 dir('kubernetes') {
                     script {
+                        sh 'microk8s kubectl apply -f secrets.yml'
+
                         sh 'microk8s kubectl apply -f db-deployment.yml'
                         sh 'microk8s kubectl apply -f db-service.yml'
 
@@ -81,7 +83,8 @@ pipeline {
 
                         sh 'microk8s kubectl apply -f front-deployment.yml'
                         sh 'microk8s kubectl apply -f front-service.yml'
-                        sh 'microk8s kubectl apply -f front-ingress.yml'
+
+                        sh 'microk8s kubectl apply -f ingress.yml'
                     }
                 }
             }

@@ -1,10 +1,5 @@
 FROM mariadb:latest
 
-# Retirar credenciais
-ENV MARIADB_ROOT_PASSWORD=root.pass.notificacao.MariaDB
-ENV MARIADB_DATABASE=NotificacaoDB
-ENV MARIADB_USER=notificacao_dbuser
-ENV MARIADB_PASSWORD=notificacao.pass.MariaDB
 
 COPY . /docker-entrypoint-initdb.d/
 

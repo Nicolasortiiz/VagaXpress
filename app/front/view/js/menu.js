@@ -4,7 +4,7 @@ window.onload = function () {
     document.getElementById('tela_inicial').click();
     document.querySelector('body').style.display = 'none';
 
-    fetch("/gateway.php/api/usuario?action=verificar_login_principal")
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_principal")
         .then(response => response.json())
         .then(data => {
             if (data.login == 0) {
@@ -290,7 +290,7 @@ function abrirTela(event) {
 
 // Função para realizar logout
 async function realizarLogout() {
-    fetch("/gateway.php/api/usuario?action=logout")
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=logout")
         .then(response => response.json())
         .then(data => {
             if (data.logout) {
@@ -305,7 +305,7 @@ async function realizarLogout() {
 
 // Carrega número de vagas disponíveis
 function carregarVagas() {
-    fetch("/gateway.php/api/vagaOcupada?action=retornar_vagas")
+    fetch("http://api.vagaxpress.com/gateway.php/api/vagaOcupada?action=retornar_vagas")
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -320,7 +320,7 @@ function carregarVagas() {
 /* Scripts Página Notificação */
 
 function carregarNotificacoes() {
-    fetch("/gateway.php/api/mensagem?action=buscar_notificacoes")
+    fetch("http://api.vagaxpress.com/gateway.php/api/mensagem?action=buscar_notificacoes")
         .then(response => response.json())
         .then(data => {
             const conteudo = document.getElementById("conteudo");
@@ -424,7 +424,7 @@ async function gravarPlaca() {
 
     const res = await criptografar(dados);
 
-    fetch("/gateway.php/api/veiculo?action=cadastrar_placa", {
+    fetch("http://api.vagaxpress.com/gateway.php/api/veiculo?action=cadastrar_placa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -463,7 +463,7 @@ async function adicionarSaldo() {
     var dados = { saldo: valorSaldo };
 
     const res = await criptografar(dados);
-    fetch("/gateway.php/api/usuario?action=adicionar_saldo", {
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=adicionar_saldo", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -493,7 +493,7 @@ async function carregarInfosPerfil() {
 }
 
 async function carregaUsuario() {
-    fetch("/gateway.php/api/usuario?action=retornar_infos_perfil")
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=retornar_infos_perfil")
         .then(response => response.json())
         .then(data => {
             if (data.erro) {
@@ -513,7 +513,7 @@ async function carregaUsuario() {
 }
 
 async function carregaNF() {
-    fetch("/gateway.php/api/notaFiscal?action=retornar_notas_fiscais")
+    fetch("http://api.vagaxpress.com/gateway.php/api/notaFiscal?action=retornar_notas_fiscais")
         .then(response => response.json())
         .then(data => {
             if (data.erro) {
@@ -553,7 +553,7 @@ async function carregaNF() {
 }
 
 async function carregaVeiculo() {
-    fetch("/gateway.php/api/veiculo?action=retornar_placas")
+    fetch("http://api.vagaxpress.com/gateway.php/api/veiculo?action=retornar_placas")
         .then(response => response.json())
         .then(data => {
             if (data.erro) {
@@ -604,7 +604,7 @@ async function deletarVeiculo(placa) {
 
     const res = await criptografar(dados);
 
-    fetch("/gateway.php/api/vagaAgendada?action=deletar_agendamentos_placa", {
+    fetch("http://api.vagaxpress.com/gateway.php/api/vagaAgendada?action=deletar_agendamentos_placa", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -636,7 +636,7 @@ async function mostrarDetalhesNota(idNota) {
 
     const res = await criptografar(dados);
 
-    fetch("/gateway.php/api/notaFiscal?action=retornar_detalhes_nf", {
+    fetch("http://api.vagaxpress.com/gateway.php/api/notaFiscal?action=retornar_detalhes_nf", {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
@@ -707,7 +707,7 @@ async function enviarEmailTelegram() {
 
     const res = await criptografar(dados);
 
-    fetch("/gateway.php/api/usuario?action=adicionar_chat", {
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=adicionar_chat", {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
@@ -736,7 +736,7 @@ function removerChatId() {
     document.getElementById('botaoRemoverTelegram').disabled = true;
     document.getElementById('botaoRemoverTelegram').textContent = 'Removendo...';
 
-    fetch("/gateway.php/api/usuario?action=remover_chat")
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=remover_chat")
         .then(response => response.json())
         .then(data => {
             window.alert(data.msg);
@@ -802,7 +802,7 @@ function cancelarPagamento() {
 
 
 function carregarPlacasPerfil() {
-    fetch("/gateway.php/api/veiculo?action=retornar_placas")
+    fetch("http://api.vagaxpress.com/gateway.php/api/veiculo?action=retornar_placas")
         .then(response => response.json())
         .then(data => {
             if (data.error) {
@@ -878,7 +878,7 @@ async function confirmarPagamento() {
 
     const res1 = await criptografar(dados);
 
-    const validar = await fetch("/gateway.php/api/vagaAgendada?action=procurar_agendamento", {
+    const validar = await fetch("http://api.vagaxpress.com/gateway.php/api/vagaAgendada?action=procurar_agendamento", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -907,7 +907,7 @@ async function confirmarPagamento() {
         dados.cpf = document.getElementById('cpf_pagador').value;
 
         const res2 = await criptografar(dados);
-        fetch("/gateway.php/api/vagaAgendada?action=criar_agendamento", {
+        fetch("http://api.vagaxpress.com/gateway.php/api/vagaAgendada?action=criar_agendamento", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -937,7 +937,7 @@ async function confirmarPagamento() {
 }
 
 function carregarDadosPagamento() {
-    fetch("/gateway.php/api/vagaAgendada?action=dados_pagina_pagamento")
+    fetch("http://api.vagaxpress.com/gateway.php/api/vagaAgendada?action=dados_pagina_pagamento")
         .then(response => response.json())
         .then(data => {
             const tabelaAgendadas = document.getElementById('tabelaAgendadas').querySelector('tbody');
@@ -1049,7 +1049,7 @@ async function cancelarAgendamento($id) {
 
     const res = await criptografar(dados);
 
-    fetch("/gateway.php/api/vagaAgendada?action=cancelar_agendamento", {
+    fetch("http://api.vagaxpress.com/gateway.php/api/vagaAgendada?action=cancelar_agendamento", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -1102,7 +1102,7 @@ async function pagarDivida() {
 
     const res = await criptografar(dados);
 
-    fetch("/gateway.php/api/registro?action=pagar_vagas", {
+    fetch("http://api.vagaxpress.com/gateway.php/api/registro?action=pagar_vagas", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -1134,7 +1134,7 @@ async function pagarDivida() {
 /* Scripts Página Suporte */
 
 function carregarSuporte() {
-    fetch("/gateway.php/api/usuario?action=verificar_login_suporte")
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_suporte")
         .then(response => response.json())
         .then(data => {
             if (data.login == 0) {
@@ -1199,7 +1199,7 @@ async function validarEmailSuporte() {
 
     const res = await criptografar(dados);
 
-    fetch("/gateway.php/api/suporte?action=validar_email", {
+    fetch("http://api.vagaxpress.com/gateway.php/api/suporte?action=validar_email", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -1256,7 +1256,7 @@ async function enviarSuporteDeslogado() {
 
     const res = await criptografar(dados);
 
-    fetch("/gateway.php/api/suporte?action=enviar_suporte_deslogado", {
+    fetch("http://api.vagaxpress.com/gateway.php/api/suporte?action=enviar_suporte_deslogado", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -1296,7 +1296,7 @@ async function enviarSuporteLogado() {
 
     const res = await criptografar(dados);
 
-    fetch("/gateway.php/api/suporte?action=enviar_suporte_logado", {
+    fetch("http://api.vagaxpress.com/gateway.php/api/suporte?action=enviar_suporte_logado", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

@@ -18,7 +18,7 @@ metadata:
 spec:
   ports:
     - port: 3307
-      targetPort: 3307
+      targetPort: 3306
       protocol: TCP
   type: ClusterIP
   selector:
@@ -31,7 +31,7 @@ metadata:
 spec:
   ports:
     - port: 3308
-      targetPort: 3308
+      targetPort: 3306
       protocol: TCP
   type: ClusterIP
   selector:
@@ -44,7 +44,7 @@ metadata:
 spec:
   ports:
     - port: 3309
-      targetPort: 3309
+      targetPort: 3306
       protocol: TCP
   type: ClusterIP
   selector:

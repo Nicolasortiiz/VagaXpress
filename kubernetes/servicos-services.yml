@@ -5,7 +5,7 @@ metadata:
 spec:
   ports:
     - port: 8880
-      targetPort: 8880
+      targetPort: 80
       protocol: TCP
   type: ClusterIP
   selector:
@@ -18,7 +18,7 @@ metadata:
 spec:
   ports:
     - port: 8881
-      targetPort: 8881
+      targetPort: 80
       protocol: TCP
   type: ClusterIP
   selector:
@@ -31,7 +31,7 @@ metadata:
 spec:
   ports:
     - port: 8882
-      targetPort: 8882
+      targetPort: 80
       protocol: TCP
   type: ClusterIP
   selector:
@@ -44,7 +44,7 @@ metadata:
 spec:
   ports:
     - port: 8883
-      targetPort: 8883
+      targetPort: 80
       protocol: TCP
   type: ClusterIP
   selector:
