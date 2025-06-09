@@ -1,7 +1,7 @@
 {
     "require": {
         "phpmailer/phpmailer": "^6.10",
-        "aws/aws-sdk-php": "^3.33",
+        "aws/aws-sdk-php": "^3.343",
         "spomky-labs/otphp": "^11.3"
     }
 }

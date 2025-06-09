@@ -1,7 +1,7 @@
 let chavePublica;
 
 window.onload = function () {
-    fetch("/gateway.php/api/usuario?action=verificar_login_autenticacao")
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_autenticacao")
         .then(response => response.json())
         .then(data => {
             if (data.login == 0) {
@@ -93,7 +93,7 @@ async function validarLogin() {
     };
 
     var res = await criptografar(dados);
-    fetch("/gateway.php/api/usuario?action=validar_otp", {
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=validar_otp", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

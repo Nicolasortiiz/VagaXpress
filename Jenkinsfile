@@ -90,6 +90,11 @@ pipeline {
             }
         }
     }
+    stage ('Testes') {
+        sh 'snyk test'
+        sh 'snyk code test'
+        sh 'snyk monitor'
+    }
 
     post {
         success {
