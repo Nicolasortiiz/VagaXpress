@@ -14,6 +14,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = decrypt($dataCrypt);
 
     switch ($action) {
+        case 'altera_numero_vagas':
+            $resultado = $controller->alteraNumeroVagas($data);
+
+            header('Content-Type: application/json');
+
+            echo json_encode([
+                "status" => $resultado ? "sucesso" : "erro",
+                "codigo" => $resultado
+            ]);
+        break;
+
         case 'altera_valor_vaga':
             $resultado = $controller->alteraValorVaga($data);
 
