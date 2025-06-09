@@ -89,7 +89,11 @@ function abrirTela(event) {
 
         case "alterar_vagas":
             conteudo.innerHTML = `
-            <h2>Alteração de numero de vagas</h2>
+                <h2>Alterar número de vagas</h2>
+                <form onsubmit="event.preventDefault(); alterar_numero_vagas();">
+                    <input id="numero_novo" placeholder="Insira o novo número de vagas" required>
+                    <button type="submit">Enviar</button>
+                </from>
         `;
             break;
 
@@ -174,6 +178,30 @@ function carregarNotificacoes() {
             console.error("Erro ao carregar notificações:", error);
             document.getElementById("conteudo").innerHTML = "<p>Erro ao carregar notificações.</p>";
         });
+}
+
+async function alterar_numero_vagas() {
+    try {
+        var numero_novo = { numero_novo: document.getElementById("numero_novo").value };
+        const res = await criptografar(numero_novo);
+
+        const resposta = await fetch("/api/estacionamento.php?action=altera_numero_vagas", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ cript: res })
+            
+        });
+        const textoBruto = await resposta.text();
+        console.log("Resposta bruta:", textoBruto);
+        alert('Número de vagas alterado com sucesso');
+
+        const data = JSON.parse(textoBruto);
+    } catch (error) {
+        console.error("Erro ao enviar alterar número de vagas do estacionamento:", error);
+        alert("Erro ao alterar número de vagas do estacionamento: " + error.message);
+    }
 }
 
 async function alterar_valor() {
