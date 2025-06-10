@@ -29,14 +29,7 @@ class EstacionamentoController
         return intval($this->retornarTotalVagas());
     }
 
-    public function alteraNumeroVagas($data)
-    {
-        return intval($this->EstacionamentoDAO->alteraNumeroVagas($data));
-    }
 
-    public function alteraValorVaga($data)
-    {
-        return intval($this->EstacionamentoDAO->alteraValorVaga($data));
-    }
 }
+
 ?>

@@ -374,10 +374,12 @@ h1.info-container{
     background-color: #4e4caf;
     color: #fff;
     padding: 15px;
+    border-radius: 8px;
     margin: 30px 0 20px 0;
 }
 h2 {
     color: #005a99;
+    margin-top: 20px;
 }
 p {
     line-height: 1.6;
@@ -392,6 +394,16 @@ p {
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0);
 }
+
+
+
+
+
+
+
+
+
+
 
 /* Container principal */
 .divSuporte {
@@ -450,58 +462,11 @@ p {
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
-
-/*
-CSS chat
-*/
-
-.inputChat {
-    width: 84%;
-    height: 50px;
-    padding: 6px;
-    margin: 5px 0;
-    border-radius: 5px;
-}
-
-.botaoChat{
-    width: 15%;
-    height: 50px;
-    padding: 6px;
-    margin: 5px 0;
-    border-radius: 5px;
-    background-color: rgb(47, 44, 66);
-    color: white;
 }
 
 .botaoSuporte:hover {
     background-color: #282761;
 }
 
-.mensagem-ia {
-    background-color: #f8d7da;
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 5px;
-}
 
-/*
-Estilos menu de gerenciamento de vagas
-*/
 
-.gerenciar_vagas_text {
-    height: 40px;
-    width: 300px;
-    padding: 6px;
-    margin: 5px 0;
-    border-radius: 5px;
-}
-
-.gerenciar_vagas_button {
-    height: 40px;
-    width: 60px;
-    padding: 6px;
-    margin: 5px 0;
-    border-radius: 5px;
-    background-color: rgb(47, 44, 66);
-    color: white;
-}
