@@ -85,15 +85,19 @@ function abrirTela(event) {
             conteudo.innerHTML = `
                 <h2>Alterar número de vagas</h2>
                 <form onsubmit="event.preventDefault(); alterar_numero_vagas();">
-                    <input id="numero_novo" class="gerenciar_vagas_text" placeholder="Insira o novo número de vagas" required>
+                    <input id="numero_novo" class="gerenciar_vagas_text" placeholder="Insira o novo número de vagas">
                     <button type="submit" class="gerenciar_vagas_button">Enviar</button>
                 </from>
+                <br>
+                <p> *Envios vazios zeram o campo </p>
                 <br><br>
                 <h2>Alterar valores de vagas</h2>
                 <form onsubmit="event.preventDefault(); alterar_valor();">
-                    <input id="valor" class="gerenciar_vagas_text" placeholder="Insira o novo valor" required>
+                    <input id="valor" class="gerenciar_vagas_text" placeholder="Insira o novo valor">
                     <button type="submit" class="gerenciar_vagas_button">Enviar</button>
                 </from>
+                <br>
+                <p> *Envios vazios zeram o campo </p>
         `;
             break;
 
