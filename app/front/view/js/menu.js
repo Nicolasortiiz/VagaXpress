@@ -797,10 +797,7 @@ function validarAgendamento() {
         return;
     }
 
-    document.getElementById('pagarDivida').disabled = true;
-    document.getElementById('pagarDivida').classList.add('desativado');
-    document.getElementById('botaoAgendar').classList.add('desativado');
-    document.getElementById('botaoAgendar').disabled = true;
+
     document.getElementById('divTelaPagamento').innerHTML = `
         <div id="divPagamento" class="divPagamento">
             <h2>Informações de Pagamento</h2>
@@ -991,11 +988,8 @@ function carregarDadosPagamento() {
                 p.textContent = data.msg;
                 labelCarros.appendChild(p);
 
-                botaoAgendar.disabled = true;
-                botaoAgendar.classList.add('desativado');
 
-                pagarDivida.disabled = true;
-                pagarDivida.classList.add('desativado');
+
             }
 
             if (Array.isArray(data.agendamentos) && data.agendamentos.length > 0) {
@@ -1107,10 +1101,7 @@ async function cancelarAgendamento($id) {
 }
 
 function abrirTelaPagamento() {
-    document.getElementById('botaoAgendar').disabled = true;
-    document.getElementById('botaoAgendar').classList.add('desativado');
-    document.getElementById('pagarDivida').disabled = true;
-    document.getElementById('pagarDivida').classList.add('desativado');
+
     document.getElementById('divTelaPagamento').innerHTML = `
         <div id="divPagamento" class="divPagamento">
             <h2>Informações de Pagamento</h2>
