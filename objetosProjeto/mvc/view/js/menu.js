@@ -107,7 +107,7 @@ function abrirTela(event) {
             setTimeout(() => {
                 espera = false;
 
-            }, 1000);
+            }, 500);
             break;
 
         case "agendamento":
@@ -194,15 +194,6 @@ function abrirTela(event) {
                         <button class="botaoPlaca" type="submit">Cadastrar</button>
                     </form>
                 </div>
-                <div>
-                    <p>Cadastrar Telegram</p>
-                    <p>Para adicionar o Telegram Bot para notificações clique em "Adicionar". </p>
-                    <p>Será enviado um email com o link do chat para você. </p>
-                    <p>Envie o seu email cadastrado no chat do bot para ser adicionado e clique em "Buscar"!</p>
-                    <button id='botaoEnviarEmail' class="botaoPlaca" onclick=enviarEmailTelegram()>Adicionar</button>
-                    <button id='botaoBuscarChatId' class="botaoPlaca" onclick=buscarChatId()>Buscar</button>
-                    <button id='botaoRemoverTelegram' class="botaoPlaca" style="background-color: red;" onclick="removerChatId()">Remover</button>
-                </div>
             </div>
 
             <div class="tabelas-usuario">
@@ -244,7 +235,7 @@ function abrirTela(event) {
 
             setTimeout(() => {
                 espera = false;
-            }), 1000;
+            }), 500;
             break;
 
         case "notificacao":
@@ -256,7 +247,7 @@ function abrirTela(event) {
             carregarNotificacoes();
             setTimeout(() => {
                 espera = false;
-            }, 2000);
+            }, 500);
             break;
 
         case "suporte":
@@ -268,7 +259,7 @@ function abrirTela(event) {
             carregarSuporte();
             setTimeout(() => {
                 espera = false;
-            }, 1000);
+            }, 500);
 
             break;
 
@@ -278,6 +269,12 @@ function abrirTela(event) {
                 <div id="conteudoChat"></div>
             `;
             carregarChat();
+            espera = true;
+            realizarLogout();
+            setTimeout(() => {
+                espera = false;
+            }, 500);
+
             break;
 
         case "login":
@@ -289,7 +286,7 @@ function abrirTela(event) {
             realizarLogout();
             setTimeout(() => {
                 espera = false;
-            }, 1000);
+            }, 500);
 
             break;
 

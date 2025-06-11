@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch:'infraestrutura', url:'https://github.com/Nicolasortiiz/VagaXpress.git'
+                git branch:'main', url:'https://github.com/Nicolasortiiz/VagaXpress.git'
             }
         }
         stage('Build') {
@@ -89,8 +89,8 @@ pipeline {
             steps {
                 dir('kubernetes') {
                     script {
-                        sh 'microk8s kubectl apply -f secrets.yml'
                         sh 'microk8s kubectl apply -f persistent-volumes-db.yml'
+                        sh 'microk8s kubectl apply -f persistent-volumes-ollama.yml'
 
                         sh 'microk8s kubectl apply -f db-deployment.yml'
                         sh 'microk8s kubectl apply -f db-service.yml'
@@ -109,6 +109,9 @@ pipeline {
 
                         sh 'microk8s kubectl apply -f front-deployment.yml'
                         sh 'microk8s kubectl apply -f front-service.yml'
+
+                        sh 'microk8s kubectl apply -f ollama-deployment.yml'
+                        sh 'microk8s kubectl apply -f ollama-service.yml'
 
                         sh 'microk8s kubectl apply -f ingress.yml'
                         sh 'microk8s kubectl apply -f backup-db.yml'
