@@ -64,8 +64,8 @@ function enviarLogin() {
 
         if ((verificadorEmail && verificadorSenha) || document.getElementById("email").value == "teste") {
             enviarDados();
-        } else if (document.getElementById("email").value == "admin") { //Fazer autenticação de admin de verdade eventualmente
-            window.location.href = "administracao.html";
+        } else if (document.getElementById("email").value == "admin") {
+            window.location.href = "administracao.html"; // Temporário para visualização sem Cognito
         } else {
             alert("Erro no login, credenciais incorretos!");
         }
