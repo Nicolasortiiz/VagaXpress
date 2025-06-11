@@ -1,7 +1,9 @@
 <?php
-header("Access-Control-Allow-Origin: http://vagaxpress.com"); 
-header("Access-Control-Allow-Methods: GET, POST");
+
+header("Access-Control-Allow-Origin: http://vagaxpress.com");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Credentials: true");
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -15,7 +17,14 @@ $app->setBasePath('/gateway.php');
 
 
 $app->addBodyParsingMiddleware();
-
+$app->add(function ($request, $handler) {
+    $response = $handler->handle($request);
+    return $response
+        ->withHeader('Access-Control-Allow-Origin', 'http://vagaxpress.com')
+        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        ->withHeader('Access-Control-Allow-Credentials', 'true');
+});
 
 $app->any('/api/{servico}', function (Request $request, Response $response, array $args) {
     $servico = $args['servico'];
@@ -43,10 +52,13 @@ $app->any('/api/{servico}', function (Request $request, Response $response, arra
     $queryParams = $request->getQueryParams();
     $bodyParams = $request->getParsedBody() ?? [];
     $contentType = $request->getHeaderLine('Content-Type');
-
+    $cookieHeader = $request->getHeaderLine('Cookie');
     $opcoes = [
         'query' => $queryParams,
-        'http_errors' => false
+        'http_errors' => false,
+        'headers' => [
+            'Cookie' => $cookieHeader
+        ]
     ];
 
     if (stripos($contentType, 'application/json') !== false) {
@@ -58,6 +70,10 @@ $app->any('/api/{servico}', function (Request $request, Response $response, arra
     try {
         $respostaRemota = $client->request($method, "{$url}/{$servico}.php", $opcoes);
 
+        if ($respostaRemota->hasHeader('Set-Cookie')) {
+            $response = $response->withHeader('Set-Cookie', $respostaRemota->getHeader('Set-Cookie'));
+        }
+        
         $response->getBody()->write((string) $respostaRemota->getBody());
         return $response->withStatus($respostaRemota->getStatusCode())
             ->withHeader('Content-Type', $respostaRemota->getHeaderLine('Content-Type'));

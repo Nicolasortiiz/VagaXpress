@@ -35,3 +35,6 @@ CREATE TABLE VagaOcupada (
 
 
 INSERT INTO Estacionamento (totalVagas, valorHora) VALUES (100, 5.00);
+
+GRANT ALL PRIVILEGES ON PagamentoDB.* TO 'estacionamento_dbuser'@'%';
+FLUSH PRIVILEGES;

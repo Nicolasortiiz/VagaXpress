@@ -8,7 +8,6 @@ CREATE TABLE Usuario (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     saldo DECIMAL(10,2),
-    senha VARCHAR(255) NOT NULL,
     segredo VARCHAR(255),
     chatId VARCHAR(255) UNIQUE
 );
@@ -19,3 +18,6 @@ CREATE TABLE Veiculo (
     placa VARCHAR(10) NOT NULL UNIQUE,
     FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario) 
 );
+
+GRANT ALL PRIVILEGES ON PagamentoDB.* TO 'usuario_dbuser'@'%';
+FLUSH PRIVILEGES;

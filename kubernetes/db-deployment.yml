@@ -14,12 +14,19 @@ spec:
       labels:
         app: db-estacionamento
     spec:
+      volumes:
+        - name: db-estacionamento-volume
+          persistentVolumeClaim:
+            claimName: db-estacionamento-pvc
       containers:
         - name: db-estacionamento
           image: localhost:4000/imagem-db-estacionamento
           imagePullPolicy: Always
           ports:
             - containerPort: 3306
+          volumeMounts:
+            - name: db-estacionamento-volume
+              mountPath: /var/lib/mysql
           env:
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
@@ -58,12 +65,19 @@ spec:
       labels:
         app: db-notificacao
     spec:
+      volumes:
+        - name: db-notificacao-volume
+          persistentVolumeClaim:
+            claimName: db-notificacao-pvc
       containers:
         - name: db-notificacao
           image: localhost:4000/imagem-db-notificacao
           imagePullPolicy: Always
           ports:
             - containerPort: 3306
+          volumeMounts:
+            - name: db-notificacao-volume
+              mountPath: /var/lib/mysql
           env:
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
@@ -102,12 +116,19 @@ spec:
       labels:
         app: db-pagamento
     spec:
+      volumes:
+        - name: db-pagamento-volume
+          persistentVolumeClaim:
+            claimName: db-pagamento-pvc
       containers:
         - name: db-pagamento
           image: localhost:4000/imagem-db-pagamento
           imagePullPolicy: Always
           ports:
             - containerPort: 3306
+          volumeMounts:
+            - name: db-pagamento-volume
+              mountPath: /var/lib/mysql
           env:
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
@@ -146,12 +167,19 @@ spec:
       labels:
         app: db-usuario
     spec:
+      volumes:
+        - name: db-usuario-volume
+          persistentVolumeClaim:
+            claimName: db-usuario-pvc
       containers:
         - name: db-usuario
           image: localhost:4000/imagem-db-usuario
           imagePullPolicy: Always
           ports:
             - containerPort: 3306
+          volumeMounts:
+            - name: db-usuario-volume
+              mountPath: /var/lib/mysql
           env:
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:

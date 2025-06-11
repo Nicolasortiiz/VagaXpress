@@ -20,18 +20,15 @@ class UsuarioController
     private $VeiculoController;
     private $Auth;
     private $apiToken;
-    private $gpgEmail;
     private $chaveAPI;
 
     public function __construct()
     {
-        $env = parse_ini_file(__DIR__ . '/../.env');
-        $this->chaveAPI = $env['CHAVE_API_GOOGLE'];
+        $this->chaveAPI = getenv('GOOGLE_API');
         $this->UsuarioDAO = new UsuarioDAO();
         $this->VeiculoController = new VeiculoController();
         $this->Auth = new Auth();
-        $this->apiToken = $env['BOT_API'];
-        $this->gpgEmail = $env['EMAIL_GPG'];
+        $this->apiToken = getenv('BOT_API');
 
     }
 
@@ -166,7 +163,6 @@ class UsuarioController
 
     public function validarToken($email, $senha, $token)
     {
-
         if ($token == $_SESSION['token']) {
             $segredo = $_SESSION['qr'];
             unset($_SESSION['qr']);
@@ -189,8 +185,7 @@ class UsuarioController
 
     public function validarLoginAutenticacao()
     {
-        $gpgEmail = $this->gpgEmail;
-        $pubkey = shell_exec("gpg --armor --export $gpgEmail");
+        $pubkey = shell_exec("gpg --armor --export");
         if ($this->Auth->verificarLogin()) {
             if ($this->Auth->obterGruposDoToken() == "Admin") {
                 echo json_encode(["login" => 2, "msg" => "Administrador já está logado!"]);

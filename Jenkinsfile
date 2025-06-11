@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        SNYK_TOKEN = credentials('SNYK_TOKEN')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -25,8 +29,6 @@ pipeline {
                             sh "docker build -t ${dockerfile.nome} -f '${dockerfile.arq}/Dockerfile' ${dockerfile.arq}"
                             sh "docker tag ${dockerfile.nome} localhost:4000/${dockerfile.nome}"
                             sh "docker push localhost:4000/${dockerfile.nome}"
-                            sh "docker rmi -f localhost:4000/${dockerfile.nome}"
-                            sh "docker pull localhost:4000/${dockerfile.nome}"
                         }
                     }
                 }
@@ -44,8 +46,6 @@ pipeline {
                             sh "docker build -t ${dockerfile.nome} -f '${dockerfile.arq}/Dockerfile.db' ${dockerfile.arq}"
                             sh "docker tag ${dockerfile.nome} localhost:4000/${dockerfile.nome}"
                             sh "docker push localhost:4000/${dockerfile.nome}"
-                            sh "docker rmi -f localhost:4000/${dockerfile.nome}"
-                            sh "docker pull localhost:4000/${dockerfile.nome}"
                         }
                     }
                 }
@@ -54,17 +54,43 @@ pipeline {
                         sh 'docker build -t imagem-sensor -f Dockerfile .'
                         sh "docker tag imagem-sensor localhost:4000/imagem-sensor"
                         sh "docker push localhost:4000/imagem-sensor"
-                        sh "docker rmi -f localhost:4000/imagem-sensor"
-                        sh "docker pull localhost:4000/imagem-sensor"
                     }
                 }
             }
         }
+
+        stage ('Testes') {
+            steps{
+                sh 'snyk auth $SNYK_TOKEN'
+                dir ('app'){
+                    dir ('gateway'){
+                        sh 'snyk test --severity-threshold=high --fail-on=all'
+                    }
+                    dir ('gestao_veiculos'){
+                        sh 'snyk test --severity-threshold=high --fail-on=all'
+                    }
+                    dir ('notificacoes'){
+                        sh 'snyk test --severity-threshold=high --fail-on=all'
+                    }
+                    dir ('pagamento'){
+                        sh 'snyk test --severity-threshold=high --fail-on=all'
+                    }
+                    dir ('vagas'){
+                        sh 'snyk test --severity-threshold=high --fail-on=all'
+                    }
+
+                }
+                
+                sh 'snyk code test --severity-threshold=high --fail-on=all'
+            }
+        }
+
         stage('Deploy') {
             steps {
                 dir('kubernetes') {
                     script {
                         sh 'microk8s kubectl apply -f secrets.yml'
+                        sh 'microk8s kubectl apply -f persistent-volumes-db.yml'
 
                         sh 'microk8s kubectl apply -f db-deployment.yml'
                         sh 'microk8s kubectl apply -f db-service.yml'
@@ -85,17 +111,12 @@ pipeline {
                         sh 'microk8s kubectl apply -f front-service.yml'
 
                         sh 'microk8s kubectl apply -f ingress.yml'
+                        sh 'microk8s kubectl apply -f backup-db.yml'
                     }
                 }
             }
         }
     }
-    stage ('Testes') {
-        sh 'snyk test'
-        sh 'snyk code test'
-        sh 'snyk monitor'
-    }
-
     post {
         success {
             echo 'Pipeline executada com sucesso!'

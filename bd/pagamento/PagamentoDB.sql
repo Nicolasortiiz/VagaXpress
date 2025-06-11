@@ -12,3 +12,6 @@ CREATE TABLE NotaFiscal (
     valor DECIMAL(10,2) NOT NULL,
     descricao VARCHAR(255) NOT NULL
 );
+
+GRANT ALL PRIVILEGES ON PagamentoDB.* TO 'pagamento_dbuser'@'%';
+FLUSH PRIVILEGES;

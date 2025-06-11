@@ -15,3 +15,6 @@ CREATE TABLE Suporte (
     email VARCHAR(100) NOT NULL,
     tipo VARCHAR(50) NOT NULL
 );
+
+GRANT ALL PRIVILEGES ON PagamentoDB.* TO 'notificacao_dbuser'@'%';
+FLUSH PRIVILEGES;

@@ -1,7 +1,7 @@
 let chavePublica;
 window.onload = function () {
 
-    fetch("/gateway.php/api/usuario?action=verificar_login_principal")
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_principal")
         .then(response => response.json())
         .then(data => {
             if (data.login == 2) {
@@ -126,7 +126,7 @@ function abrirTela(event) {
 }
 
 async function realizarLogout() {
-    fetch("/gateway.php/api/usuario?action=logout")
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=logout")
         .then(response => response.json())
         .then(data => {
             if (data.logout) {
@@ -140,7 +140,7 @@ async function realizarLogout() {
 /* Scripts Página Notificação */
 
 function carregarNotificacoes() {
-    fetch("/gateway.php/api/mensagem?action=buscar_notificacoes")
+    fetch("http://api.vagaxpress.com/gateway.php/api/mensagem?action=buscar_notificacoes")
         .then(response => response.json())
         .then(data => {
             const conteudo = document.getElementById("conteudo");
@@ -178,7 +178,7 @@ async function enviar_notificacao() {
         const dados = {notificacao: notificacao};
         const res = await criptografar(dados);
 
-        const resposta = await fetch("/gateway.php/api/mensagem?action=enviar_notificacao", {
+        const resposta = await fetch("http://api.vagaxpress.com/gateway.php/api/mensagem?action=enviar_notificacao", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

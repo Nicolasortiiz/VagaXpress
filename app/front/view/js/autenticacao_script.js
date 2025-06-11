@@ -1,7 +1,9 @@
 let chavePublica;
 
 window.onload = function () {
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_autenticacao")
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_autenticacao", {
+        credentials: 'include'
+    })
         .then(response => response.json())
         .then(data => {
             if (data.login == 0) {
@@ -42,7 +44,7 @@ async function criptografar(dados) {
         message: message,
         encryptionKeys: publicKey
     });
-    
+
     const encryptedData = {
         key: encryptedKey,
         data: resultado
@@ -80,7 +82,7 @@ function enviarLogin() {
 async function validarLogin() {
     let token = /^[0-9]{6,}$/;
     var verificadorToken = token.test(document.getElementById('inputSMS').value);
-    if(!verificadorToken){
+    if (!verificadorToken) {
         alert("Token inválido!");
         return;
     }
@@ -95,6 +97,7 @@ async function validarLogin() {
     var res = await criptografar(dados);
     fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=validar_otp", {
         method: "POST",
+        credentials: 'include',
         headers: {
             "Content-Type": "application/json"
         },

@@ -1,7 +1,9 @@
 let chavePublica;
 
 window.onload = function () {
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_autenticacao")
+    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_autenticacao", {
+        credentials: 'include'
+    })
         .then(response => response.json())
         .then(data => {
             if (data.login == 0) {
@@ -42,7 +44,7 @@ async function criptografar(dados) {
         message: message,
         encryptionKeys: publicKey
     });
-    
+
     const encryptedData = {
         key: encryptedKey,
         data: resultado
@@ -110,6 +112,7 @@ async function verificaEmail() {
 
     fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=validar_email", {
         method: "POST",
+        credentials: 'include',
         headers: {
             "Content-Type": "application/json"
         },
@@ -149,6 +152,7 @@ async function verificaToken() {
 
         fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=validar_token", {
             method: "POST",
+            credentials: 'include',
             headers: {
                 "Content-Type": "application/json"
             },

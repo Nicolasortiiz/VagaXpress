@@ -24,7 +24,7 @@ class UsuarioController
 
     public function __construct()
     {
-        $this->chaveAPI = getenv('CHAVE_API_GOOGLE');
+        $this->chaveAPI = getenv('GOOGLE_API');
         $this->UsuarioDAO = new UsuarioDAO();
         $this->VeiculoController = new VeiculoController();
         $this->Auth = new Auth();
@@ -163,7 +163,6 @@ class UsuarioController
 
     public function validarToken($email, $senha, $token)
     {
-
         if ($token == $_SESSION['token']) {
             $segredo = $_SESSION['qr'];
             unset($_SESSION['qr']);

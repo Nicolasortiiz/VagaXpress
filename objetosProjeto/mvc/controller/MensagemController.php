@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . "/../dao/MensagemDAO.php";
 require_once __DIR__ . "/../model/Mensagem.php";
-require_once __DIR__ . "/../controller/UsuarioController.php";
 
 header('Content-Type: application/json');
 

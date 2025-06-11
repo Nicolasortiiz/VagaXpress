@@ -17,7 +17,7 @@ class SuporteController
     public function __construct()
     {
     
-        $this->chaveAPI = getenv('CHAVE_API_GOOGLE');
+        $this->chaveAPI = getenv('GOOGLE_API');
         $this->SuporteDAO = new SuporteDAO();
         $this->Auth = new Auth();
     }

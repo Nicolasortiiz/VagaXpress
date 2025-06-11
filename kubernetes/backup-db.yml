@@ -1,0 +1,117 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-db
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+            - name: backup-volume
+              persistentVolumeClaim:
+                claimName: db-backup-pvc
+          containers:
+            - name: backup-db-container
+              image: mariadb:latest
+              volumeMounts:
+                - name: backup-volume
+                  mountPath: /backup
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -e;
+
+                  mysqldump \
+                    --host= db-estacionamento-service \
+                    --user=$USERNAME_ESTACIONAMENTO \
+                    --password=$PASS_ESTACIONAMENTO \
+                    $DB_NAME_ESTACIONAMENTO \
+                    | gzip > /backup/db-estacionamento-backup-$(date +%Y-%m-%d_%H-%M-%S).sql.gz;
+
+                  mysqldump \
+                    --host= db-notificacao-service \
+                    --user=$USERNAME_NOTIFICACAO \
+                    --password=$PASS_NOTIFICACAO \
+                    $DB_NAME_NOTIFICACAO \
+                    | gzip > /backup/db-notificacao-backup-$(date +%Y-%m-%d_%H-%M-%S).sql.gz;
+
+                  mysqldump \
+                    --host= db-pagamento-service \
+                    --user=$USERNAME_PAGAMENTO \
+                    --password=$PASS_PAGAMENTO \
+                    $DB_NAME_PAGAMENTO \
+                    | gzip > /backup/db-pagamento-backup-$(date +%Y-%m-%d_%H-%M-%S).sql.gz;
+
+                  mysqldump \
+                    --host= db-usuario-service \
+                    --user=$USERNAME_USUARIO \
+                    --password=$PASS_USUARIO \
+                    $DB_NAME_USUARIO \
+                    | gzip > /backup/db-usuario-backup-$(date +%Y-%m-%d_%H-%M-%S).sql.gz;
+
+                  echo "Backups criados com sucesso!";
+              env:
+                - name: DB_NAME_ESTACIONAMENTO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_NAME_ESTACIONAMENTO
+                - name: USERNAME_ESTACIONAMENTO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_USER_ESTACIONAMENTO
+                - name: PASS_ESTACIONAMENTO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_PASS_ESTACIONAMENTO
+                - name: DB_NAME_NOTIFICACAO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_NAME_NOTIFICACAO
+                - name: USERNAME_NOTIFICACAO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_USER_NOTIFICACAO
+                - name: PASS_NOTIFICACAO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_PASS_NOTIFICACAO
+                - name: DB_NAME_PAGAMENTO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_NAME_PAGAMENTO
+                - name: USERNAME_PAGAMENTO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_USER_PAGAMENTO
+                - name: PASS_PAGAMENTO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_PASS_PAGAMENTO
+                - name: DB_NAME_USUARIO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_NAME_USUARIO
+                - name: USERNAME_USUARIO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_USER_USUARIO
+                - name: PASS_USUARIO
+                  valueFrom:
+                    secretKeyRef:
+                      name: segredos
+                      key: DB_PASS_USUARIO
+
+          restartPolicy: OnFailure
