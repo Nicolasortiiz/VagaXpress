@@ -23,7 +23,8 @@ class UsuarioController
 
     public function __construct()
     {
-        $this->chaveAPI = getenv('GOOGLE_API');
+        $env = parse_ini_file(__DIR__ . '/../.env');
+        $this->chaveAPI = $env['GOOGLE_API'];
         $this->UsuarioDAO = new UsuarioDAO();
         $this->VeiculoController = new VeiculoController();
         $this->Auth = new Auth();
