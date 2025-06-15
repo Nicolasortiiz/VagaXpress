@@ -17,8 +17,7 @@ window.onload = function () {
                 document.getElementById("login").style.disabled = true;
                 document.getElementById("login").style.display = "none";
             } else if (data.login == 0) {
-                //encaminhar para index.html
-                //window.location.href = "../index.html";
+                window.location.href = "../index.html";
             }
             if (data.pubkey) {
                 chavePublica = data.pubkey;
@@ -64,22 +63,6 @@ function abrirTela(event) {
     const conteudo = document.getElementById("conteudo");
 
     switch (elementoClicado) {
-
-        case "excluir_usuario":
-            conteudo.innerHTML = `
-                <h2>Menu de exclusão de usuários</h2>
-                <form onsubmit="event.preventDefault(); excluir_usuario();">
-                    <input id="usuario" placeholder="Qual usuário deseja excluir?" required>
-                    <button type="submit">Enviar</button>
-                </form>
-            `;
-            break;
-
-        case "verificar_conta":
-            conteudo.innerHTML = `
-                <h2>Visualização de solicitações de verificação de contas</h2>
-            `;
-            break;
 
         case "alterar_vagas":
             conteudo.innerHTML = `
