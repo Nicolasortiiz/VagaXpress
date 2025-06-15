@@ -1,6 +1,5 @@
 FROM mariadb:11.3
 
-ENV MARIADB_ROOT_PASSWORD=root
 
 COPY bancodedados.sql /docker-entrypoint-initdb.d/
 RUN chmod 644 /docker-entrypoint-initdb.d/bancodedados.sql \

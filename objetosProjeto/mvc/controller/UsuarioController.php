@@ -19,16 +19,15 @@ class UsuarioController
     private $UsuarioDAO;
     private $VeiculoController;
     private $Auth;
-    private $apiToken;
     private $chaveAPI;
 
     public function __construct()
     {
-        $this->chaveAPI = getenv('GOOGLE_API');
+        $env = parse_ini_file(__DIR__ . '/../.env');
+        $this->chaveAPI = $env['GOOGLE_API'];
         $this->UsuarioDAO = new UsuarioDAO();
         $this->VeiculoController = new VeiculoController();
         $this->Auth = new Auth();
-        $this->apiToken = getenv('BOT_API');
 
     }
 
@@ -363,64 +362,6 @@ class UsuarioController
         echo json_encode(["error" => false, "login" => 1]);
     }
 
-    // Função para remover envio de notificações via Telegram
-    public function removerChat()
-    {
-        if (!$this->Auth->verificarLogin()) {
-            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
-            exit;
-        }
-        $usuario = new Usuario();
-        $usuario->setIdUsuario($_SESSION["usuario_id"]);
-        $msg = $this->UsuarioDAO->removerChat($usuario);
-        echo json_encode(["error" => false, "msg" => htmlspecialchars($msg)]);
-
-    }
-
-    // Função para adicionar envio de notificações via Telegram
-    public function adicionarChat($chatId)
-    {
-        if (!$this->Auth->verificarLogin()) {
-            echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
-            exit;
-        }
-        $usuario = new Usuario();
-        $usuario->setChatId($chatId);
-        $usuario->setIdUsuario($_SESSION["usuario_id"]);
-        $msg = $this->UsuarioDAO->adicionarChat($usuario);
-        echo json_encode(["error" => false, "msg" => htmlspecialchars($msg)]);
-        
-    }
-
-    // Função para envio de notificações via Telegram
-    function enviarNotificacaoTelegram($mensagem) {
-        if (!$this->Auth->verificarLogin()) {
-            return false;
-        }
-        $apiToken = $this->apiToken;
-
-        $usuario = new Usuario();
-        $usuario->setIdUsuario($_SESSION["usuario_id"]);
-        $chatId = $this->UsuarioDAO->retornarChatId($usuario);
-        if($chatId == null || $chatId == '') {
-            return false;
-        }
-
-        $url = "https://api.telegram.org/bot$apiToken/sendMessage";
-
-        $dados = [
-            'chat_id' => $chatId,
-            'text' => $mensagem
-        ];
-
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $dados);
-        $resposta = curl_exec($ch);
-        curl_close($ch);
-
-        return $resposta;
-    }
 
 }
 

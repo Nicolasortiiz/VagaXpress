@@ -1,7 +1,4 @@
 <?php
-ini_set('session.save_handler', 'redis');
-ini_set('session.save_path', 'tcp://redis-service:6379');
-
 require_once __DIR__ . "/../utils/decrypt.php";
 require_once __DIR__ . "/../controller/RegistroController.php";
 

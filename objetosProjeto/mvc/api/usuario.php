@@ -1,6 +1,4 @@
 <?php
-ini_set('session.save_handler', 'redis');
-ini_set('session.save_path', 'tcp://redis-service:6379');
 
 require_once __DIR__ . "/../utils/decrypt.php";
 require_once __DIR__ . "/../controller/UsuarioController.php";
@@ -34,7 +32,6 @@ $token = preg_match('/^[0-9]{6,}$/', $token) ? $token : null;
 $hora = isset($data['data']) ? strtotime($data['data']) : null;
 
 $saldo = $data['saldo'] ?? '';
-$saldo = is_numeric($saldo) ? floatval($saldo) : null;
 
 $placa = $data['placa'] ?? '';
 $placa = preg_match('/^[A-Za-z0-9]+$/', $placa) ? $placa : null;

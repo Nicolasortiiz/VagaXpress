@@ -4,7 +4,7 @@ window.onload = function () {
     document.getElementById('tela_inicial').click();
     document.querySelector('body').style.display = 'none';
 
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_principal", {
+    fetch("/gateway.php/api/usuario?action=verificar_login_principal", {
         credentials: 'include'
     })
         .then(response => response.json())
@@ -270,7 +270,6 @@ function abrirTela(event) {
             `;
             carregarChat();
             espera = true;
-            realizarLogout();
             setTimeout(() => {
                 espera = false;
             }, 500);
@@ -297,7 +296,7 @@ function abrirTela(event) {
 
 // Função para realizar logout
 async function realizarLogout() {
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=logout", {
+    fetch("/gateway.php/api/usuario?action=logout", {
         credentials: 'include'
     })
         .then(response => response.json())
@@ -314,7 +313,7 @@ async function realizarLogout() {
 
 // Carrega número de vagas disponíveis
 function carregarVagas() {
-    fetch("http://api.vagaxpress.com/gateway.php/api/vagaOcupada?action=retornar_vagas", {
+    fetch("/gateway.php/api/vagaOcupada?action=retornar_vagas", {
         credentials: 'include'
     })
         .then(response => response.json())
@@ -331,7 +330,7 @@ function carregarVagas() {
 /* Scripts Página Notificação */
 
 function carregarNotificacoes() {
-    fetch("http://api.vagaxpress.com/gateway.php/api/mensagem?action=buscar_notificacoes", {
+    fetch("/gateway.php/api/mensagem?action=buscar_notificacoes", {
         credentials: 'include'
     })
         .then(response => response.json())
@@ -437,7 +436,7 @@ async function gravarPlaca() {
 
     const res = await criptografar(dados);
 
-    fetch("http://api.vagaxpress.com/gateway.php/api/veiculo?action=cadastrar_placa", {
+    fetch("/gateway.php/api/veiculo?action=cadastrar_placa", {
         method: "POST",
         credentials: 'include',
         headers: { "Content-Type": "application/json" },
@@ -477,7 +476,7 @@ async function adicionarSaldo() {
     var dados = { saldo: valorSaldo };
 
     const res = await criptografar(dados);
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=adicionar_saldo", {
+    fetch("/gateway.php/api/usuario?action=adicionar_saldo", {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -508,7 +507,7 @@ async function carregarInfosPerfil() {
 }
 
 async function carregaUsuario() {
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=retornar_infos_perfil", {
+    fetch("/gateway.php/api/usuario?action=retornar_infos_perfil", {
         credentials: 'include'
     })
         .then(response => response.json())
@@ -530,7 +529,7 @@ async function carregaUsuario() {
 }
 
 async function carregaNF() {
-    fetch("http://api.vagaxpress.com/gateway.php/api/notaFiscal?action=retornar_notas_fiscais", {
+    fetch("/gateway.php/api/notaFiscal?action=retornar_notas_fiscais", {
         credentials: 'include'
     })
         .then(response => response.json())
@@ -572,7 +571,7 @@ async function carregaNF() {
 }
 
 async function carregaVeiculo() {
-    fetch("http://api.vagaxpress.com/gateway.php/api/veiculo?action=retornar_placas", {
+    fetch("/gateway.php/api/veiculo?action=retornar_placas", {
         credentials: 'include'
     })
         .then(response => response.json())
@@ -625,7 +624,7 @@ async function deletarVeiculo(placa) {
 
     const res = await criptografar(dados);
 
-    fetch("http://api.vagaxpress.com/gateway.php/api/vagaAgendada?action=deletar_agendamentos_placa", {
+    fetch("/gateway.php/api/vagaAgendada?action=deletar_agendamentos_placa", {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -658,7 +657,7 @@ async function mostrarDetalhesNota(idNota) {
 
     const res = await criptografar(dados);
 
-    fetch("http://api.vagaxpress.com/gateway.php/api/notaFiscal?action=retornar_detalhes_nf", {
+    fetch("/gateway.php/api/notaFiscal?action=retornar_detalhes_nf", {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -680,7 +679,7 @@ async function mostrarDetalhesNota(idNota) {
             const span = document.createElement("span");
             span.className = "detalhesNF";
             span.textContent = "×";
-            span.addEventListener("click", fecharModalNota());
+            span.addEventListener("click", fecharModalNota)
 
             const h2 = document.createElement("h2");
             h2.textContent = "Detalhes da Nota Fiscal";
@@ -720,67 +719,6 @@ function fecharModalNota() {
     document.getElementById("modalDetalhesNF").classList.add("hidden");
 }
 
-
-async function enviarEmailTelegram() {
-    document.getElementById('botaoAdicionarTelegram').classList.add('desativado');
-    document.getElementById('botaoAdicionarTelegram').disabled = true;
-    document.getElementById('botaoAdicionarTelegram').textContent = 'Adicionando...';
-
-    var dados = { chatId: document.getElementById('chatId').value };
-
-    const res = await criptografar(dados);
-
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=adicionar_chat", {
-        method: "POST",
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ cript: res })
-    })
-        .then(response => response.json())
-        .then(data => {
-            window.alert(data.msg);
-        })
-        .catch(error => {
-            console.error("Erro ao buscar detalhes da nota fiscal:", error);
-        });
-
-    setTimeout(() => {
-        document.getElementById('botaoAdicionarTelegram').classList.remove('desativado');
-        document.getElementById('botaoAdicionarTelegram').disabled = false;
-        document.getElementById('botaoAdicionarTelegram').textContent = 'Adicionar';
-    }, 1000);
-
-
-}
-
-function removerChatId() {
-    document.getElementById('botaoRemoverTelegram').classList.add('desativado');
-    document.getElementById('botaoRemoverTelegram').disabled = true;
-    document.getElementById('botaoRemoverTelegram').textContent = 'Removendo...';
-
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=remover_chat", {
-        credentials: 'include'
-    })
-        .then(response => response.json())
-        .then(data => {
-            window.alert(data.msg);
-        })
-        .catch(error => {
-            console.error("Erro ao buscar detalhes da nota fiscal:", error);
-        });
-    setTimeout(() => {
-        document.getElementById('botaoRemoverTelegram').classList.remove('desativado');
-        document.getElementById('botaoRemoverTelegram').disabled = false;
-        document.getElementById('botaoRemoverTelegram').textContent = 'Remover';
-    }, 1000);
-
-}
-
-function buscarChatId() {
-
-}
 
 /* Página Agendamento/Pagamento */
 
@@ -828,7 +766,7 @@ function cancelarPagamento() {
 
 
 function carregarPlacasPerfil() {
-    fetch("http://api.vagaxpress.com/gateway.php/api/veiculo?action=retornar_placas", {
+    fetch("/gateway.php/api/veiculo?action=retornar_placas", {
         credentials: 'include'
     })
         .then(response => response.json())
@@ -906,7 +844,7 @@ async function confirmarPagamento() {
 
     const res1 = await criptografar(dados);
 
-    const validar = await fetch("http://api.vagaxpress.com/gateway.php/api/vagaAgendada?action=procurar_agendamento", {
+    const validar = await fetch("/gateway.php/api/vagaAgendada?action=procurar_agendamento", {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -927,16 +865,19 @@ async function confirmarPagamento() {
         })
         .catch(error => console.error(error))
         .finally(() => {
-            document.getElementById('botaoPagamento').disabled = false;
+            document.getElementById('pagarDivida').disabled = false;
             document.getElementById('botaoAgendar').disabled = false;
-            document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+            document.getElementById('pagarDivida').textContent = 'Pagar Divida';
+            document.getElementById('pagarDivida').classList.remove('desativado');
+            document.getElementById('botaoAgendar').classList.remove('desativado');
+            
         });
     if (validar == true) {
         dados.nome = document.getElementById('nome_pagador').value;
         dados.cpf = document.getElementById('cpf_pagador').value;
 
         const res2 = await criptografar(dados);
-        fetch("http://api.vagaxpress.com/gateway.php/api/vagaAgendada?action=criar_agendamento", {
+        fetch("/gateway.php/api/vagaAgendada?action=criar_agendamento", {
             method: "POST",
             credentials: 'include',
             headers: {
@@ -958,8 +899,9 @@ async function confirmarPagamento() {
             })
             .catch(error => console.error(error))
             .finally(() => {
-                document.getElementById('botaoPagamento').disabled = false;
-                document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+                document.getElementById('pagarDivida').disabled = false;
+                document.getElementById('pagarDivida').textContent = 'Pagar Divida';
+                document.getElementById('pagarDivida').classList.remove('desativado');
             });
     }
 
@@ -967,7 +909,7 @@ async function confirmarPagamento() {
 }
 
 function carregarDadosPagamento() {
-    fetch("http://api.vagaxpress.com/gateway.php/api/vagaAgendada?action=dados_pagina_pagamento", {
+    fetch("/gateway.php/api/vagaAgendada?action=dados_pagina_pagamento", {
         credentials: 'include'
     })
         .then(response => response.json())
@@ -1081,7 +1023,7 @@ async function cancelarAgendamento($id) {
 
     const res = await criptografar(dados);
 
-    fetch("http://api.vagaxpress.com/gateway.php/api/vagaAgendada?action=cancelar_agendamento", {
+    fetch("/gateway.php/api/vagaAgendada?action=cancelar_agendamento", {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -1135,7 +1077,7 @@ async function pagarDivida() {
 
     const res = await criptografar(dados);
 
-    fetch("http://api.vagaxpress.com/gateway.php/api/registro?action=pagar_vagas", {
+    fetch("/gateway.php/api/registro?action=pagar_vagas", {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -1168,7 +1110,7 @@ async function pagarDivida() {
 /* Scripts Página Suporte */
 
 function carregarSuporte() {
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_suporte", {
+    fetch("/gateway.php/api/usuario?action=verificar_login_suporte", {
         credentials: 'include'
     })
         .then(response => response.json())
@@ -1237,7 +1179,7 @@ function carregarChat() {
     `;
 
     const form = document.getElementById('formChat');
-    form.addEventListener('submit', async function(event) {
+    form.addEventListener('submit', async function (event) {
         event.preventDefault();
         const input = document.getElementById('mensagem');
         const mensagem = input.value.trim();
@@ -1283,7 +1225,7 @@ function carregarChat() {
 async function validarEmailSuporte() {
     document.getElementById('botaoEnviarSuporte').disabled = true;
     document.getElementById('botaoEnviarSuporte').textContent = 'Validando...';
-    let email = /^[A-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+    let email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     var verificadorEmail = email.test(document.getElementById("email").value);
     if (!verificadorEmail) {
         alert("Email inválido! Por favor, insira um email válido.");
@@ -1293,7 +1235,7 @@ async function validarEmailSuporte() {
 
     const res = await criptografar(dados);
 
-    fetch("http://api.vagaxpress.com/gateway.php/api/suporte?action=validar_email", {
+    fetch("/gateway.php/api/suporte?action=validar_email", {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -1324,7 +1266,7 @@ async function validarEmailSuporte() {
 }
 
 function sanitizarTexto(texto) {
-    return str
+    return texto
         .replace(/&/g, " ")
         .replace(/</g, " ")
         .replace(/>/g, " ")
@@ -1351,7 +1293,7 @@ async function enviarSuporteDeslogado() {
 
     const res = await criptografar(dados);
 
-    fetch("http://api.vagaxpress.com/gateway.php/api/suporte?action=enviar_suporte_deslogado", {
+    fetch("/gateway.php/api/suporte?action=enviar_suporte_deslogado", {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -1367,9 +1309,11 @@ async function enviarSuporteDeslogado() {
                 window.alert(data.msg);
             } else {
                 window.alert('Mensagem enviada com sucesso!');
-                document.getElementById("conteudo_suporte").innerHTML = ``
                 document.getElementById('email').value = '';
                 document.getElementById('textoSuporte').value = '';
+                document.getElementById('conteudo_suporte').innerHTML = '';
+                document.getElementById('botaoEnviarSuporte').disabled = false;
+                document.getElementById('botaoEnviarSuporte').textContent = 'Enviar';
 
             }
         })
@@ -1392,7 +1336,7 @@ async function enviarSuporteLogado() {
 
     const res = await criptografar(dados);
 
-    fetch("http://api.vagaxpress.com/gateway.php/api/suporte?action=enviar_suporte_logado", {
+    fetch("/gateway.php/api/suporte?action=enviar_suporte_logado", {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -1407,8 +1351,7 @@ async function enviarSuporteLogado() {
             if (data.error) {
                 window.alert(data.msg);
             } else {
-                document.alert("Mensagem enviada com sucesso!");
-                document.getElementById("conteudo_suporte").innerHTML = ``
+                window.alert("Mensagem enviada com sucesso!");
                 document.getElementById('textoSuporte').value = '';
 
             }
