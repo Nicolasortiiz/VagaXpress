@@ -4,21 +4,10 @@ window.onload = function () {
     fetch("/gateway.php/api/usuario?action=verificar_login_principal")
         .then(response => response.json())
         .then(data => {
-            if (data.login == 2) {
-                document.getElementById("cadastro_veiculos").style.disabled = true;
-                document.getElementById("cadastro_veiculos").style.display = "none";
-                document.getElementById("agendamento").style.disabled = true;
-                document.getElementById("agendamento").style.display = "none";
-                document.getElementById("perfil_usuario").style.disabled = true;
-                document.getElementById("perfil_usuario").style.display = "none";
-                document.getElementById("logout").style.disabled = true;
-                document.getElementById("logout").style.display = "none";
-            } else if (data.login == 1) {
-                document.getElementById("login").style.disabled = true;
-                document.getElementById("login").style.display = "none";
+            if (data.login == 1) {
+                window.location.href = "../index.html";
             } else if (data.login == 0) {
-                //encaminhar para index.html
-                //window.location.href = "../index.html";
+                window.location.href = "../index.html";
             }
             if (data.pubkey) {
                 chavePublica = data.pubkey;
