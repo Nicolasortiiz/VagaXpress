@@ -32,7 +32,6 @@ $token = preg_match('/^[0-9]{6,}$/', $token) ? $token : null;
 $hora = isset($data['data']) ? strtotime($data['data']) : null;
 
 $saldo = $data['saldo'] ?? '';
-$saldo = is_numeric($saldo) ? floatval($saldo) : null;
 
 $placa = $data['placa'] ?? '';
 $placa = preg_match('/^[A-Za-z0-9]+$/', $placa) ? $placa : null;

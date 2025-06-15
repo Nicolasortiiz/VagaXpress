@@ -67,8 +67,6 @@ function enviarLogin() {
         if ((verificadorEmail && verificadorSenha)) {
             document.querySelector(".input_box").style.display = 'none';
             document.querySelector(".divSMS").style.display = 'flex';
-        } else if (document.getElementById("email").value == "admin") { //Fazer autenticação de admin de verdade eventualmente
-            window.location.href = "administracao.html";
         } else {
             alert("Erro no login, credenciais incorretos!");
         }

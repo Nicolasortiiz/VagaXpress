@@ -114,8 +114,8 @@ class VagaAgendadaController
         ];
         $resposta = enviaDados($url, $dados);
         $json = json_decode($resposta);
-        if(isset($json['msg'])){
-            $json['msg'] = htmlspecialchars($json['msg'], ENT_QUOTES, 'UTF-8');
+        if(isset($json->msg)){
+            $json->msg = htmlspecialchars($json->msg, ENT_QUOTES, 'UTF-8');
         echo json_encode($json); 
         }else{
             echo json_encode(["error" => true, "msg" => "Erro ao deletar placa!"]);
@@ -154,13 +154,10 @@ class VagaAgendadaController
         ];
         $resposta = enviaDados($url, $dados);
         $json = json_decode($resposta);
-        if (isset($json['msg'])) {
-            $json['msg'] = htmlspecialchars($json['msg'], ENT_QUOTES, 'UTF-8');
-            echo json_encode($json); 
-        }else{
-            echo json_encode(["error" => true, "msg" => "Erro ao validar pagamento!"]);
-            exit;
+        if (isset($json->msg)) {
+            $json->msg = htmlspecialchars($json->msg, ENT_QUOTES, 'UTF-8');
         }
+        echo json_encode($json); 
         exit;
     }
     public function criarAgendamento($placa, $dataEntrada, $horaEntrada, $nome, $cpf)

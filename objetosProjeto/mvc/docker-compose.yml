@@ -29,6 +29,21 @@ services:
     networks:
       custom_net:
         ipv4_address: 172.25.0.11
+        
+  sensor:
+    build:
+      context: .
+      dockerfile: Dockerfile.sensor
+    container_name: sensor
+    volumes:
+      - .:/app
+    ports:
+      - "5000:5000"
+    networks:
+      custom_net:
+        ipv4_address: 172.25.0.12
+    depends_on:
+      - db
   
   ollama:
     image: ollama/ollama

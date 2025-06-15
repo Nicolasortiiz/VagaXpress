@@ -270,7 +270,6 @@ function abrirTela(event) {
             `;
             carregarChat();
             espera = true;
-            realizarLogout();
             setTimeout(() => {
                 espera = false;
             }, 500);
@@ -680,7 +679,7 @@ async function mostrarDetalhesNota(idNota) {
             const span = document.createElement("span");
             span.className = "detalhesNF";
             span.textContent = "×";
-            span.addEventListener("click", fecharModalNota());
+            span.addEventListener("click", fecharModalNota)
 
             const h2 = document.createElement("h2");
             h2.textContent = "Detalhes da Nota Fiscal";
@@ -866,9 +865,12 @@ async function confirmarPagamento() {
         })
         .catch(error => console.error(error))
         .finally(() => {
-            document.getElementById('botaoPagamento').disabled = false;
+            document.getElementById('pagarDivida').disabled = false;
             document.getElementById('botaoAgendar').disabled = false;
-            document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+            document.getElementById('pagarDivida').textContent = 'Pagar Divida';
+            document.getElementById('pagarDivida').classList.remove('desativado');
+            document.getElementById('botaoAgendar').classList.remove('desativado');
+            
         });
     if (validar == true) {
         dados.nome = document.getElementById('nome_pagador').value;
@@ -897,8 +899,9 @@ async function confirmarPagamento() {
             })
             .catch(error => console.error(error))
             .finally(() => {
-                document.getElementById('botaoPagamento').disabled = false;
-                document.getElementById('botaoPagamento').textContent = 'Confirmar Pagamento';
+                document.getElementById('pagarDivida').disabled = false;
+                document.getElementById('pagarDivida').textContent = 'Pagar Divida';
+                document.getElementById('pagarDivida').classList.remove('desativado');
             });
     }
 
@@ -1176,7 +1179,7 @@ function carregarChat() {
     `;
 
     const form = document.getElementById('formChat');
-    form.addEventListener('submit', async function(event) {
+    form.addEventListener('submit', async function (event) {
         event.preventDefault();
         const input = document.getElementById('mensagem');
         const mensagem = input.value.trim();
@@ -1222,7 +1225,7 @@ function carregarChat() {
 async function validarEmailSuporte() {
     document.getElementById('botaoEnviarSuporte').disabled = true;
     document.getElementById('botaoEnviarSuporte').textContent = 'Validando...';
-    let email = /^[A-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+    let email = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     var verificadorEmail = email.test(document.getElementById("email").value);
     if (!verificadorEmail) {
         alert("Email inválido! Por favor, insira um email válido.");
@@ -1263,7 +1266,7 @@ async function validarEmailSuporte() {
 }
 
 function sanitizarTexto(texto) {
-    return str
+    return texto
         .replace(/&/g, " ")
         .replace(/</g, " ")
         .replace(/>/g, " ")
@@ -1306,9 +1309,11 @@ async function enviarSuporteDeslogado() {
                 window.alert(data.msg);
             } else {
                 window.alert('Mensagem enviada com sucesso!');
-                document.getElementById("conteudo_suporte").innerHTML = ``
                 document.getElementById('email').value = '';
                 document.getElementById('textoSuporte').value = '';
+                document.getElementById('conteudo_suporte').innerHTML = '';
+                document.getElementById('botaoEnviarSuporte').disabled = false;
+                document.getElementById('botaoEnviarSuporte').textContent = 'Enviar';
 
             }
         })
@@ -1346,8 +1351,7 @@ async function enviarSuporteLogado() {
             if (data.error) {
                 window.alert(data.msg);
             } else {
-                document.alert("Mensagem enviada com sucesso!");
-                document.getElementById("conteudo_suporte").innerHTML = ``
+                window.alert("Mensagem enviada com sucesso!");
                 document.getElementById('textoSuporte').value = '';
 
             }
