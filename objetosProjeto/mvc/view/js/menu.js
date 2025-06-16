@@ -782,6 +782,28 @@ function buscarChatId() {
 
 }
 
+/**
+ * Função que mostra uma mensagem na div de sistema.
+ * @param {string} mensagem O texto da mensagem a ser exibida.
+ * @param {string} tipo O tipo da mensagem (ex: 'sucesso', 'erro', 'info').
+ */
+function exibirMensagem(mensagem, tipo) {
+    const mensagemDiv = document.getElementById('mensagemSistema');
+    if (mensagemDiv) {
+        mensagemDiv.textContent = mensagem;
+        mensagemDiv.className = 'mensagem-sistema'; // Reseta as classes
+        mensagemDiv.classList.add(tipo);
+        mensagemDiv.classList.remove('hidden');
+
+/*
+        // Oculta a mensagem após 5 segundos se precisar
+        setTimeout(() => {
+            mensagemDiv.classList.add('hidden');
+        }, 5000);
+*/
+    }
+}
+
 /* Página Agendamento/Pagamento */
 
 function validarAgendamento() {
@@ -790,7 +812,7 @@ function validarAgendamento() {
     const agendamento = new Date(`${dataInput}T${horaInput}`);
     const agora = new Date();
     if (agendamento < agora) {
-        window.alert("A data e hora do agendamento não podem ser no passado.");
+        exibirMensagem("A data e hora do agendamento não podem ser no passado.", "erro");
         return;
     }
 
@@ -800,6 +822,7 @@ function validarAgendamento() {
     document.getElementById('botaoAgendar').disabled = true;
     document.getElementById('divTelaPagamento').innerHTML = `
         <div id="divPagamento" class="divPagamento">
+        <div id="mensagemSistema" class="mensagem-sistema hidden"></div>
             <h2>Informações de Pagamento</h2>
             <form onsubmit="event.preventDefault(); confirmarPagamento();">
                 <label for="nome_pagador">Nome do Pagador:</label><br>
@@ -834,7 +857,7 @@ function carregarPlacasPerfil() {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                window.alert(data.msg);
+                exibirMensagem(data.msg, "erro");
             } else {
                 const select = document.getElementById("carros");
                 select.innerHTML = "";

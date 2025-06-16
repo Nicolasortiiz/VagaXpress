@@ -530,3 +530,46 @@ Estilos menu de gerenciamento de vagas
     background-color: rgb(47, 44, 66);
     color: white;
 }
+
+
+
+
+/* Estilos para a div de mensagens */
+.mensagem-sistema {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    text-align: center;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Esconder a div de mensagens */
+.mensagem-sistema.hidden {
+    display: none;
+    opacity: 0;
+}
+
+/* Estilo para mensagens de sucesso */
+.mensagem-sistema.sucesso {
+    background-color: #d4edda; /* Verde claro */
+    color: #155724; /* Verde escuro */
+    border: 1px solid #c3e6cb;
+}
+
+/* Estilo para mensagens de erro/alerta */
+.mensagem-sistema.erro {
+    background-color: #f8d7da; /* Vermelho claro */
+    color: #721c24; /* Vermelho escuro */
+    border: 1px solid #f5c6cb;
+}
+
+/* Estilo para mensagens de informação (opcional) */
+.mensagem-sistema.info {
+    background-color: #d1ecf1; /* Azul claro */
+    color: #0c5460; /* Azul escuro */
+    border: 1px solid #bee5eb;
+}
