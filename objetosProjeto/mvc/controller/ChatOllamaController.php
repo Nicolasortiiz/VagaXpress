@@ -22,7 +22,7 @@ class ChatOllamaController
 
     public function chamarIA($mensagem)
     {
-        $ollama_url = 'http://host.docker.internal:11434/api/generate';
+        $ollama_url = 'http://ollama:11434/api/generate';
 
         // Alterar dados para que fique tudo certo!
         $memoria = 'Contexto: 

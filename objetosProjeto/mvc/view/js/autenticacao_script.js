@@ -1,7 +1,7 @@
 let chavePublica;
 
 window.onload = function () {
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_autenticacao", {
+    fetch("/gateway.php/api/usuario?action=verificar_login_autenticacao", {
         credentials: 'include'
     })
         .then(response => response.json())
@@ -67,8 +67,6 @@ function enviarLogin() {
         if ((verificadorEmail && verificadorSenha)) {
             document.querySelector(".input_box").style.display = 'none';
             document.querySelector(".divSMS").style.display = 'flex';
-        } else if (document.getElementById("email").value == "admin") { //Fazer autenticação de admin de verdade eventualmente
-            window.location.href = "administracao.html";
         } else {
             alert("Erro no login, credenciais incorretos!");
         }
@@ -95,7 +93,7 @@ async function validarLogin() {
     };
 
     var res = await criptografar(dados);
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=validar_otp", {
+    fetch("/gateway.php/api/usuario?action=validar_otp", {
         method: "POST",
         credentials: 'include',
         headers: {

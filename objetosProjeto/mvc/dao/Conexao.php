@@ -10,7 +10,7 @@ class Conexao{
 
     private function __construct(){
         $env = parse_ini_file(__DIR__ . '/../.env');
-        $this->ip = $env['DATABASE_IP'] ?? $this->ip;
+        $this->ip = '172.25.0.11';
         $this->username = $env['DATABASE_USER'] ?? $this->username;
         $this->password = $env['DATABASE_PASSWORD'] ?? $this->password;
         $this->dbname = "EstacionamentoDB" ?? $this->dbname;

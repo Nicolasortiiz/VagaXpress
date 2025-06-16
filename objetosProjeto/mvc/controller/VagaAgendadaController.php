@@ -73,7 +73,7 @@ class VagaAgendadaController
             echo json_encode(["error" => true, "msg" => "Necessário realizar login!"]);
             exit;
         }
-        $url = "http://vagas-service:8883/registro.php?action=validar_remocao";
+        $url = "http://localhost:8001/registro.php?action=validar_remocao";
         $dados = [
             'placa' => htmlspecialchars($placa)
         ];
@@ -107,15 +107,15 @@ class VagaAgendadaController
             $this->VagaAgendadaDAO->removerTodosAgendamentos($agendamento);
         }
 
-        $url = "http://gestao-veiculos-service:8880/veiculo.php?action=deletar_placa";
+        $url = "http://localhost:8001/veiculo.php?action=deletar_placa";
         $dados = [
             'placa' => htmlspecialchars($placa),
             'id' => htmlspecialchars($_SESSION['usuario_id'])
         ];
         $resposta = enviaDados($url, $dados);
         $json = json_decode($resposta);
-        if(isset($json['msg'])){
-            $json['msg'] = htmlspecialchars($json['msg'], ENT_QUOTES, 'UTF-8');
+        if(isset($json->msg)){
+            $json->msg = htmlspecialchars($json->msg, ENT_QUOTES, 'UTF-8');
         echo json_encode($json); 
         }else{
             echo json_encode(["error" => true, "msg" => "Erro ao deletar placa!"]);
@@ -146,7 +146,7 @@ class VagaAgendadaController
             exit;
         }
         $valor = $this->EstacionamentoController->retornarValorHora();
-        $url = "http://gestao-veiculos-service:8880/usuario.php?action=validar_pagamento_agendamento";
+        $url = "http://localhost:8001/usuario.php?action=validar_pagamento_agendamento";
         $dados = [
             'placa' => htmlspecialchars($placa),
             'id' => htmlspecialchars($_SESSION['usuario_id']),
@@ -154,13 +154,10 @@ class VagaAgendadaController
         ];
         $resposta = enviaDados($url, $dados);
         $json = json_decode($resposta);
-        if (isset($json['msg'])) {
-            $json['msg'] = htmlspecialchars($json['msg'], ENT_QUOTES, 'UTF-8');
-            echo json_encode($json); 
-        }else{
-            echo json_encode(["error" => true, "msg" => "Erro ao validar pagamento!"]);
-            exit;
+        if (isset($json->msg)) {
+            $json->msg = htmlspecialchars($json->msg, ENT_QUOTES, 'UTF-8');
         }
+        echo json_encode($json); 
         exit;
     }
     public function criarAgendamento($placa, $dataEntrada, $horaEntrada, $nome, $cpf)
@@ -172,7 +169,7 @@ class VagaAgendadaController
         }
 
         $valor = $this->EstacionamentoController->retornarValorHora();
-        $url = "http://gestao-veiculos-service:8880/usuario.php?action=realizar_pagamento";
+        $url = "http://localhost:8001/usuario.php?action=realizar_pagamento";
         $dados = [
             "valor" => htmlspecialchars($valor),
             "id" => htmlspecialchars($_SESSION['usuario_id'])
@@ -184,7 +181,7 @@ class VagaAgendadaController
             exit;
         }
         $cpf = preg_replace('/\D/', '', $cpf);
-        $url = "http://pagamento-service:8882/notaFiscal.php?action=gerar_nota_fiscal";
+        $url = "http://localhost:8001/notaFiscal.php?action=gerar_nota_fiscal";
         $dados = [
             "valor" => htmlspecialchars($valor),
             "id" => htmlspecialchars($_SESSION["usuario_id"]),
@@ -213,7 +210,7 @@ class VagaAgendadaController
             exit;
         }
         
-        $url = "http://gestao-veiculos-service:8880/veiculo.php?action=retornar_placas";
+        $url = "http://localhost:8001/veiculo.php?action=retornar_placas";
         $dados = ["id" => $_SESSION["usuario_id"]];
         $resposta = enviaDados($url, $dados);  
         $resposta = json_decode($resposta);

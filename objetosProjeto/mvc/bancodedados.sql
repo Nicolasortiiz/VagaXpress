@@ -71,8 +71,5 @@ CREATE TABLE Suporte (
     tipo VARCHAR(50) NOT NULL
 );
 
-INSERT INTO Usuario (nome, email) VALUES ('Admin', 'admin@vagaxpress.com');
-INSERT INTO Usuario (nome, email) VALUES ('teste', 'teste@mail.com');
-INSERT INTO Usuario (nome, email, segredo) VALUES ('teste', 'nicolasortiz2003@gmail.com', '7KI7FG56KT46JH5V62R24ZVYTEGTKJHWAQHYE5YWU623G6OECIAHS6BWG4DUV6FNPAYJBBX7SYZYFDOVFMAPXAPMJLS4PLBTHAS2QTQ');
-INSERT INTO Estacionamento (totalVagas, valorHora) VALUES (100, 5.00);
+
  

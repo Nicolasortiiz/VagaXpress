@@ -1,24 +1,13 @@
 let chavePublica;
 window.onload = function () {
 
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=verificar_login_principal")
+    fetch("/gateway.php/api/usuario?action=verificar_login_principal")
         .then(response => response.json())
         .then(data => {
-            if (data.login == 2) {
-                document.getElementById("cadastro_veiculos").style.disabled = true;
-                document.getElementById("cadastro_veiculos").style.display = "none";
-                document.getElementById("agendamento").style.disabled = true;
-                document.getElementById("agendamento").style.display = "none";
-                document.getElementById("perfil_usuario").style.disabled = true;
-                document.getElementById("perfil_usuario").style.display = "none";
-                document.getElementById("logout").style.disabled = true;
-                document.getElementById("logout").style.display = "none";
-            } else if (data.login == 1) {
-                document.getElementById("login").style.disabled = true;
-                document.getElementById("login").style.display = "none";
+            if (data.login == 1) {
+                window.location.href = "../index.html";
             } else if (data.login == 0) {
-                //encaminhar para index.html
-                //window.location.href = "../index.html";
+                window.location.href = "../index.html";
             }
             if (data.pubkey) {
                 chavePublica = data.pubkey;
@@ -65,22 +54,6 @@ function abrirTela(event) {
 
     switch (elementoClicado) {
 
-        case "excluir_usuario":
-            conteudo.innerHTML = `
-                <h2>Menu de exclusão de usuários</h2>
-                <form onsubmit="event.preventDefault(); excluir_usuario();">
-                    <input id="usuario" placeholder="Qual usuário deseja excluir?" required>
-                    <button type="submit">Enviar</button>
-                </form>
-            `;
-            break;
-
-        case "verificar_conta":
-            conteudo.innerHTML = `
-                <h2>Visualização de solicitações de verificação de contas</h2>
-            `;
-            break;
-
         case "alterar_vagas":
             conteudo.innerHTML = `
                 <h2>Alterar número de vagas</h2>
@@ -99,12 +72,6 @@ function abrirTela(event) {
                 <br>
                 <p> *Envios vazios zeram o campo </p>
         `;
-            break;
-
-        case "banir_placa":
-            conteudo.innerHTML = `
-                <h2>Banir placas cadastradas</h2>
-            `;
             break;
 
         case "enviar_notificacao":
@@ -130,7 +97,7 @@ function abrirTela(event) {
 }
 
 async function realizarLogout() {
-    fetch("http://api.vagaxpress.com/gateway.php/api/usuario?action=logout")
+    fetch("/gateway.php/api/usuario?action=logout")
         .then(response => response.json())
         .then(data => {
             if (data.logout) {
@@ -144,7 +111,7 @@ async function realizarLogout() {
 /* Scripts Página Notificação */
 
 function carregarNotificacoes() {
-    fetch("http://api.vagaxpress.com/gateway.php/api/mensagem?action=buscar_notificacoes")
+    fetch("/gateway.php/api/mensagem?action=buscar_notificacoes")
         .then(response => response.json())
         .then(data => {
             const conteudo = document.getElementById("conteudo");
@@ -230,7 +197,7 @@ async function enviar_notificacao() {
         const dados = {notificacao: notificacao};
         const res = await criptografar(dados);
 
-        const resposta = await fetch("http://api.vagaxpress.com/gateway.php/api/mensagem?action=enviar_notificacao", {
+        const resposta = await fetch("/gateway.php/api/mensagem?action=enviar_notificacao", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
